@@ -1,0 +1,49 @@
+/* Estilo do contêiner principal */
+.quiz-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    text-align: center;
+  }
+  
+  /* Estilo dos números de perguntas */
+  .active-question-no {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007BFF;
+  }
+  
+  .total-question {
+    font-size: 1.2rem;
+    color: #555;
+    margin-left: 5px;
+  }
+  
+  /* Estilo do título da pergunta */
+  .quiz-container h2 {
+    font-size: 1.8rem;
+    margin: 20px 0;
+    color: #333;
+  }
+  
+  /* Animação simples para transição entre perguntas */
+  .quiz-container h2 {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

@@ -1,8 +1,9 @@
-import { JsQuizz } from '../components/JSquiz';
-import Quizz from '../components/quizz';
+import { jsQuizz } from '../components/Quiz/Constants';
+import Quiz from "../components/Quiz/quizz";
+
+
 function QuestoesView() {
-  
-  return <Quizz question ={JsQuizz.Qts}/>
+  return <Quiz questions={jsQuizz.questions} />;
 }
 
 export default QuestoesView;
