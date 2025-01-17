@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './home.css'
 
 function Home() {
   const [darkMode, setDarkMode] = useState(true); // Estado para alternar entre escuro e claro
