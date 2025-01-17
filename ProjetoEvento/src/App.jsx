@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Questoes from './pages/Questoes';
 import AuthPage from './pages/login';
 import TestConnection from './pages/TestConnection'
+import Palestras from './pages/palestras';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="quizz" element={<Questoes />} />
         <Route path="/" element={<AuthPage />} />
         <Route path='test' element={<TestConnection/>}/>
+        <Route path='palestras' element={<Palestras/>}/>
       </Routes>
     </div>
     
