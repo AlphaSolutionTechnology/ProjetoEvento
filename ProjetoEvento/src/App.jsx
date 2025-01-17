@@ -1,16 +1,17 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Questoes from './pages/Questoes';
-import TestConnection from './pages/TestConnection';
+import AuthPage from './pages/login';
 
 function App() {
   return (
     <div>
       <Routes>
-        <Route path="/questions" element={<Questoes />} />
-        <Route path='test' element={<TestConnection />}/>
+        <Route path="/questionshome" element={<Questoes />} />
+        <Route path="login" element={<AuthPage />} />
       </Routes>
     </div>
+    
   );
 }
 
