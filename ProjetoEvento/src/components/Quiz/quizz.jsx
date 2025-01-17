@@ -2,7 +2,7 @@ import { useState } from "react";
 import './quizz.css';
 import { resultInitialState } from "./Constants";
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
-const Quiz = ({ questions }) => {
+  const Quiz = ({ questions }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answerIdx, setAnswerIdx] = useState(null);
   const [answer, setAnswer] = useState(null);
@@ -20,10 +20,10 @@ const Quiz = ({ questions }) => {
     }
   };
 
-  const onClickNext = () => {
+  const onClickNext = (finalAnswer) => {
     setAnswerIdx(null);
     setResult((prev) =>
-      answer
+      finalAnswer
         ? {
             ...prev,
             score: prev.score + 5,
@@ -49,7 +49,8 @@ const Quiz = ({ questions }) => {
   };
 
   const handleTimeup = () => {
-    
+    setAnswer(false);
+    onClickNext(false);
   }
 
   return (
@@ -72,7 +73,7 @@ const Quiz = ({ questions }) => {
             ))}
           </ul>
           <div className="footer">
-            <button onClick={onClickNext} disabled={answerIdx === null}>
+            <button onClick={() => onClickNext} disabled={answerIdx === null}>
               {currentQuestion === questions.length - 1 ? "Finalizar" : "Próximo"}
             </button>
           </div>
