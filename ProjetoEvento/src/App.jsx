@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Questoes from './pages/Questoes';
 import AuthPage from './pages/login';
+import TestConnection from './pages/TestConnection'
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/questionshome" element={<Questoes />} />
         <Route path="login" element={<AuthPage />} />
+        <Route path='test' element={<TestConnection/>}/>
       </Routes>
     </div>
     
