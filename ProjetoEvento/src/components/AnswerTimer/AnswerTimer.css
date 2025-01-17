@@ -15,25 +15,12 @@
     top: 0;
     left: 0;
     height: 100%; /* A altura corresponde ao contêiner */
-    background-color: #008000; /* verde principal */
+    background-color: #007bff; /* Azul principal */
     transition: width 1.5s linear, background-color 0.5s ease-in-out; /* Transição mais suave */
   }
   
   /* Barra de progresso em estado de alerta */
   .answer-timer-container .progress.warning {
     background-color: #dc3545; /* Vermelho de alerta */
-  }
-  
-  /* Responsividade para o timer */
-  @media (max-width: 768px) {
-    .answer-timer-container {
-      height: 8px; /* Reduz a altura em telas menores */
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .answer-timer-container {
-      height: 6px; /* Ajusta ainda mais a altura */
-    }
   }
   
