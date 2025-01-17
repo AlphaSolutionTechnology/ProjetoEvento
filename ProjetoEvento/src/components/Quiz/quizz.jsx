@@ -2,7 +2,8 @@ import { useState } from "react";
 import './quizz.css';
 import { resultInitialState } from "./Constants";
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
-  const Quiz = ({ questions }) => {
+
+const Quiz = ({ questions }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answerIdx, setAnswerIdx] = useState(null);
   const [answer, setAnswer] = useState(null);
@@ -44,20 +45,19 @@ import AnswerTimer from "../AnswerTimer/AnswerTimer";
   };
 
   const onExit = () => {
-    // Implementar lógica adicional, se necessário
-    window.location.reload(); // Simula sair, recarregando a página
+    window.location.reload();
   };
 
   const handleTimeup = () => {
     setAnswer(false);
     onClickNext(false);
-  }
+  };
 
   return (
     <div className="quiz-container">
       {!showResult ? (
         <>
-          <AnswerTimer duration={10} onTimeUp={handleTimeup}/>
+          <AnswerTimer duration={10} onTimeUp={handleTimeup} />
           <span className="active-question-no">{currentQuestion + 1}</span>
           <span className="total-question">/{questions.length}</span>
           <h2>{question}</h2>
@@ -73,7 +73,7 @@ import AnswerTimer from "../AnswerTimer/AnswerTimer";
             ))}
           </ul>
           <div className="footer">
-            <button onClick={() => onClickNext} disabled={answerIdx === null}>
+            <button onClick={() => onClickNext(answer)} disabled={answerIdx === null}>
               {currentQuestion === questions.length - 1 ? "Finalizar" : "Próximo"}
             </button>
           </div>
@@ -81,9 +81,9 @@ import AnswerTimer from "../AnswerTimer/AnswerTimer";
       ) : (
         <div className="result">
           <h3>Resultado</h3>
-          <p> Total de Acertos: <span>{result.correctAnswers}</span></p>
-          <p> Total de Erros: <span>{result.wrongAnswers}</span></p>
-          <p> Pontuação Final: <span>{result.score}</span></p>
+          <p>Total de Acertos: <span>{result.correctAnswers}</span></p>
+          <p>Total de Erros: <span>{result.wrongAnswers}</span></p>
+          <p>Pontuação Final: <span>{result.score}</span></p>
           <button onClick={onExit} className="exit-button">Sair</button>
         </div>
       )}
