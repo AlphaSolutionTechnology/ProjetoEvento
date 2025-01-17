@@ -69,7 +69,10 @@ const Quiz = ({ questions }) => {
         </>
       ) : (
         <div className="result">
-          <h3>Result</h3>
+          <h3>Resultado</h3>
+          <p> Total de Acertos: <span>{result.correctAnswers}</span></p>
+          <p> Total de Erros: <span>{result.wrongAnswers}</span></p>
+          <p> Pontuação Final: <span>{result.score}</span></p>
         </div>
       )}
     </div>
