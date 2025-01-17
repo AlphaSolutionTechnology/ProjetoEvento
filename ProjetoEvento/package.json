@@ -10,8 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.0",
+    "@mui/material": "^6.4.0",
+    "framer-motion": "^11.18.0",
     "react": "^18.3.1",
+    "react-card-flip": "^1.2.3",
     "react-dom": "^18.3.1",
+    "react-qr-code": "^2.0.15",
     "react-router-dom": "^7.1.1"
   },
   "devDependencies": {
@@ -24,6 +31,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
+    "tailwindcss": "^3.4.17",
     "vite": "^6.0.5"
   }
 }
