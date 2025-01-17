@@ -1,160 +1,183 @@
-/* Estilo do contêiner principal */
+/* Estilo do contêiner principal */ 
 .quiz-container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    text-align: center;
-  }
-  
-  /* Estilo dos números de perguntas */
-  .active-question-no {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #007BFF;
-  }
-  
-  .total-question {
-    font-size: 1.2rem;
-    color: #555;
-    margin-left: 5px;
-  }
-  
-  /* Estilo do título da pergunta */
-  .quiz-container h2 {
-    font-size: 1.8rem;
-    margin: 20px 0;
-    color: #333;
-  }
-  
-  /* Animação simples para transição entre perguntas */
-  .quiz-container h2, ul, .footer {
-    animation: fadeIn 0.5s ease-in-out;
-  }
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  text-align: center;
+}
 
-  /* Estilo da lista não ordenada (ul) */
+/* Estilo dos números de perguntas */
+.active-question-no {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007BFF;
+}
+
+.total-question {
+  font-size: 1.2rem;
+  color: #555;
+  margin-left: 5px;
+}
+
+/* Estilo do título da pergunta */
+.quiz-container h2 {
+  font-size: 1.8rem;
+  margin: 20px 0;
+  color: #333;
+}
+
+/* Animação simples para transição entre perguntas */
+.quiz-container h2, ul, .footer {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Estilo da lista não ordenada (ul) */
 .quiz-container ul {
-    list-style: none; /* Remove os marcadores padrão */
-    padding: 0;
-    margin: 20px 0;
-  }
-  
-  /* Estilo dos itens da lista (li) */
+  list-style: none; /* Remove os marcadores padrão */
+  padding: 0;
+  margin: 20px 0;
+}
+
+/* Estilo dos itens da lista (li) */
+.quiz-container ul li {
+  padding: 10px 15px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Efeito ao passar o mouse sobre o item */
+.quiz-container ul li:hover {
+  background-color: #e3f2fd; /* Azul claro */
+  color: #007bff; /* Azul principal */
+}
+
+/* Estilo para a resposta selecionada */
+.quiz-container ul li.selected-answer {
+  background-color: #007bff; /* Azul principal */
+  color: #fff; /* Branco */
+  border-color: #0056b3; /* Azul escuro */
+  font-weight: bold;
+}
+
+/* Responsividade para a lista */
+@media (max-width: 768px) {
   .quiz-container ul li {
-    padding: 10px 15px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    cursor: pointer;
-    font-size: 1rem;
-    color: #333;
-    transition: background-color 0.3s, color 0.3s;
+    font-size: 0.9rem; /* Reduz o tamanho da fonte em telas menores */
+    padding: 8px 12px;
   }
-  
-  /* Efeito ao passar o mouse sobre o item */
-  .quiz-container ul li:hover {
-    background-color: #e3f2fd; /* Azul claro */
-    color: #007bff; /* Azul principal */
+}
+
+@media (max-width: 480px) {
+  .quiz-container ul li {
+    font-size: 0.8rem; /* Ajusta ainda mais para telas pequenas */
+    padding: 6px 10px;
   }
-  
-  /* Estilo para a resposta selecionada */
-  .quiz-container ul li.selected-answer {
-    background-color: #007bff; /* Azul principal */
-    color: #fff; /* Branco */
-    border-color: #0056b3; /* Azul escuro */
-    font-weight: bold;
-  }
-  
-  /* Responsividade para a lista */
-  @media (max-width: 768px) {
-    .quiz-container ul li {
-      font-size: 0.9rem; /* Reduz o tamanho da fonte em telas menores */
-      padding: 8px 12px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .quiz-container ul li {
-      font-size: 0.8rem; /* Ajusta ainda mais para telas pequenas */
-      padding: 6px 10px;
-    }
-  }
-  
+}
+
 /* Estilo do contêiner do footer */
 .footer {
-    display: flex;
-    justify-content: center; /* Centraliza o botão no footer */
-    margin-top: 20px;
-    padding: 15px 0;
-    border-top: 1px solid #ddd; /* Linha separadora acima do footer */
-    background-color: #f9f9f9;
-  }
-  
-  /* Estilo do botão */
+  display: flex;
+  justify-content: center; /* Centraliza o botão no footer */
+  margin-top: 20px;
+  padding: 15px 0;
+  border-top: 1px solid #ddd; /* Linha separadora acima do footer */
+  background-color: #f9f9f9;
+}
+
+/* Estilo do botão */
+.footer button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Botão desativado */
+.footer button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Efeito ao passar o mouse no botão ativo */
+.footer button:not(:disabled):hover {
+  background-color: #0056b3; /* Azul mais escuro */
+  transform: scale(1.05); /* Leve aumento ao passar o mouse */
+}
+
+/* Efeito de clique no botão */
+.footer button:active {
+  transform: scale(0.95); /* Leve redução ao clicar */
+}
+
+/* Responsividade para o footer */
+@media (max-width: 768px) {
   .footer button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    font-size: 0.9rem;
+    padding: 8px 16px;
   }
-  
-  /* Botão desativado */
-  .footer button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.7;
+}
+
+@media (max-width: 480px) {
+  .footer {
+    flex-direction: column; /* Botão centralizado em telas pequenas */
   }
-  
-  /* Efeito ao passar o mouse no botão ativo */
-  .footer button:not(:disabled):hover {
-    background-color: #0056b3; /* Azul mais escuro */
-    transform: scale(1.05); /* Leve aumento ao passar o mouse */
+
+  .footer button {
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 10px;
   }
-  
-  /* Efeito de clique no botão */
-  .footer button:active {
-    transform: scale(0.95); /* Leve redução ao clicar */
+}
+
+/* Estilo do botão de sair */
+.exit-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #dc3545; /* Vermelho */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Efeito ao passar o mouse no botão de sair */
+.exit-button:hover {
+  background-color: #c82333; /* Vermelho mais escuro */
+  transform: scale(1.05); /* Leve aumento ao passar o mouse */
+}
+
+/* Efeito de clique no botão de sair */
+.exit-button:active {
+  transform: scale(0.95); /* Leve redução ao clicar */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  
-  /* Responsividade para o footer */
-  @media (max-width: 768px) {
-    .footer button {
-      font-size: 0.9rem;
-      padding: 8px 16px;
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  @media (max-width: 480px) {
-    .footer {
-      flex-direction: column; /* Botão centralizado em telas pequenas */
-    }
-  
-    .footer button {
-      width: 100%;
-      font-size: 0.8rem;
-      padding: 10px;
-    }
-  }
-  
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
+}

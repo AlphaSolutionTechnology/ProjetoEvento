@@ -43,6 +43,11 @@ const Quiz = ({ questions }) => {
     }
   };
 
+  const onExit = () => {
+    // Implementar lógica adicional, se necessário
+    window.location.reload(); // Simula sair, recarregando a página
+  };
+
   return (
     <div className="quiz-container">
       {!showResult ? (
@@ -73,6 +78,7 @@ const Quiz = ({ questions }) => {
           <p> Total de Acertos: <span>{result.correctAnswers}</span></p>
           <p> Total de Erros: <span>{result.wrongAnswers}</span></p>
           <p> Pontuação Final: <span>{result.score}</span></p>
+          <button onClick={onExit} className="exit-button">Sair</button>
         </div>
       )}
     </div>
