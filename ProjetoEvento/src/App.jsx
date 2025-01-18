@@ -5,7 +5,7 @@ import AuthPage from './pages/login';
 import ThemeToggle from './components/toggleDarkMode';  
 import { useAuth } from './context/AuthContext';
 import TestConnection from './pages/TestConnection'
-import Home from './pages/Home';
+import Home from './pages/home';
 
 function App() {
   const { user } = useAuth(); // pode ser null ou com daddos
