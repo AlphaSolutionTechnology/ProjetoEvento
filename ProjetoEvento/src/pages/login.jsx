@@ -1,4 +1,4 @@
-import { useTheme } from '../styles/ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 import { useState } from 'react';
 import googleIcon from '../assets/logo-google.svg';
 import linkedinIcon from '../assets/linkedin-icon.png';

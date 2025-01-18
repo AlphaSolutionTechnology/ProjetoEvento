@@ -1,9 +1,10 @@
 import React from 'react';
-import { useTheme } from '../styles/ThemeContext'; // Importa o hook de tema
+import { useTheme } from '../context/ThemeContext'; // Importa o hook de tema
+import { useAuth } from '../context/AuthContext';
 
 function Home() {
   const { darkMode } = useTheme(); // Acessa o estado global do tema
-  const isAdmin = true; // Define se o usuário é administrador (troque para "false" para testar)
+  const {user} = useAuth(); // Acessa o estado global de autenticação
 
   return (
     <div
@@ -41,7 +42,7 @@ function Home() {
       </div>
 
       {/* Terceiro Container (Somente para Administradores) */}
-      {isAdmin && (
+      {user.isAdmin && (
         <div
           className={`w-11/12 sm:w-3/4 h-[15%] ${
             darkMode ? 'bg-gray-600' : 'bg-gray-400'

@@ -3,8 +3,10 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/home';
 import AuthPage from './pages/login';
 import ThemeToggle from './components/toggleDarkMode';  
+import { useAuth } from './context/AuthContext';
 
 function App() {
+  const { user } = useAuth(); // pode ser null ou com daddos
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       {/* Header com o botão de alternância de tema */}
@@ -15,7 +17,7 @@ function App() {
 
       {/* Rotas da aplicação */}
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/home" element={user ? <Home /> : <AuthPage />} /> 
         <Route path="/login" element={<AuthPage />} />
       </Routes>
     </div>
