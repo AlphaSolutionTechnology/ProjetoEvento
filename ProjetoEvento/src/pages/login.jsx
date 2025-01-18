@@ -10,42 +10,55 @@ function AuthPage() {
 
   function handleCredentialResponse(response) {
     console.log("Token JWT recebido:", response.credential);
-    fetch("http://localhost:8080/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: response.credential }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Usuário autenticado:", data);
+    if (response.credential) {
+      fetch("http://localhost:8080/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: response.credential }),
       })
-      .catch((err) => console.error("Erro na autenticação:", err));
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Usuário autenticado:", data);
+        })
+        .catch((err) => console.error("Erro na autenticação:", err));
+    } else {
+      console.error("Nenhum token recebido!");
+    }
   }
 
   useEffect(() => {
     const initializeGoogleSignIn = () => {
-      google.accounts.id.initialize({
-        client_id:
-          "937916098858-8ekrflam5ad65379jqocah9l2dlrjtrq.apps.googleusercontent.com",
-        callback: handleCredentialResponse,
-      });
+      if (window.google && google.accounts) {
+        google.accounts.id.initialize({
+          client_id:
+            "937916098858-8ekrflam5ad65379jqocah9l2dlrjtrq.apps.googleusercontent.com",
+          callback: handleCredentialResponse,
+        });
+        console.log("Google Sign-In inicializado!");
+      };
     };
 
-    if (window.google && google.accounts) {
-      initializeGoogleSignIn();
-    } else {
+    if (!window.google || !google.accounts) {
       const script = document.createElement("script");
       script.src = "https://accounts.google.com/gsi/client";
       script.async = true;
       script.defer = true;
       script.onload = initializeGoogleSignIn;
       document.body.appendChild(script);
+    } else {
+      initializeGoogleSignIn();
     }
   }, []);
 
   const handleGoogleSignIn = () => {
-    google.accounts.id.prompt(); // exibe a janela de login do google
-  }
+
+    if (window.google && google.accounts) {
+      google.accounts.id.prompt(); // Inicia o fluxo de autenticação do Google
+    } else {
+      console.error("Google Sign-In não inicializado!");
+    }
+
+  };
 
   return (
     <div
@@ -132,7 +145,8 @@ function AuthPage() {
 
         {/* Botões de Autenticação */}
         <div className="flex flex-col gap-4">
-          {/* google botao autenticador */}
+
+          {/* Google botao autenticador */}
           <button
             onClick={handleGoogleSignIn}
             className={`w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 ${
@@ -145,7 +159,7 @@ function AuthPage() {
             Entrar com Google
           </button>
 
-            {/* apple botao autenticador */}
+          {/* Apple botao autenticador */}
           <button
             className={`w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 ${
               darkMode
@@ -157,7 +171,7 @@ function AuthPage() {
             Entrar com Apple
           </button>
 
-          {/* linkedin botao autenticador */}
+          {/* LinkedIn botao autenticador */}
           <button
             className={`w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 ${
               darkMode
@@ -172,6 +186,6 @@ function AuthPage() {
       </div>
     </div>
   );
-};
+}
 
 export default AuthPage;
