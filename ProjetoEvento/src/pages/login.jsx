@@ -57,20 +57,6 @@ function AuthPage() {
         darkMode ? "bg-black text-white" : "bg-white text-black"
       }`}
     >
-      {/* Botão de alternar tema */}
-      <div className="absolute top-4 right-4">
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className={`px-4 py-2 rounded-lg font-semibold shadow-md text-sm sm:text-base lg:text-lg transition-colors duration-300 ${
-            darkMode
-              ? "bg-gray-200 text-black hover:bg-gray-300"
-              : "bg-gray-800 text-white hover:bg-gray-700"
-          }`}
-        >
-          {darkMode ? "Modo Claro" : "Modo Escuro"}
-        </button>
-      </div>
-
       {/* Título da Página */}
       <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-6 text-center">
         {isLogin ? "Login" : "Registro"}
