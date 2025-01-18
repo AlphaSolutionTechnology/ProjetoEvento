@@ -29,14 +29,6 @@ function AuthPage() {
           "937916098858-8ekrflam5ad65379jqocah9l2dlrjtrq.apps.googleusercontent.com",
         callback: handleCredentialResponse,
       });
-
-      google.accounts.id.renderButton(
-        document.getElementById("g_id_signin"),
-        {
-          theme: "outline",
-          size: "large",
-        }
-      );
     };
 
     if (window.google && google.accounts) {
@@ -50,6 +42,10 @@ function AuthPage() {
       document.body.appendChild(script);
     }
   }, []);
+
+  const handleGoogleSignIn = () => {
+    google.accounts.id.prompt(); // exibe a janela de login do google
+  }
 
   return (
     <div
@@ -136,16 +132,20 @@ function AuthPage() {
 
         {/* Botões de Autenticação */}
         <div className="flex flex-col gap-4">
+          {/* google botao autenticador */}
           <button
+            onClick={handleGoogleSignIn}
             className={`w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 ${
               darkMode
                 ? "bg-red-600 hover:bg-red-700"
                 : "bg-red-500 hover:bg-red-600"
             } transition duration-300`}
-          >
+          > 
             <img src={googleIcon} alt="Google" className="w-5 h-5" />
             Entrar com Google
           </button>
+
+            {/* apple botao autenticador */}
           <button
             className={`w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 ${
               darkMode
@@ -156,6 +156,8 @@ function AuthPage() {
             <img src={appleIcon} alt="Apple" className="w-5 h-5" />
             Entrar com Apple
           </button>
+
+          {/* linkedin botao autenticador */}
           <button
             className={`w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 ${
               darkMode
@@ -170,7 +172,6 @@ function AuthPage() {
       </div>
     </div>
   );
-}
+};
 
 export default AuthPage;
-
