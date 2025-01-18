@@ -25,7 +25,7 @@ function AuthPage() {
   }
 
   useEffect(() => {
-    window.onload = () => {
+    const initializeGoogleSignIn = () => {
       google.accounts.id.initialize({
         client_id: "937916098858-8ekrflam5ad65379jqocah9l2dlrjtrq.apps.googleusercontent.com",
         callback: handleCredentialResponse,
@@ -39,6 +39,17 @@ function AuthPage() {
         }
       );
     };
+
+    if (window.google && google.accounts) {
+      initializeGoogleSignIn();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeGoogleSignIn;
+      document.body.appendChild(script);
+    }
   }, []);
 
   return (
@@ -177,6 +188,7 @@ function AuthPage() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
