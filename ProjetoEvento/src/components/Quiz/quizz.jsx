@@ -1,6 +1,5 @@
 import { useState } from "react";
 import './quizz.css';
-import { resultInitialState } from "./Constants";
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
 
 const Quiz = ({ questions }) => {
