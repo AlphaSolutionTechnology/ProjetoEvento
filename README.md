@@ -87,7 +87,31 @@ function App() {
 export default App;
 ```
 
-### 5. Execute o Projeto
+### 5. Adicione e Utilize Icons
+O projeto utiliza Heroicons para ícones SVG. Caso ainda não estejam instalados, adicione a biblioteca:
+
+```bash
+npm install @heroicons/react
+
+```
+Depois, use os ícones nos componentes React. Exemplo:
+```bash
+import { ArrowRightIcon } from '@heroicons/react/solid';
+
+function ExampleButton() {
+  return (
+    <button className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+      Próximo
+      <ArrowRightIcon className="w-5 h-5 ml-2" />
+    </button>
+  );
+}
+
+export default ExampleButton;
+```
+OBS: A biblioteca Heroicons oferece ícones nos estilos solid (cheio) e outline (contorno). Escolha o que se adapta melhor ao seu design.
+
+### 6. Execute o Projeto
 
 Após instalar as dependências e configurar o projeto, execute-o localmente:
 
@@ -105,7 +129,7 @@ Após instalar as dependências e configurar o projeto, execute-o localmente:
 
 O projeto será iniciado e estará disponível em `http://localhost:3000` por padrão.
 
-### 6. Build para Produção (opcional)
+### 7. Build para Produção (opcional)
 
 Para gerar os arquivos otimizados para produção, execute o comando:
 
@@ -128,3 +152,4 @@ Os arquivos otimizados estarão disponíveis na pasta `build/`.
 - [React](https://reactjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [React Router](https://reactrouter.com/)
+- [HeroIcons](https://heroicons.com)
