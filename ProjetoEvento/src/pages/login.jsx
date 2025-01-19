@@ -34,8 +34,11 @@ function AuthPage() {
             "937916098858-8ekrflam5ad65379jqocah9l2dlrjtrq.apps.googleusercontent.com",
           callback: handleCredentialResponse,
         });
+        google.accounts.id.prompt()
         console.log("Google Sign-In inicializado!");
-      };
+      } else {
+        console.error("Google Sign-In não inicializado!");
+      }
     };
 
     if (!window.google || !google.accounts) {
@@ -53,7 +56,9 @@ function AuthPage() {
   const handleGoogleSignIn = () => {
 
     if (window.google && google.accounts) {
+      console.log("Iniciando autenticação do Google...");
       google.accounts.id.prompt(); // Inicia o fluxo de autenticação do Google
+      console.log("Autenticação do Google iniciada!");
     } else {
       console.error("Google Sign-In não inicializado!");
     }
