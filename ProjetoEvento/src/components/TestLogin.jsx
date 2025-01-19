@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const GoogleSignIn = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!googleClientId) {
@@ -9,7 +12,10 @@ const GoogleSignIn = () => {
       return;
     }
 
+    // Verifica se o usuário já está autenticado
+    checkAuthentication();
 
+    // Carrega o script do Google
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.onload = initializeGoogleSignIn;
@@ -20,7 +26,30 @@ const GoogleSignIn = () => {
     };
   }, []);
 
+  const checkAuthentication = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/validate", {
+        method: "POST",
+        credentials: "include", 
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsAuthenticated(true); 
+        localStorage.setItem("user_data", JSON.stringify(data));
+        navigate("/home"); 
+      } else {
+        console.log("Usuário não autenticado.");
+        setIsAuthenticated(false); 
+      }
+    } catch (error) {
+      console.error("Erro ao verificar autenticação:", error);
+    }
+  };
+
   const initializeGoogleSignIn = () => {
+    if (isAuthenticated) return; // Não exibe o botão se já estiver autenticado
+
     window.google.accounts.id.initialize({
       client_id: googleClientId,
       callback: handleCredentialResponse,
@@ -39,20 +68,24 @@ const GoogleSignIn = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        
       },
-      credentials:"include",
-      
+      credentials: "include", // Envia o cookie na requisição
       body: JSON.stringify({ token: response.credential }),
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Resposta do backend:", data);
+        localStorage.setItem("user_data", JSON.stringify(data)); // Armazena os dados do usuário
+        setIsAuthenticated(true); // Atualiza o estado de autenticação
+        navigate("/main"); // Redireciona para a página principal
       })
       .catch((error) => {
-        console.error("Erro ao enviar token para o backend:", error);
+        console.error("Erro ao autenticar com Google:", error);
       });
   };
+
+  if (isAuthenticated) {
+    return <div>Redirecionando...</div>; // Opcional: Indicador de redirecionamento
+  }
 
   return (
     <div>
