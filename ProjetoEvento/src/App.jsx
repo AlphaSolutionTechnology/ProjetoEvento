@@ -7,6 +7,7 @@ import { useAuth } from './context/AuthContext';
 import TestConnection from './pages/TestConnection'
 import Home from './pages/home';
 import LoginPage from './pages/LoginPage';
+import { Test } from './pages/Test';
 
 function App() {
   const { user } = useAuth(); // pode ser null ou com daddos
@@ -27,6 +28,7 @@ function App() {
         <Route path="/quizz" element={<Questoes />} />
         <Route path="/" element={<AuthPage />} />
         <Route path='/test' element={<TestConnection/>}/>
+        <Route path='/googletest' element={<Test/>}/>
       </Routes>
     </div>
   );
