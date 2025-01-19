@@ -7,7 +7,7 @@ import { useAuth } from './context/AuthContext';
 import TestConnection from './pages/TestConnection'
 import Home from './pages/home';
 import LoginPage from './pages/LoginPage';
-import { Test } from './pages/Test';
+import Test from './pages/TestConnection';
 
 function App() {
   const { user } = useAuth(); // pode ser null ou com daddos
