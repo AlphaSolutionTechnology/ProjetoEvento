@@ -21,7 +21,7 @@ function App() {
 
       {/* Rotas da aplicação */}
       <Routes>
-        <Route path="/register" element={<LoginPage />} />
+        <Route path="/re" element={<LoginPage />} />
         <Route path="/home" element={user ? <Home /> : <AuthPage />} /> 
         <Route path="/login" element={<AuthPage />} />
         <Route path="/quizz" element={<Questoes />} />

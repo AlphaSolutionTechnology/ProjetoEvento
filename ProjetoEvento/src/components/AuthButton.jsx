@@ -1,13 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const AuthButton = ({ platform, clientid, onSuccess, onError, icon, buttonText }) => {
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const initializeGoogleSignIn = () => {
             if (window.google && google.accounts) {
                 google.accounts.id.initialize({
                     client_id: clientid,
                     callback: (response) => {
-                        console.log("Token JWT recebido:", response.credential);
+                        setLoading(false); // Define loading como false após a resposta
                         if (response.credential) {
                             fetch(`http://localhost:8080/auth/${platform}`, {
                                 method: "POST",
@@ -28,7 +30,6 @@ const AuthButton = ({ platform, clientid, onSuccess, onError, icon, buttonText }
                         }
                     },
                 });
-                google.accounts.id.prompt();
                 console.log("Google Sign-In inicializado!");
             } else {
                 console.error("Google Sign-In não inicializado!");
@@ -49,6 +50,7 @@ const AuthButton = ({ platform, clientid, onSuccess, onError, icon, buttonText }
 
     const handleSignIn = () => {
         if (window.google && google.accounts) {
+            setLoading(true); // Define loading como true antes de chamar o prompt
             console.log(`Iniciando autenticação do ${platform}...`);
             google.accounts.id.prompt();
         }
@@ -57,11 +59,19 @@ const AuthButton = ({ platform, clientid, onSuccess, onError, icon, buttonText }
     return (
         <button
             onClick={handleSignIn}
-            className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 rounded-md shadow-md"
+            disabled={loading}
+            className={`flex items-center justify-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''} bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 rounded-md shadow-md`}
         >
-            <img src={icon} alt={`Ícone do ${platform}`} className="w-6 h-6" />
-            <span>{buttonText}</span>
+            {loading ? (
+                <span>Loading...</span>
+            ) : (
+                <>
+                    <img src={icon} alt={`Ícone do ${platform}`} className="w-6 h-6" />
+                    <span>{buttonText}</span>
+                </>
+            )}
         </button>
     );
-}
+};
+
 export default AuthButton;
