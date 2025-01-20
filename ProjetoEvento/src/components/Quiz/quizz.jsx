@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import './quizz.css';
+import "./quizz.css";
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
 
 const Quiz = () => {
@@ -18,7 +18,7 @@ const Quiz = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch('/api/questions'); // Substitua pelo endpoint real
+        const response = await fetch("http://localhost:8080/api/questoes");
         if (!response.ok) {
           throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
         }
@@ -41,10 +41,10 @@ const Quiz = () => {
     }
   };
 
-  const onClickNext = async (finalAnswer) => {
+  const onClickNext = () => {
     setAnswerIdx(null);
     setResult((prev) =>
-      finalAnswer
+      answer
         ? {
             ...prev,
             score: prev.score + 5,
@@ -59,33 +59,12 @@ const Quiz = () => {
     if (currentQuestion !== questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
-      // Enviar resultados ao backend
-      try {
-        const response = await fetch('/api/results', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(result),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erro ao enviar resultados: ${response.statusText}`);
-        }
-      } catch (error) {
-        console.error(error.message);
-      }
       setShowResult(true);
     }
   };
 
   const onExit = () => {
     window.location.reload();
-  };
-
-  const handleTimeup = () => {
-    setAnswer(false);
-    onClickNext(false);
   };
 
   if (questions.length === 0) {
@@ -98,7 +77,7 @@ const Quiz = () => {
     <div className="quiz-container">
       {!showResult ? (
         <>
-          <AnswerTimer duration={10} onTimeUp={handleTimeup} />
+          <AnswerTimer duration={10} onTimeUp={() => onClickNext(false)} />
           <span className="active-question-no">{currentQuestion + 1}</span>
           <span className="total-question">/{questions.length}</span>
           <h2>{question}</h2>
@@ -115,7 +94,7 @@ const Quiz = () => {
           </ul>
           <div className="footer">
             <button
-              onClick={() => onClickNext(answer)}
+              onClick={onClickNext}
               disabled={answerIdx === null}
             >
               {currentQuestion === questions.length - 1 ? "Finalizar" : "Próximo"}

@@ -2,7 +2,7 @@ import Quiz from "../components/Quiz/quizz";
 
 
 function QuestoesView() {
-  return <Quiz questions={jsQuizz.questions} />;
+  return <Quiz/>;
 }
 
 export default QuestoesView;
