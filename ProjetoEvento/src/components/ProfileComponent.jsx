@@ -15,9 +15,32 @@ const theme = createTheme({
     },
   },
 });
+const checkAuthentication = async () => {
+  try {
+    const response = await fetch("http://localhost:8080/api/auth/validate", {
+      method: "POST",
+      credentials: "include", 
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setIsAuthenticated(true); 
+      localStorage.setItem("user_data", JSON.stringify(data));
+      navigate("/home"); 
+    } else {
+      console.log("Usuário não autenticado.");
+      setIsAuthenticated(false); 
+    }
+  } catch (error) {
+    console.error("Erro ao verificar autenticação:", error);
+  }
+};
 
 function ProfileComponent() {
-  const [name, setName] = useState('');
+  if(localStorage.getItem("user_data" == null)){
+      checkAuthentication()
+  }
+  const name = JSON.parse(localStorage.getItem("user_data")).name;
 
   return (
     <ThemeProvider theme={theme}>
