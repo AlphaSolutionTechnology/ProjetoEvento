@@ -64,7 +64,7 @@ const GoogleSignIn = () => {
   const handleCredentialResponse = (response) => {
     console.log("Token JWT recebido:", response.credential);
 
-    fetch("http://localhost:8080/auth/google", {
+    fetch("http://localhost:8080/api/auth/google", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +76,7 @@ const GoogleSignIn = () => {
       .then((data) => {
         localStorage.setItem("user_data", JSON.stringify(data)); // Armazena os dados do usuário
         setIsAuthenticated(true); // Atualiza o estado de autenticação
-        navigate("/main"); // Redireciona para a página principal
+        navigate("/home"); // Redireciona para a página principal
       })
       .catch((error) => {
         console.error("Erro ao autenticar com Google:", error);
