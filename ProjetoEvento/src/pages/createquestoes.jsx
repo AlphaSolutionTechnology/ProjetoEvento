@@ -6,6 +6,7 @@ function CreateQuestoes() {
   const [choices, setChoices] = useState(["", "", "", ""]); // Quatro opções padrão
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [palestraId, setPalestraId] = useState("");
+  const [message, setMessage] = useState(""); // Estado para a mensagem de feedback
 
   // Função para lidar com a submissão do formulário
   const handleSubmit = async (e) => {
@@ -19,7 +20,7 @@ function CreateQuestoes() {
         idPalestra: palestraId,
       };
 
-      const response = await fetch('http://localhost:8080/api/questoes', {
+      const response = await fetch("http://localhost:8080/api/questoes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,16 +29,17 @@ function CreateQuestoes() {
       });
 
       if (response.ok) {
-        console.log("Questão criada com sucesso!");
+        setMessage("Quiz enviado com sucesso!"); // Define a mensagem de sucesso
         // Limpar os campos após o sucesso
         setQuestionText("");
         setChoices(["", "", "", ""]);
         setCorrectAnswer("");
         setPalestraId("");
       } else {
-        console.error("Erro ao criar questão:", response.statusText);
+        setMessage("Erro ao enviar o quiz."); // Define a mensagem de erro
       }
     } catch (error) {
+      setMessage("Erro ao enviar a requisição."); // Define a mensagem de erro em caso de falha
       console.error("Erro ao enviar a requisição:", error);
     }
   };
@@ -57,7 +59,10 @@ function CreateQuestoes() {
         onSubmit={handleSubmit}
       >
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="questionText">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="questionText"
+          >
             Enunciado da Questão
           </label>
           <input
@@ -71,7 +76,9 @@ function CreateQuestoes() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Escolhas</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Escolhas
+          </label>
           {choices.map((choice, index) => (
             <input
               key={index}
@@ -85,7 +92,10 @@ function CreateQuestoes() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="correctAnswer">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="correctAnswer"
+          >
             Resposta Correta
           </label>
           <input
@@ -99,7 +109,10 @@ function CreateQuestoes() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="palestraId">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="palestraId"
+          >
             ID da Palestra
           </label>
           <input
@@ -121,8 +134,20 @@ function CreateQuestoes() {
           </button>
         </div>
       </form>
+
+      {message && (
+        <p
+          className={`mt-4 text-lg font-bold ${
+            message.includes("sucesso")
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
+          {message}
+        </p>
+      )}
     </div>
   );
 }
 
-export default CreateQuestoes
+export default CreateQuestoes;
