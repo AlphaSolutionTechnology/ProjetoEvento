@@ -1,27 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import './quizz.css';
-import { resultInitialState } from "./Constants";
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
 
-const Quiz = ({ questions }) => {
+const Quiz = () => {
+  const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answerIdx, setAnswerIdx] = useState(null);
   const [answer, setAnswer] = useState(null);
-  const [result, setResult] = useState(resultInitialState);
+  const [result, setResult] = useState({
+    score: 0,
+    correctAnswers: 0,
+    wrongAnswers: 0,
+  });
   const [showResult, setShowResult] = useState(false);
 
-  const { question, choices, correctAnswer } = questions[currentQuestion];
+  // Fetch questions from API
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch('/api/questions'); // Substitua pelo endpoint real
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setQuestions(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
 
   const onAnswerClick = (selectedAnswer, index) => {
     setAnswerIdx(index);
-    if (selectedAnswer === correctAnswer) {
+    if (selectedAnswer === questions[currentQuestion].correctAnswer) {
       setAnswer(true);
     } else {
       setAnswer(false);
     }
   };
 
-  const onClickNext = (finalAnswer) => {
+  const onClickNext = async (finalAnswer) => {
     setAnswerIdx(null);
     setResult((prev) =>
       finalAnswer
@@ -39,7 +59,22 @@ const Quiz = ({ questions }) => {
     if (currentQuestion !== questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
-      setCurrentQuestion(0);
+      // Enviar resultados ao backend
+      try {
+        const response = await fetch('/api/results', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(result),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erro ao enviar resultados: ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error(error.message);
+      }
       setShowResult(true);
     }
   };
@@ -52,6 +87,12 @@ const Quiz = ({ questions }) => {
     setAnswer(false);
     onClickNext(false);
   };
+
+  if (questions.length === 0) {
+    return <p>Carregando...</p>;
+  }
+
+  const { question, choices } = questions[currentQuestion];
 
   return (
     <div className="quiz-container">
@@ -66,14 +107,17 @@ const Quiz = ({ questions }) => {
               <li
                 onClick={() => onAnswerClick(choice, index)}
                 key={choice}
-                className={answerIdx === index ? 'selected-answer' : null}
+                className={answerIdx === index ? "selected-answer" : null}
               >
                 {choice}
               </li>
             ))}
           </ul>
           <div className="footer">
-            <button onClick={() => onClickNext(answer)} disabled={answerIdx === null}>
+            <button
+              onClick={() => onClickNext(answer)}
+              disabled={answerIdx === null}
+            >
               {currentQuestion === questions.length - 1 ? "Finalizar" : "Próximo"}
             </button>
           </div>
