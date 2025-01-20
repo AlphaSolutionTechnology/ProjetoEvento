@@ -8,6 +8,7 @@ import TestConnection from './pages/TestConnection'
 import Home from './pages/home';
 import LoginPage from './pages/LoginPage';
 import { Test } from './pages/Test';
+import CreateQuestoes from './pages/createquestoes';
 import Palestras from './pages/palestras';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path='/test' element={<TestConnection/>}/>
         <Route path='/googletest' element={<Test/>}/>
         <Route path='/palestras' element={<Palestras/>}/>
+        <Route path="/admquizz" element={<CreateQuestoes />} />
       </Routes>
     </div>
   );
