@@ -26,7 +26,7 @@ function App() {
         <Route path="/quizz" element={<Questoes />} />
         <Route path="/" element={<AuthPage />} />
         <Route path='/test' element={<TestConnection/>}/>
-        <Route path='palestras' element={<Palestras/>}/>
+        <Route path='/palestras' element={<Palestras/>}/>
       </Routes>
     </div>
   );
