@@ -1,40 +1,49 @@
 import React, { useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import QRCode from 'react-qr-code';
-import SwitchTheme from './SwitchTheme';
-import { useTheme } from './ThemeContext';
 import { Box, Avatar, Typography, Button, TextField } from '@mui/material';
 
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    background: {
+      default: '#f5f5f5',
+      paper: '#ffffff',
+    },
+    text: {
+      primary: '#333333',
+    },
+  },
+});
+const checkAuthentication = async () => {
+  try {
+    const response = await fetch("http://localhost:8080/api/auth/validate", {
+      method: "POST",
+      credentials: "include", 
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setIsAuthenticated(true); 
+      localStorage.setItem("user_data", JSON.stringify(data));
+      navigate("/home"); 
+    } else {
+      console.log("Usuário não autenticado.");
+      setIsAuthenticated(false); 
+    }
+  } catch (error) {
+    console.error("Erro ao verificar autenticação:", error);
+  }
+};
+
 function ProfileComponent() {
-  const [name, setName] = useState('');
-
-  // Pega o estado do tema do contexto
-  const { isDarkMode } = useTheme();
-
-  // Define os temas
-  const lightTheme = createTheme({
-    palette: {
-      mode: 'light',
-      primary: { main: '#4FC3F7' },
-      secondary: { main: '#81C784' },
-      background: { default: '#ffffff', paper: '#f9f9f9' },
-      text: { primary: '#213547', secondary: '#757575' },
-    },
-  });
-
-  const darkTheme = createTheme({
-    palette: {
-      mode: 'dark',
-      primary: { main: '#4FC3F7' },
-      secondary: { main: '#81C784' },
-      background: { default: '#121212', paper: '#1E1E1E' },
-      text: { primary: '#E0E0E0', secondary: '#757575' },
-    },
-  });
+  if(localStorage.getItem("user_data" == null)){
+      checkAuthentication()
+  }
+  const name = JSON.parse(localStorage.getItem("user_data")).name;
 
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <SwitchTheme />
+    <ThemeProvider theme={theme}>
       <Box
         sx={(theme) => ({
           display: 'flex',
@@ -43,8 +52,8 @@ function ProfileComponent() {
           justifyContent: 'center',
           width: '100%',
           height: '100vh',
-          backgroundColor: theme.palette.background.default, // Usa o tema para o fundo
-          color: theme.palette.text.primary, // Usa o tema para o texto
+          backgroundColor: theme.palette.background.default,
+          color: theme.palette.text.primary,
         })}
       >
         {/* Avatar e informações */}
@@ -74,27 +83,28 @@ function ProfileComponent() {
           }}
         >
           Usuário
-         
         </Typography>
-          <p>Escaneie o QR Code</p>
+        <Typography variant="body2" sx={{ marginTop: '8px' }}>
+          Escaneie o QR Code
+        </Typography>
+
         {/* QR Code */}
         <Box
           sx={(theme) => ({
-            backgroundColor: theme.palette.background.paper, // Usa o tema para o fundo do QR Code
+            backgroundColor: theme.palette.background.paper,
             padding: '16px',
             borderRadius: '8px',
             marginTop: '24px',
             boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
             maxWidth: '200px',
             width: { xs: '80%', sm: '50%', md: '200px' },
-            justifyContent:'center',
-            display:'flex'
+            display: 'flex',
+            justifyContent: 'center',
           })}
         >
           <QRCode value="https://example.com/yehor-haiduk" size={128} />
-
         </Box>
-    
+
         {/* Botões */}
         <Box
           sx={{
@@ -106,7 +116,9 @@ function ProfileComponent() {
             maxWidth: '300px',
           }}
         >
-            <p className='ortext'>Ou compartilhe o código: </p>
+          <Typography className="ortext" sx={{ textAlign: 'center' }}>
+            Ou compartilhe o código:
+          </Typography>
 
           <Button
             variant="contained"

@@ -6,6 +6,8 @@ import ThemeToggle from './components/toggleDarkMode';
 import { useAuth } from './context/AuthContext';
 import TestConnection from './pages/TestConnection'
 import Home from './pages/home';
+import LoginPage from './pages/LoginPage';
+import { Test } from './pages/Test';
 import Palestras from './pages/palestras';
 
 function App() {
@@ -21,11 +23,13 @@ function App() {
 
       {/* Rotas da aplicação */}
       <Routes>
+        <Route path="/re" element={<LoginPage />} />
         <Route path="/home" element={user ? <Home /> : <AuthPage />} /> 
         <Route path="/login" element={<AuthPage />} />
         <Route path="/quizz" element={<Questoes />} />
         <Route path="/" element={<AuthPage />} />
         <Route path='/test' element={<TestConnection/>}/>
+        <Route path='/googletest' element={<Test/>}/>
         <Route path='/palestras' element={<Palestras/>}/>
       </Routes>
     </div>
