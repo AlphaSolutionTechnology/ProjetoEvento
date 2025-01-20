@@ -6,20 +6,7 @@ function Palestras(){
     const [palestras, setPalestras] = useState([]);
     const [isVisible, setIsVisible] = useState(false);
     const [formData, setFormData] = useState({
-        id:'',
         tema:'',
-        user: {
-            id:"",
-            nome:"",
-            role: {
-
-            },
-            evento: {
-
-            },
-            email:"",
-            redeSocial:""
-        },
         evento: {
             id: "1",
             nome:"Primeiro Evento",
