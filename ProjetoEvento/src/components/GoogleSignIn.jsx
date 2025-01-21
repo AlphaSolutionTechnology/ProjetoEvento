@@ -1,3 +1,5 @@
+import { Height } from '@mui/icons-material';
+import { color } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -57,7 +59,7 @@ const GoogleSignIn = () => {
 
     window.google.accounts.id.renderButton(
       document.getElementById("googleSignInButton"),
-      { theme: "outline", size: "large" }
+      { theme: "outline", size: "large", width: "240px", Height: "50px", text: "continue_with", locale: "pt-BR"}
     );
   };
 

@@ -1,6 +1,8 @@
 import { useState } from "react";
-
+import { useTheme } from '../context/ThemeContext';
 function CreateQuestoes() {
+  const { darkMode } = useTheme(); // Importar o contexto de tema
+
   // Estados para os campos do formulário
   const [questionText, setQuestionText] = useState("");
   const [choices, setChoices] = useState(["", "", "", ""]); // Quatro opções padrão
