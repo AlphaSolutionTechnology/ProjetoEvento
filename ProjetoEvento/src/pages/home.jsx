@@ -1,17 +1,18 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext'; // Importa o hook de tema
 import { useAuth } from '../context/AuthContext';
-
+import QrScannedModal from '../components/BasicModal';
 function Home() {
   const { darkMode } = useTheme(); // Acessa o estado global do tema
   const {user} = useAuth(); // Acessa o estado global de autenticação
+  
 
   return (
     <div
       className={`min-h-screen w-full flex flex-col justify-center items-center ${
         darkMode ? 'bg-black text-white' : 'bg-white text-black'
       }`}>
-        
+      <QrScannedModal/>
       {/* Título da Página */}
       <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-6 text-center">
         Bem-vindo, **Nome do usuário**!

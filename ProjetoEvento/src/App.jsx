@@ -9,6 +9,7 @@ import Home from './pages/home';
 import LoginPage from './pages/LoginPage';
 import { Test } from './pages/Test';
 import CreateQuestoes from './pages/createquestoes';
+import ParentComponent from './pages/ParentComponent';
 
 function App() {
   const { user } = useAuth(); // pode ser null ou com daddos
@@ -31,6 +32,7 @@ function App() {
         <Route path='/test' element={<TestConnection/>}/>
         <Route path='/googletest' element={<Test/>}/>
         <Route path="/admquizz" element={<CreateQuestoes />} />
+        <Route path='/parent' element={<ParentComponent/>}/>
       </Routes>
     </div>
   );
