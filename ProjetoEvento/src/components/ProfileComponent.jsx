@@ -57,6 +57,7 @@ const ProfileComponent = () => {
           throw new Error(data.message || "Erro na requisição"); // Usa a mensagem da resposta se disponível
         }
         setModalTitle("Sucesso");
+        setModalText(data.message);
         return data;
       })
       .then(() => {
@@ -94,102 +95,61 @@ const ProfileComponent = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={(theme) => ({
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '90%',
-          height: '100vh',
-          
-        })}
-      >
-        {/* Avatar e informações */}
-        <Avatar
-          src="https://via.placeholder.com/150"
-          alt={name || 'Carregando'}
-          sx={{
-            width: 100,
-            height: 100,
-            marginBottom: '16px',
-          }}
-        />
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          sx={{
-            fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.8rem' },
-          }}
-        >
-          {name || 'Carregando...'}
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            marginTop: '8px',
-            fontSize: { xs: '0.9rem', sm: '0.9rem', md: '1rem' },
-          }}
-        >
-          Usuário
-        </Typography>
-        <Typography variant="body2" sx={{ marginTop: '10px' }}>
-          Escaneie o QR Code
-        </Typography>
-
-        {/* QR Code */}
-        <Box
-          sx={(theme) => ({
-            backgroundColor: theme.palette.background.paper,
-            padding: '20px',
-            borderRadius: '8px',
-            marginTop: '20px',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-            maxWidth: '250px',
-            width: { xs: '80%', sm: '50%', md: '200px' },
-            display: 'flex',
-            justifyContent: 'center',
-          })}
-        >
-          <QRCode value="https://example.com/yehor-haiduk" size={180} />
+      <Box sx={{ padding: '16px', backgroundColor: theme.palette.background.default, height: '100vh' }}>
+        {/* Avatar e Nome do Usuário */}
+        <Box sx={{ textAlign: 'center', marginBottom: '32px' }}>
+          <Avatar sx={{ width: 100, height: 100, margin: 'auto', marginBottom: '16px' }} />
+          <Typography variant="h6">{userData?.name || "Usuário"}</Typography>
         </Box>
 
-        {/* Botões */}
-        <Box
-          sx={{
-            display: 'flex',
-            gap: '16px',
-            marginTop: '24px',
-            flexDirection: 'column',
-            width: '100%',
-            maxWidth: '300px',
-          }}
+        {/* Tabs */}
+        <Tabs
+          value={activeTab}
+          onChange={(e, newValue) => setActiveTab(newValue)}
+          centered
+          sx={{ marginBottom: '24px' }}
         >
-          <Typography className="ortext" sx={{ textAlign: 'center' }}>
-            Ou compartilhe o código:
-          </Typography>
+          <Tab label="Meu QR Code" />
+          <Tab label="Conectar" />
+        </Tabs>
 
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              flex: 1,
-              padding: '10px',
-            }}
-          >
-            Escanear QR code
-          </Button>
-          <Box
-            component="form"
-            sx={{
-              '& .MuiInput-underline:before': { borderBottomColor: 'orange' },
-              '& .MuiInput-underline:after': { borderBottomColor: 'orange' },
-              '& > :not(style)': { width: '100%' },
-              backgroundColor: 'white',
-            }}
-            noValidate
-            autoComplete="off"
-          >
+        {/* Conteúdo das Abas */}
+        {activeTab === 0 && (
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body1" sx={{ marginBottom: '16px' }}>
+              Escaneie este QR Code para se conectar comigo.
+            </Typography>
+            <Box
+              sx={{
+                backgroundColor: 'white',
+                padding: '16px',
+                borderRadius: '8px',
+                display: 'inline-block',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              }}
+            >
+              <QRCode value={String(localId)} size={255} />
+            </Box>
+            <p>Ou Digite o código: {localId}</p>
+          </Box>
+        )}
+
+        {activeTab === 1 && (
+          <Box sx={{ maxWidth: '400px', margin: '0 auto' }}>
+            <Typography variant="body1" sx={{ marginBottom: '16px', textAlign: 'center' }}>
+              Digite o código do usuário ou escaneie um QR Code para se conectar.
+            </Typography>
+            {/* Botão para Escanear QR Code */}
+            <Button
+              variant="contained"
+              startIcon={<QrCodeScannerIcon />}
+              onClick={() => setIsScannerOpen(true)}
+              sx={{ marginBottom: '16px' }}
+              fullWidth
+            >
+              Escanear QR Code
+            </Button>
+            {/* Campo para Inserir Código Manual */}
             <TextField
               label="Inserir Código"
               variant="outlined"

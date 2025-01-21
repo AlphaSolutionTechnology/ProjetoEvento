@@ -1,6 +1,6 @@
 import React from "react";
 import ProfileComponent from "../components/ProfileComponent";
-import QrScannedModal from "../components/BasicModal"
+
 
 function TestConnection() {
   return (
@@ -11,12 +11,5 @@ function TestConnection() {
       <ProfileComponent />
     </div>
   );
-function TestConnection(){
-    return(
-        <>
-        <ProfileComponent/>
-        </>
-    )
-}
-
+};
 export default TestConnection;
