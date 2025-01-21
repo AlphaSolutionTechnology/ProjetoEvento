@@ -1,5 +1,4 @@
-import { dividerClasses } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Palestras(){
 
@@ -13,6 +12,9 @@ function Palestras(){
             data: "2025-03-25"
         }
     })
+
+
+
 
 
     const formHandleChange = (e) => {
@@ -48,7 +50,7 @@ function Palestras(){
             const data = await response.json();
             console.log('Palestra criada:', data);
             setPalestras(prevPalestras => [...prevPalestras, data]);
-            setFormData({ titulo: '', descricao: '', palestrante: '' }); // Limpa o formulário
+            setFormData({ tema: ''}); // Limpa o formulário
           } else {
             console.error('Erro ao criar palestra:', response.statusText);
           }
@@ -59,16 +61,41 @@ function Palestras(){
     
 
 
+      const handlePalestrasList = async () => {
 
+        try{
 
+            const response = await fetch("http://localhost:8080/api/palestra/lista", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+    
+            if (response.ok) {
+                const list = await response.json();
+                console.log("Lista de palestras:", list);
+                setPalestras(list); // Atualiza o estado com a lista recebida
+            } else {
+                console.error("Erro ao buscar palestras:", response.statusText);
+            }
+        } catch (err) {
+            console.error("Erro na requisição:", err.message);
+        }
+      };
 
+      useEffect(() => {
+        handlePalestrasList();
+      }, [])
 
-
-
-
-    const toggleVisibility = () => {
-
-        setIsVisible(!isVisible);
+      
+    const toggleVisibility = (e) => {
+        const originEvent = e.target.id;
+        if(isVisible && originEvent == 'criarButton'){
+            return
+        } else {
+            setIsVisible(!isVisible);
+        }
 
     }
 
@@ -83,7 +110,7 @@ function Palestras(){
                 <div className="w-full flex-col bg-green-100 mt-2 mb-2 p-2">
                    
                     <div className="bg-purple-400 flex justify-between">
-                        <button onClick={toggleVisibility}>Criar</button>
+                        <button id='criarButton' onClick={toggleVisibility}>Criar</button>
                         <button>Excluir</button>
                     </div>
                    
@@ -97,11 +124,11 @@ function Palestras(){
                </div>
 
 
-                <div id='listContainer' className="bg-yellow-50 w-full h-[50vh] border-t border-black flex-col overflow-y-auto">
+                <div id='listContainer' className="bg-yellow-50 w-full h-[50vh] flex-col overflow-y-auto">
 
                 {palestras.map((palestra) => (
 
-                    <div key={palestra.id} className="text-black bg-yellow-400 h-1/6 p-2 flex items-center justify-between ">
+                    <div key={palestra.id} className="text-black bg-yellow-400 h-1/6 p-2 flex items-center justify-between border-t border-black cursor-pointer" >
                         <p>{palestra.tema}</p>
                         <button className="bg-transparent border-black text-black">Editar</button>
                     </div>
