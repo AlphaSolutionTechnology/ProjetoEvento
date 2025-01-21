@@ -85,12 +85,12 @@ const ProfileComponent = () => {
   return (
     <Box sx={{ 
       padding: { xs: '8px', sm: '16px' }, 
-      backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.7)' : backgroundColor, // Fundo transparente no modo escuro
+      
       height: '100vh', 
       color: textColor, 
-      backdropFilter: darkMode ? 'blur(10px)' : 'none', // Desfoco apenas no modo escuro
+      backdropFilter: darkMode ? 'blur(10px)' : 'blur(10px)', // Desfoco apenas no modo escuro
       borderRadius: '10px', // Adiciona cantos arredondados
-      boxShadow: darkMode ? '0px 4px 10px rgba(0, 0, 0, 0.5)' : 'none', // Sombra sutil no modo escuro
+      boxShadow: darkMode ? '0px 4px 10px rgba(0, 0, 0, 0.5)' : '0px 4px 10px rgba(0, 0, 0, 0.2)', // Sombra sutil no modo escuro
     }}>
       {/* Contêiner principal da página */}
   
