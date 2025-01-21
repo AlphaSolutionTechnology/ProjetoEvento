@@ -6,6 +6,7 @@ import SendIcon from '@mui/icons-material/Send';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import QRScanner from './QRScanner';
 import BasicModal from './BasicModal';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme({
   palette: {
@@ -29,7 +30,7 @@ const ProfileComponent = () => {
   const [modalTitle, setModalTitle] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false); // Controle do modal básico
   const [modalText, setModalText] = useState('');
-  const localId = JSON.parse(localStorage.getItem('user_data')).unique_code;
+  const navigate = useNavigate();
 
   const handleScan = (data) => {
     setInputCode(data);
@@ -47,24 +48,26 @@ const ProfileComponent = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        idSolicitante: localId,
+        idSolicitante: userData.unique_code,
         idSolicitado: code,
       }),
     })
       .then(async (response) => {
-        const data = await response.json(); // Aguarda o corpo da resposta
+        const data = await response.json();
         if (!response.ok) {
-          throw new Error(data.message || "Erro na requisição"); // Usa a mensagem da resposta se disponível
+          throw new Error(data.message || "Erro na requisição");
         }
         setModalTitle("Sucesso");
+        setModalText(data.message);
         return data;
       })
       .then(() => {
-        setIsModalOpen(true);
         console.log("Conexão enviada com sucesso!");
       })
       .catch((error) => {
         setModalText(error.message)
+      }).finally(()=>{
+        setIsModalOpen(true);
       });
   };
   
@@ -127,9 +130,9 @@ const ProfileComponent = () => {
                 boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
               }}
             >
-              <QRCode value={String(localId)} size={255} />
+              <QRCode value={String(userData.unique_code)} size={255} />
             </Box>
-            <p>Ou Digite o código: {localId}</p>
+            <p>Ou Digite o código: {userData.unique_code}</p>
           </Box>
         )}
 
