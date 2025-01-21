@@ -1,58 +1,75 @@
 import React, { useEffect, useState } from "react";
 
-const AuthButton = ({ platform, clientid, onSuccess, onError, icon, buttonText }) => {
+const AuthButton = ({ platform, onSuccess, onError, icon, buttonText }) => {
     const [loading, setLoading] = useState(false);
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
     useEffect(() => {
-        const initializeGoogleSignIn = () => {
-            if (window.google && google.accounts) {
-                google.accounts.id.initialize({
-                    client_id: clientid,
-                    callback: (response) => {
-                        setLoading(false); // Define loading como false após a resposta
-                        if (response.credential) {
-                            fetch(`http://localhost:8080/auth/${platform}`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ token: response.credential }),
-                            })
-                                .then((res) => res.json())
-                                .then((data) => {
-                                    console.log("Usuário autenticado:", data);
-                                    onSuccess(data);
-                                })
-                                .catch((err) => {
-                                    console.error("Erro na autenticação:", err);
-                                    onError(err);
-                                });
-                        } else {
-                            console.error("Nenhum token recebido!");
-                        }
-                    },
-                });
-                console.log("Google Sign-In inicializado!");
+        const loadGoogleSignIn = () => {
+            if (!window.google || !google.accounts) {
+                const script = document.createElement("script");
+                script.src = "https://accounts.google.com/gsi/client";
+                script.async = true;
+                script.defer = true;
+                script.onload = initializeGoogleSignIn;
+                document.body.appendChild(script);
             } else {
-                console.error("Google Sign-In não inicializado!");
+                initializeGoogleSignIn();
             }
         };
 
-        if (!window.google || !google.accounts) {
-            const script = document.createElement("script");
-            script.src = `https://accounts.google.com/gsi/client?client_id=${clientid}`;
-            script.async = true;
-            script.defer = true;
-            script.onload = initializeGoogleSignIn;
-            document.body.appendChild(script);
-        } else {
-            initializeGoogleSignIn();
-        }
-    }, [platform, clientid, onSuccess, onError]);
+        const initializeGoogleSignIn = () => {
+            if (window.google && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback: handleCredentialResponse,
+                });
+                console.log("Google Sign-In initialized!");
+            } else {
+                console.error("Google Sign-In failed to initialize!");
+            }
+        };
+
+        const handleCredentialResponse = (response) => {
+            setLoading(false);
+            if (response.credential) {
+                authenticateWithBackend(response.credential);
+            } else {
+                console.error("No token received!");
+                onError("No token received.");
+            }
+        };
+
+        const authenticateWithBackend = async (token) => {
+            try {
+                const res = await fetch("http://localhost:8080/api/auth/google", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    console.log("User authenticated:", data);
+                    onSuccess(data);
+                } else {
+                    console.error("Authentication failed:", data);
+                    onError(data);
+                }
+            } catch (error) {
+                console.error("Authentication error:", error);
+                onError(error);
+            }
+        };
+
+        loadGoogleSignIn();
+    }, [platform, clientId, onSuccess, onError]);
 
     const handleSignIn = () => {
         if (window.google && google.accounts) {
-            setLoading(true); // Define loading como true antes de chamar o prompt
-            console.log(`Iniciando autenticação do ${platform}...`);
+            setLoading(true);
             google.accounts.id.prompt();
+        } else {
+            console.error("Google Sign-In not initialized.");
         }
     };
 

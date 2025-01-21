@@ -1,30 +1,51 @@
 import { useState } from "react";
 import './quizz.css';
-import { resultInitialState } from "./Constants";
+
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
 
-const Quiz = ({ questions }) => {
+const Quiz = () => {
+  const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answerIdx, setAnswerIdx] = useState(null);
   const [answer, setAnswer] = useState(null);
-  const [result, setResult] = useState(resultInitialState);
+  const [result, setResult] = useState({
+    score: 0,
+    correctAnswers: 0,
+    wrongAnswers: 0,
+  });
   const [showResult, setShowResult] = useState(false);
 
-  const { question, choices, correctAnswer } = questions[currentQuestion];
+  // Fetch questions from API
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/questoes");
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setQuestions(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
 
   const onAnswerClick = (selectedAnswer, index) => {
     setAnswerIdx(index);
-    if (selectedAnswer === correctAnswer) {
+    if (selectedAnswer === questions[currentQuestion].correctAnswer) {
       setAnswer(true);
     } else {
       setAnswer(false);
     }
   };
 
-  const onClickNext = (finalAnswer) => {
+  const onClickNext = () => {
     setAnswerIdx(null);
     setResult((prev) =>
-      finalAnswer
+      answer
         ? {
             ...prev,
             score: prev.score + 5,
@@ -39,7 +60,6 @@ const Quiz = ({ questions }) => {
     if (currentQuestion !== questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
-      setCurrentQuestion(0);
       setShowResult(true);
     }
   };
@@ -48,16 +68,17 @@ const Quiz = ({ questions }) => {
     window.location.reload();
   };
 
-  const handleTimeup = () => {
-    setAnswer(false);
-    onClickNext(false);
-  };
+  if (questions.length === 0) {
+    return <p>Carregando...</p>;
+  }
+
+  const { question, choices } = questions[currentQuestion];
 
   return (
     <div className="quiz-container">
       {!showResult ? (
         <>
-          <AnswerTimer duration={10} onTimeUp={handleTimeup} />
+          <AnswerTimer duration={10} onTimeUp={() => onClickNext(false)} />
           <span className="active-question-no">{currentQuestion + 1}</span>
           <span className="total-question">/{questions.length}</span>
           <h2>{question}</h2>
@@ -66,14 +87,17 @@ const Quiz = ({ questions }) => {
               <li
                 onClick={() => onAnswerClick(choice, index)}
                 key={choice}
-                className={answerIdx === index ? 'selected-answer' : null}
+                className={answerIdx === index ? "selected-answer" : null}
               >
                 {choice}
               </li>
             ))}
           </ul>
           <div className="footer">
-            <button onClick={() => onClickNext(answer)} disabled={answerIdx === null}>
+            <button
+              onClick={onClickNext}
+              disabled={answerIdx === null}
+            >
               {currentQuestion === questions.length - 1 ? "Finalizar" : "Próximo"}
             </button>
           </div>

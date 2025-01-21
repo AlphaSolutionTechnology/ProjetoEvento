@@ -6,6 +6,7 @@ import appleIcon from '../assets/apple-logo.svg'; // Importar o ícone da Apple
 import AuthButton from '../components/AuthButton'; // Importar o componente AuthButton
 import { useTheme } from '../context/ThemeContext'; // Importar o contexto de tema
 import { useState } from 'react'; // Importar o hook de estado
+import GoogleSignIn from '../components/GoogleSignIn';
 
 const AuthPage = () => {
     const { darkMode, setDarkMode } = useTheme();
@@ -105,9 +106,10 @@ const AuthPage = () => {
 
         {/* Botões de autenticação social */}
         <div className="flex flex-col gap-4">
+          <GoogleSignIn/>
           <AuthButton
             platform="google"
-            clientid="937916098858-8ekrflam5ad65379jqocah9l2dlrjtrq.apps.googleusercontent.com"
+            clientid={import.meta.env.VITE_GOOGLE_CLIENT_ID}
             onSuccess={handleAuthSuccess}
             onError={handleAuthError}
             icon={googleIcon}
