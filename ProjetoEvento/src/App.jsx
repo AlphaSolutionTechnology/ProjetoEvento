@@ -8,6 +8,7 @@ import TestConnection from './pages/TestConnection'
 import Home from './pages/home';
 import LoginPage from './pages/LoginPage';
 import { Test } from './pages/Test';
+import CreateQuestoes from './pages/createquestoes';
 
 function App() {
   const { user } = useAuth(); // pode ser null ou com daddos
@@ -29,6 +30,7 @@ function App() {
         <Route path="/" element={<AuthPage />} />
         <Route path='/test' element={<TestConnection/>}/>
         <Route path='/googletest' element={<Test/>}/>
+        <Route path="/admquizz" element={<CreateQuestoes />} />
       </Routes>
     </div>
   );
