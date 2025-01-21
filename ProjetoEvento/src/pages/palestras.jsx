@@ -36,7 +36,7 @@ function Palestras(){
 
         try{
 
-        const response = await fetch("http://localhost:5173/api/palestra/criar", {
+        const response = await fetch("http://localhost:8080/api/palestra/criar", {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
