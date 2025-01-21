@@ -1,7 +1,7 @@
 import React from "react";
 
 import ProfileComponent from "../components/ProfileComponent";
-import QrScannedModal from "../components/QrScannedModal"
+import QrScannedModal from "../components/BasicModal"
 
 function TestConnection(){
     return(

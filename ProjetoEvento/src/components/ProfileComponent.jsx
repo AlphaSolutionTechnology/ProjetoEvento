@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import QRCode from 'react-qr-code';
 import { Box, Avatar, Typography, Button, Tabs, Tab, TextField, Modal } from '@mui/material';
-import QRScanner from './QRScanner';
 import SendIcon from '@mui/icons-material/Send';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import QRScanner from './QRScanner';
+import BasicModal from './BasicModal';
 
 const theme = createTheme({
   palette: {
@@ -25,9 +26,18 @@ const ProfileComponent = () => {
   const [inputCode, setInputCode] = useState(''); // Código inserido manualmente
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Autenticação
   const [userData, setUserData] = useState(null); // Dados do usuário autenticado
-
+  const [modalTitle, setModalTitle] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false); // Controle do modal básico
+  const [modalText, setModalText] = useState('');
   const localId = JSON.parse(localStorage.getItem('user_data')).unique_code;
 
+  const handleScan = (data) => {
+    setInputCode(data);
+    setIsScannerOpen(false);
+    handleSendConnection(data);
+    setIsModalOpen(true);
+    console.log('QR Code Lido:', data);
+  };
 
   const handleSendConnection = (code) => {
     fetch("http://localhost:8080/api/connection/sendconnection", {
@@ -41,30 +51,36 @@ const ProfileComponent = () => {
         idSolicitado: code,
       }),
     })
-      .then((response) => {
-        if (!response.ok) throw new Error(`Erro: ${response.statusText}`);
-        return response.json();
+      .then(async (response) => {
+        const data = await response.json(); // Aguarda o corpo da resposta
+        if (!response.ok) {
+          throw new Error(data.message || "Erro na requisição"); // Usa a mensagem da resposta se disponível
+        }
+        setModalTitle("Sucesso");
+        return data;
       })
-      .then((data) => {
-        console.log("Conexão enviada com sucesso!", data);
-        alert("Conexão realizada com sucesso!");
+      .then(() => {
+        setIsModalOpen(true);
+        console.log("Conexão enviada com sucesso!");
       })
       .catch((error) => {
-        console.error("Erro ao enviar conexão:", error);
-        alert("Erro ao conectar. Tente novamente.");
+        setModalText(error.message)
       });
   };
+  
 
   useEffect(() => {
     const storedData = localStorage.getItem('user_data');
     if (storedData) {
       setUserData(JSON.parse(storedData));
-      console.log(storedData.unique_code)
       setIsAuthenticated(true);
     } else {
+      // Redirecionar caso não autenticado
       navigate("/googletest");
     }
   }, []);
+
+
 
   if (!isAuthenticated) {
     return (
@@ -163,18 +179,22 @@ const ProfileComponent = () => {
             <Typography variant="h6" sx={{ marginBottom: '16px' }}>
               Escaneie um QR Code
             </Typography>
-            <QRScanner
-              onResult={(result) => {
-                setIsScannerOpen(false);
-                handleSendConnection(result); // Conectar automaticamente após escanear
-              }}
-            />
+            <QRScanner onScan={handleScan} />
             <Button onClick={() => setIsScannerOpen(false)} sx={{ marginTop: '16px' }}>
-              Fechar
+              Fechar Scanner
             </Button>
           </Box>
         </Modal>
+
+        {/* Modal Básico */}
+
       </Box>
+      <BasicModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title={modalTitle}
+          description={modalText}
+        />
     </ThemeProvider>
   );
 };
