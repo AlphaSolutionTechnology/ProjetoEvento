@@ -83,7 +83,15 @@ const ProfileComponent = () => {
   }
 
   return (
-    <Box sx={{ padding: { xs: '8px', sm: '16px' }, backgroundColor, height: '100vh', color: textColor }}>
+    <Box sx={{ 
+      padding: { xs: '8px', sm: '16px' }, 
+      backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.7)' : backgroundColor, // Fundo transparente no modo escuro
+      height: '100vh', 
+      color: textColor, 
+      backdropFilter: darkMode ? 'blur(10px)' : 'none', // Desfoco apenas no modo escuro
+      borderRadius: '10px', // Adiciona cantos arredondados
+      boxShadow: darkMode ? '0px 4px 10px rgba(0, 0, 0, 0.5)' : 'none', // Sombra sutil no modo escuro
+    }}>
       {/* Contêiner principal da página */}
   
       <Box sx={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -136,7 +144,7 @@ const ProfileComponent = () => {
             sx={{
               backgroundColor: paperColor,
               padding: '16px',
-              borderRadius: '8px',
+              borderRadius: '30px',
               display: 'inline-block',
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
             }}
