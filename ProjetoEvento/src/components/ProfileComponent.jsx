@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import QRCode from 'react-qr-code';
-import { Box, Avatar, Typography, Button, TextField } from '@mui/material';
+import { Box, Avatar, Typography, Button, Tabs, Tab, TextField, Modal } from '@mui/material';
+import QRScanner from './QRScanner';
+import SendIcon from '@mui/icons-material/Send';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 
 const theme = createTheme({
   palette: {
@@ -15,140 +18,165 @@ const theme = createTheme({
     },
   },
 });
-const checkAuthentication = async () => {
-  try {
-    const response = await fetch("http://localhost:8080/api/auth/validate", {
+
+const ProfileComponent = () => {
+  const [activeTab, setActiveTab] = useState(1); // Aba ativa
+  const [isScannerOpen, setIsScannerOpen] = useState(false); // Controle do modal scanner
+  const [inputCode, setInputCode] = useState(''); // Código inserido manualmente
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Autenticação
+  const [userData, setUserData] = useState(null); // Dados do usuário autenticado
+
+  const localId = JSON.parse(localStorage.getItem('user_data')).unique_code;
+
+
+  const handleSendConnection = (code) => {
+    fetch("http://localhost:8080/api/connection/sendconnection", {
       method: "POST",
-      credentials: "include", 
-    });
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        idSolicitante: localId,
+        idSolicitado: code,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Erro: ${response.statusText}`);
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Conexão enviada com sucesso!", data);
+        alert("Conexão realizada com sucesso!");
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar conexão:", error);
+        alert("Erro ao conectar. Tente novamente.");
+      });
+  };
 
-    if (response.ok) {
-      const data = await response.json();
-      setIsAuthenticated(true); 
-      localStorage.setItem("user_data", JSON.stringify(data));
-      navigate("/home"); 
+  useEffect(() => {
+    const storedData = localStorage.getItem('user_data');
+    if (storedData) {
+      setUserData(JSON.parse(storedData));
+      console.log(storedData.unique_code)
+      setIsAuthenticated(true);
     } else {
-      console.log("Usuário não autenticado.");
-      setIsAuthenticated(false); 
+      navigate("/googletest");
     }
-  } catch (error) {
-    console.error("Erro ao verificar autenticação:", error);
-  }
-};
+  }, []);
 
-function ProfileComponent() {
-  if(localStorage.getItem("user_data" == null)){
-      checkAuthentication()
+  if (!isAuthenticated) {
+    return (
+      <ThemeProvider theme={theme}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+          <Typography variant="h6">Verificando autenticação...</Typography>
+        </Box>
+      </ThemeProvider>
+    );
   }
-  const name = JSON.parse(localStorage.getItem("user_data")).name;
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={(theme) => ({
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100vh',
-          backgroundColor: theme.palette.background.default,
-          color: theme.palette.text.primary,
-        })}
-      >
-        {/* Avatar e informações */}
-        <Avatar
-          src="https://via.placeholder.com/150"
-          alt={name || 'Carregando'}
-          sx={{
-            width: { xs: 64, sm: 80, md: 100 },
-            height: { xs: 64, sm: 80, md: 100 },
-            marginBottom: '16px',
-          }}
-        />
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          sx={{
-            fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.8rem' },
-          }}
-        >
-          {name || 'Carregando...'}
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            marginTop: '8px',
-            fontSize: { xs: '0.7rem', sm: '0.9rem', md: '1rem' },
-          }}
-        >
-          Usuário
-        </Typography>
-        <Typography variant="body2" sx={{ marginTop: '8px' }}>
-          Escaneie o QR Code
-        </Typography>
-
-        {/* QR Code */}
-        <Box
-          sx={(theme) => ({
-            backgroundColor: theme.palette.background.paper,
-            padding: '16px',
-            borderRadius: '8px',
-            marginTop: '24px',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-            maxWidth: '200px',
-            width: { xs: '80%', sm: '50%', md: '200px' },
-            display: 'flex',
-            justifyContent: 'center',
-          })}
-        >
-          <QRCode value="https://example.com/yehor-haiduk" size={128} />
+      <Box sx={{ padding: '16px', backgroundColor: theme.palette.background.default, height: '100vh' }}>
+        {/* Avatar e Nome do Usuário */}
+        <Box sx={{ textAlign: 'center', marginBottom: '32px' }}>
+          <Avatar sx={{ width: 100, height: 100, margin: 'auto', marginBottom: '16px' }} />
+          <Typography variant="h6">{userData?.name || "Usuário"}</Typography>
         </Box>
 
-        {/* Botões */}
-        <Box
-          sx={{
-            display: 'flex',
-            gap: '16px',
-            marginTop: '24px',
-            flexDirection: { xs: 'column', sm: 'row' },
-            width: '100%',
-            maxWidth: '300px',
-          }}
+        {/* Tabs */}
+        <Tabs
+          value={activeTab}
+          onChange={(e, newValue) => setActiveTab(newValue)}
+          centered
+          sx={{ marginBottom: '24px' }}
         >
-          <Typography className="ortext" sx={{ textAlign: 'center' }}>
-            Ou compartilhe o código:
-          </Typography>
+          <Tab label="Meu QR Code" />
+          <Tab label="Conectar" />
+        </Tabs>
 
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              flex: 1,
-            }}
-          >
-            Escanear QR code
-          </Button>
-          <Box
-            component="form"
-            sx={{
-              '& .MuiInput-underline:before': { borderBottomColor: 'orange' },
-              '& .MuiInput-underline:after': { borderBottomColor: 'orange' },
-              '& > :not(style)': { width: '100%' },
-            }}
-            noValidate
-            autoComplete="off"
-          >
+        {/* Conteúdo das Abas */}
+        {activeTab === 0 && (
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body1" sx={{ marginBottom: '16px' }}>
+              Escaneie este QR Code para se conectar comigo.
+            </Typography>
+            <Box
+              sx={{
+                backgroundColor: 'white',
+                padding: '16px',
+                borderRadius: '8px',
+                display: 'inline-block',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              }}
+            >
+              <QRCode value={String(localId)} size={255} />
+            </Box>
+            <p>Ou Digite o código: {localId}</p>
+          </Box>
+        )}
+
+        {activeTab === 1 && (
+          <Box sx={{ maxWidth: '400px', margin: '0 auto' }}>
+            <Typography variant="body1" sx={{ marginBottom: '16px', textAlign: 'center' }}>
+              Digite o código do usuário ou escaneie um QR Code para se conectar.
+            </Typography>
+            {/* Botão para Escanear QR Code */}
+            <Button
+              variant="contained"
+              startIcon={<QrCodeScannerIcon />}
+              onClick={() => setIsScannerOpen(true)}
+              sx={{ marginBottom: '16px' }}
+              fullWidth
+            >
+              Escanear QR Code
+            </Button>
+            {/* Campo para Inserir Código Manual */}
             <TextField
-              id="outlined-basic"
               label="Inserir Código"
               variant="outlined"
+              fullWidth
+              value={inputCode}
+              onChange={(e) => setInputCode(e.target.value)}
+              sx={{ marginBottom: '16px' }}
             />
+            <Button
+              variant="contained"
+              endIcon={<SendIcon />}
+              fullWidth
+              onClick={() => handleSendConnection(inputCode)}
+              disabled={!inputCode}
+            >
+              Conectar
+            </Button>
           </Box>
-        </Box>
+        )}
+
+        {/* Modal QR Scanner */}
+        <Modal
+          open={isScannerOpen}
+          onClose={() => setIsScannerOpen(false)}
+          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Box sx={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px' }}>
+            <Typography variant="h6" sx={{ marginBottom: '16px' }}>
+              Escaneie um QR Code
+            </Typography>
+            <QRScanner
+              onResult={(result) => {
+                setIsScannerOpen(false);
+                handleSendConnection(result); // Conectar automaticamente após escanear
+              }}
+            />
+            <Button onClick={() => setIsScannerOpen(false)} sx={{ marginTop: '16px' }}>
+              Fechar
+            </Button>
+          </Box>
+        </Modal>
       </Box>
     </ThemeProvider>
   );
-}
+};
 
 export default ProfileComponent;
