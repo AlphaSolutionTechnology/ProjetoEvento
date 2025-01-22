@@ -68,7 +68,6 @@ const ProfileComponent = () => {
         setModalText(error.message)
       });
   };
-  
 
   useEffect(() => {
     const storedData = localStorage.getItem('user_data');
@@ -95,10 +94,10 @@ const ProfileComponent = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ padding: '16px', backgroundColor: theme.palette.background.default, height: '100vh' }}>
+      <Box className="p-6 bg-white dark:bg-gray-800 min-h-screen">
         {/* Avatar e Nome do Usuário */}
         <Box sx={{ textAlign: 'center', marginBottom: '32px' }}>
-          <Avatar sx={{ width: 100, height: 100, margin: 'auto', marginBottom: '16px' }} />
+          <Avatar sx={{ width: 120, height: 120, margin: 'auto', marginBottom: '16px' }} />
           <Typography variant="h6">{userData?.name || "Usuário"}</Typography>
         </Box>
 
@@ -156,14 +155,16 @@ const ProfileComponent = () => {
               fullWidth
               value={inputCode}
               onChange={(e) => setInputCode(e.target.value)}
-              sx={{ marginBottom: '16px' }}
+              sx={{ marginBottom: '16px', backgroundColor: 'white' }}
             />
+            {/* Botão Conectar */}
             <Button
               variant="contained"
               endIcon={<SendIcon />}
               fullWidth
               onClick={() => handleSendConnection(inputCode)}
               disabled={!inputCode}
+              sx={{ marginBottom: '16px', backgroundColor: 'dark-blue' }}
             >
               Conectar
             </Button>
@@ -188,7 +189,6 @@ const ProfileComponent = () => {
         </Modal>
 
         {/* Modal Básico */}
-
       </Box>
       <BasicModal
           open={isModalOpen}
