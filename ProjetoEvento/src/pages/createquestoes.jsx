@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { useTheme } from "../context/ThemeContext";
 import FormQuestion from "../components/FormQuestion";
 import FeedbackMessage from "../components/FeedBackMessage";
 
 function CreateQuestoes() {
-  const { darkMode } = useTheme();
-
   const [questionText, setQuestionText] = useState("");
   const [choices, setChoices] = useState(["", "", "", ""]);
   const [correctAnswer, setCorrectAnswer] = useState("");
@@ -53,12 +50,8 @@ function CreateQuestoes() {
   };
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center min-h-screen ${
-        darkMode ? "bg-gray-800" : "bg-gray-100"
-      }`}
-    >
-      <h1 className="text-2xl font-bold mb-6">Criar Nova Questão</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen dark:bg-gray-800 bg-gray-100">
+      <h1 className="text-2xl font-bold mb-6">CriarNova Questão</h1>
       <FormQuestion
         questionText={questionText}
         setQuestionText={setQuestionText}
