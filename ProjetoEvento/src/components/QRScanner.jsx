@@ -13,8 +13,8 @@ const QRScanner = ({ onScan }) => {
         (result) => {
           if (!qrCodeData) {
             const scannedData = result.data;
-            setQrCodeData(scannedData); // Atualiza o estado local
-            onScan(scannedData); // Envia o valor para o pai
+            setQrCodeData(scannedData); 
+            onScan(scannedData); 
           }
         },
         {

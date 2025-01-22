@@ -65,6 +65,7 @@ const ProfileComponent = () => {
         console.log("Conexão enviada com sucesso!");
       })
       .catch((error) => {
+        
         setModalText(error.message)
       }).finally(()=>{
         setIsModalOpen(true);
