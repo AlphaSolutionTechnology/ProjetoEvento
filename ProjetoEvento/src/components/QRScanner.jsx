@@ -1,56 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import QrScanner from 'qr-scanner';
-import QrScannedModal from './QrScannedModal';
 
-const QRScanner = () => {
-  const videoRef = useRef(null); 
-  const [qrCodeData, setQrCodeData] = useState(''); 
+const QRScanner = ({ onScan }) => {
+  const videoRef = useRef(null);
+  const [qrCodeData, setQrCodeData] = useState('');
   const [error, setError] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false); // Controle do modal
-  const localId = JSON.parse(localStorage.getItem('user_data')).unique_code;
-
-  const sendConnection = () => {
-    fetch("http://localhost:8080/api/connection/sendconnection", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json", 
-      },
-      body: JSON.stringify({
-        idSolicitante: localId, 
-        idSolicitado: qrCodeData, 
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Erro na requisição: ${response.statusText}`);
-        }
-        return response.json(); 
-      })
-      .then((data) => {
-        console.log(data);
-        setIsModalOpen(true); // Abre o modal após o envio
-      })
-      .catch((error) => {
-        console.error("Erro ao enviar conexão:", error);
-      });
-  };
-
+  
   useEffect(() => {
-    let qrScanner;
-
     if (videoRef.current) {
-      qrScanner = new QrScanner(
+      const qrScanner = new QrScanner(
         videoRef.current,
         (result) => {
-          setQrCodeData(Number(result.data));
-          if (result.data) {
-            sendConnection();
+          if (!qrCodeData) {
+            const scannedData = result.data;
+            setQrCodeData(scannedData); 
+            onScan(scannedData); 
           }
         },
         {
           onDecodeError: (err) => {
-            console.error(err);
+            console.warn('Erro ao decodificar QR Code:', err);
           },
           highlightScanRegion: true,
           highlightCodeOutline: true,
@@ -61,12 +30,12 @@ const QRScanner = () => {
         console.error(err);
         setError('Erro ao acessar a câmera.');
       });
-    }
 
-    return () => {
-      qrScanner?.destroy();
-    };
-  }, []);
+      return () => {
+        qrScanner.destroy();
+      };
+    }
+  }, [qrCodeData, onScan]); // Inclua onScan nas dependências para garantir que ele esteja atualizado
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -83,9 +52,6 @@ const QRScanner = () => {
         )}
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </div>
-
-      {/* Modal exibido ao escanear e enviar conexão */}
-      {isModalOpen && <QrScannedModal />}
     </div>
   );
 };

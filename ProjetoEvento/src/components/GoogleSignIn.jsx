@@ -1,3 +1,5 @@
+import { Height } from '@mui/icons-material';
+import { color } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,6 +28,7 @@ const GoogleSignIn = () => {
     };
   }, []);
 
+
   const checkAuthentication = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/validate", {
@@ -35,8 +38,8 @@ const GoogleSignIn = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setIsAuthenticated(true); 
-        localStorage.setItem("user_data", JSON.stringify(data));
+        setIsAuthenticated(true);
+        localStorage.setItem('user_data',JSON.stringify(data)); 
         navigate("/home"); 
       } else {
         console.log("Usuário não autenticado.");
@@ -57,7 +60,7 @@ const GoogleSignIn = () => {
 
     window.google.accounts.id.renderButton(
       document.getElementById("googleSignInButton"),
-      { theme: "outline", size: "large" }
+      { theme: "outline", size: "large", width: "240px", Height: "50px", text: "continue_with", locale: "pt-BR"}
     );
   };
 
@@ -69,17 +72,16 @@ const GoogleSignIn = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // Envia o cookie na requisição
+      credentials: "include",
       body: JSON.stringify({ token: response.credential }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        localStorage.setItem("user_data", JSON.stringify(data)); // Armazena os dados do usuário
-        setIsAuthenticated(true); // Atualiza o estado de autenticação
-        navigate("/home"); // Redireciona para a página principal
+      .then((res) =>{
+        localStorage.setItem('user_data',JSON.stringify(res.json())); 
+        navigate('/home');
       })
       .catch((error) => {
         console.error("Erro ao autenticar com Google:", error);
+        navigate('/googletest');
       });
   };
 

@@ -1,9 +1,5 @@
 // src/components/AuthPage.js
 import React from 'react';
-import googleIcon from '../assets/logo-google.svg'; // Importar o ícone do Google
-import linkedinIcon from '../assets/linkedin-icon.png'; // Importar o ícone do LinkedIn
-import appleIcon from '../assets/apple-logo.svg'; // Importar o ícone da Apple
-import AuthButton from '../components/AuthButton'; // Importar o componente AuthButton
 import { useTheme } from '../context/ThemeContext'; // Importar o contexto de tema
 import { useState } from 'react'; // Importar o hook de estado
 import GoogleSignIn from '../components/GoogleSignIn';
@@ -11,14 +7,6 @@ import GoogleSignIn from '../components/GoogleSignIn';
 const AuthPage = () => {
     const { darkMode, setDarkMode } = useTheme();
     const [isLogin, setIsLogin] = useState(true);
-  
-    const handleAuthSuccess = (data) => {
-      console.log("Usuário autenticado com sucesso:", data);
-    };
-  
-    const handleAuthError = (err) => {
-      console.error("Erro na autenticação:", err);
-    };
   
     return (
       <div
@@ -105,33 +93,9 @@ const AuthPage = () => {
         <div className="my-6 border-t"></div>
 
         {/* Botões de autenticação social */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col items-center" > 
           <GoogleSignIn/>
-          <AuthButton
-            platform="google"
-            clientid={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-            onSuccess={handleAuthSuccess}
-            onError={handleAuthError}
-            icon={googleIcon}
-            buttonText="Entrar com Google"
-            
-          />
-          <AuthButton
-            platform="linkedin"
-            clientid="78v1z2j1w0v8e8"
-            onSuccess={handleAuthSuccess}
-            onError={handleAuthError}
-            icon={linkedinIcon}
-            buttonText="Entrar com LinkedIn"
-          />
-          <AuthButton
-            platform="apple"
-            clientid="com.example.apple"
-            onSuccess={handleAuthSuccess}
-            onError={handleAuthError}
-            icon={appleIcon}
-            buttonText="Entrar com Apple"
-          />
+
         </div>
         </div>
       </div>
