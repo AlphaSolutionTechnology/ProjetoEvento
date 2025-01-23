@@ -7,9 +7,10 @@ import TestConnection from "./pages/TestConnection";
 import Home from "./pages/home";
 import LoginPage from "./pages/LoginPage";
 import { Test } from "./pages/Test";
-import CreateQuestoes from "./pages/createquestoes";
+import PalestrasList from "./pages/palestrasList";
 import ParentComponent from "./pages/ParentComponent";
 import WebSTest from "./pages/WebSTest";
+import AdmQuizz from "./pages/admQuizz"
 import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
 
 function App() {
