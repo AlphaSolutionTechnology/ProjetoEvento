@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import QRCode from 'react-qr-code';
-import { Box, Avatar, Typography, Button, Tabs, Tab, TextField, Modal, Grid } from '@mui/material';
+import { Box, Avatar, Typography, Button, Tabs, Tab, TextField, Modal } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import QRScanner from './QRScanner';
 import BasicModal from './BasicModal';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { WebSocketContext } from '../context/WebSocketContext'; // Importa o WebSocketContext
 
 const ProfileComponent = () => {
   const [activeTab, setActiveTab] = useState(1); // Aba ativa
@@ -17,8 +18,10 @@ const ProfileComponent = () => {
   const [modalTitle, setModalTitle] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false); // Controle do modal básico
   const [modalText, setModalText] = useState('');
+
   const navigate = useNavigate();
   const { darkMode } = useTheme();
+  const { sendMessage, messages } = useContext(WebSocketContext); // Obtém o WebSocketContext
 
   const backgroundColor = darkMode ? '#121212' : '#f5f5f5';
   const paperColor = darkMode ? '#1e1e1e' : '#ffffff';
@@ -29,40 +32,17 @@ const ProfileComponent = () => {
     setInputCode(data);
     setIsScannerOpen(false);
     handleSendConnection(data);
-    setIsModalOpen(true);
     console.log('QR Code Lido:', data);
   };
 
   const handleSendConnection = (code) => {
-    fetch("http://localhost:8080/api/connection/sendconnection", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        idSolicitante: userData.unique_code,
-        idSolicitado: code,
-      }),
-    })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.message || "Erro na requisição");
-        }
-        setModalTitle("Sucesso");
-        setModalText(data.message);
-        return data;
-      })
-      .then(() => {
-        console.log("Conexão enviada com sucesso!");
-      })
-      .catch((error) => {
-        
-        setModalText(error.message)
-      }).finally(() => {
-        setIsModalOpen(true);
-      });
+    if (!code) return;
+    sendMessage('/app/sendrequest', {
+      to: code, // ID do usuário solicitado
+    });
+    setModalTitle('Solicitação Enviada');
+    setModalText(`Sua solicitação foi enviada para o usuário: ${code}`);
+    setIsModalOpen(true);
   };
 
   useEffect(() => {
@@ -71,9 +51,18 @@ const ProfileComponent = () => {
       setUserData(JSON.parse(storedData));
       setIsAuthenticated(true);
     } else {
-      navigate("/googletest");
+      navigate('/home');
     }
   }, []);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      setModalTitle('Nova Notificação');
+      setModalText(lastMessage.message || 'Você tem uma nova notificação!');
+      setIsModalOpen(true);
+    }
+  }, [messages]);
 
   if (!isAuthenticated) {
     return (
@@ -84,37 +73,32 @@ const ProfileComponent = () => {
   }
 
   return (
-    <Box sx={{ 
-      padding: { xs: '8px', sm: '16px' }, 
-      
-      height: '100vh', 
-      color: textColor, 
-      backdropFilter: darkMode ? 'blur(10px)' : 'blur(10px)', // Desfoco apenas no modo escuro
-      borderRadius: '10px', // Adiciona cantos arredondados
-      boxShadow: darkMode ? '0px 4px 10px rgba(0, 0, 0, 0.5)' : '0px 4px 10px rgba(0, 0, 0, 0.2)', // Sombra sutil no modo escuro
-    }}>
-      {/* Contêiner principal da página */}
-  
+    <Box
+      sx={{
+        padding: { xs: '8px', sm: '16px' },
+        height: '100vh',
+        color: textColor,
+        backdropFilter: darkMode ? 'blur(10px)' : 'blur(10px)',
+        borderRadius: '10px',
+        boxShadow: darkMode ? '0px 4px 10px rgba(0, 0, 0, 0.5)' : '0px 4px 10px rgba(0, 0, 0, 0.2)',
+      }}
+    >
       <Box sx={{ textAlign: 'center', marginBottom: '32px' }}>
-        {/* Avatar e Nome do Usuário */}
-        <Avatar 
-          sx={{ 
-            width: { xs: 80, sm: 100 }, 
-            height: { xs: 80, sm: 100 }, 
-            margin: 'auto', 
-            marginBottom: '16px', 
-            backgroundColor: darkMode ? paperColor : '#e0e0e0', // Cor de fundo ajustada para modo claro
-            color: darkMode ? textColor : '#757575', // Ajuste da cor do ícone no modo claro
+        <Avatar
+          sx={{
+            width: { xs: 80, sm: 100 },
+            height: { xs: 80, sm: 100 },
+            margin: 'auto',
+            marginBottom: '16px',
+            backgroundColor: darkMode ? paperColor : '#e0e0e0',
+            color: darkMode ? textColor : '#757575',
           }}
         />
-
-        {/* Nome do usuário ou "Usuário" como padrão */}
         <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.2rem' } }}>
-          {userData?.name || "Usuário"}
+          {userData?.name || 'Usuário'}
         </Typography>
       </Box>
-  
-      {/* Tabs para alternar entre as abas */}
+
       <Tabs
         value={activeTab}
         onChange={(e, newValue) => setActiveTab(newValue)}
@@ -128,19 +112,14 @@ const ProfileComponent = () => {
         }}
       >
         <Tab label="Meu QR Code" />
-        {/* Aba que exibe o QR Code */}
         <Tab label="Conectar" />
-        {/* Aba que permite inserir ou escanear códigos */}
       </Tabs>
-  
-      {/* Conteúdo da aba "Meu QR Code" */}
+
       {activeTab === 0 && (
         <Box sx={{ textAlign: 'center' }}>
-          {/* Texto explicativo */}
           <Typography variant="body1" sx={{ marginBottom: '16px', color: textColor }}>
             Escaneie este QR Code para se conectar comigo.
           </Typography>
-          {/* QR Code gerado dinamicamente */}
           <Box
             sx={{
               backgroundColor: paperColor,
@@ -152,21 +131,17 @@ const ProfileComponent = () => {
           >
             <QRCode value={String(userData.unique_code)} size={255} />
           </Box>
-          {/* Código numérico como alternativa ao QR Code */}
           <Typography variant="body2" sx={{ marginTop: '16px' }}>
             Ou Digite o código: {userData.unique_code}
           </Typography>
         </Box>
       )}
-  
-      {/* Conteúdo da aba "Conectar" */}
+
       {activeTab === 1 && (
         <Box sx={{ maxWidth: '400px', margin: '0 auto' }}>
-          {/* Texto explicativo */}
           <Typography variant="body1" sx={{ marginBottom: '16px', textAlign: 'center', color: textColor }}>
             Digite o código do usuário ou escaneie um QR Code para se conectar.
           </Typography>
-          {/* Botão para abrir o scanner de QR Code */}
           <Button
             variant="contained"
             startIcon={<QrCodeScannerIcon />}
@@ -180,7 +155,6 @@ const ProfileComponent = () => {
           >
             Escanear QR Code
           </Button>
-          {/* Input para inserir código manualmente */}
           <TextField
             label="Inserir Código"
             variant="outlined"
@@ -189,29 +163,10 @@ const ProfileComponent = () => {
             onChange={(e) => setInputCode(e.target.value)}
             sx={{
               marginBottom: '16px',
-              backgroundColor: darkMode ? '#424242' : paperColor, 
-              borderRadius: '4px', 
-              '.MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: darkMode ? '#757575' : '#c4c4c4', 
-                },
-                '&:hover fieldset': {
-                  borderColor: darkMode ? '#ffffff' : '#000000', 
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: buttonColor, 
-                },
-              },
-              '.MuiInputLabel-root': {
-                color: darkMode ? '#ffffff' : textColor, 
-              },
-              input: {
-                color: darkMode ? '#ffffff' : textColor, 
-              },
+              backgroundColor: darkMode ? '#424242' : paperColor,
+              borderRadius: '4px',
             }}
           />
-
-          {/* Botão para enviar o código inserido */}
           <Button
             variant="contained"
             endIcon={<SendIcon />}
@@ -221,21 +176,14 @@ const ProfileComponent = () => {
             sx={{
               backgroundColor: darkMode ? buttonColor : '#ffffff',
               color: darkMode ? '#ffffff' : '#000000',
-              '&:hover': {
-                backgroundColor: darkMode ? '#9a67ea' : '#f5f5f5',
-              },
-              '&.Mui-disabled': {
-                backgroundColor: darkMode ? '#424242' : '#e0e0e0',
-                color: darkMode ? '#9e9e9e' : '#9e9e9e',
-              },
+              '&:hover': { backgroundColor: darkMode ? '#9a67ea' : '#f5f5f5' },
             }}
           >
             Conectar
           </Button>
         </Box>
       )}
-  
-      {/* Modal para scanner de QR Code */}
+
       <Modal
         open={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
@@ -246,7 +194,6 @@ const ProfileComponent = () => {
         </Box>
       </Modal>
 
-      {/* Modal básico */}
       <BasicModal
         open={isModalOpen}
         title={modalTitle}
