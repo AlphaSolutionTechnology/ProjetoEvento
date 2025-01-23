@@ -163,7 +163,7 @@ const ProfileComponent = () => {
             onChange={(e) => setInputCode(e.target.value)}
             sx={{
               marginBottom: '16px',
-              backgroundColor: darkMode ? '#6C6C7C' : '#FFFFFF', // Fundo adequado para cada modo
+              backgroundColor: darkMode ? '#8C8C8C' : '#FFFFFF', // Fundo adequado para cada modo
               borderRadius: '4px',
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
