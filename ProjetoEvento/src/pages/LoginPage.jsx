@@ -1,81 +1,54 @@
-// src/components/AuthPage.js
-import React from 'react';
-import { useTheme } from '../context/ThemeContext'; // Importar o contexto de tema
-import { useState } from 'react'; // Importar o hook de estado
+import React, { useState } from 'react';
 import GoogleSignIn from '../components/GoogleSignIn';
 
 const AuthPage = () => {
-    const { darkMode, setDarkMode } = useTheme();
-    const [isLogin, setIsLogin] = useState(true);
-  
-    return (
-      <div
-        className={`min-h-screen w-full flex flex-col justify-center items-center ${
-          darkMode ? "bg-black text-white" : "bg-white text-black"
-        }`}
-      >
+  const [isLogin, setIsLogin] = useState(true);
 
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-6 text-center">
-          {isLogin ? "Login" : "Registro"}
-        </h1>
+  return (
+    <div className="min-h-screen w-full flex flex-col justify-center items-center bg-white text-black dark:bg-gray-700 dark:text-white">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-6 text-center">
+        {isLogin ? "Login" : "Registro"}
+      </h1>
 
-        <div
-          className={`w-11/12 sm:w-3/4 lg:w-1/2 ${
-            darkMode ? "bg-gray-800" : "bg-gray-200"
-          } rounded-lg p-6 shadow-lg`}
-        >
+      <div className="w-11/12 sm:w-3/4 lg:w-1/2 bg-gray-200 dark:bg-gray-800 rounded-lg p-6 shadow-lg">
         {/* Formulário de Login ou Registro */}
-          <form>
-            {!isLogin && (
-              <div className="mb-4">
-                <label className="block mb-2">Nome</label>
-                <input
-                  type="text"
-                  className={`w-full px-4 py-2 rounded-lg ${
-                    darkMode
-                      ? "bg-gray-700 text-white focus:ring-blue-500"
-                      : "bg-gray-100 text-black focus:ring-blue-500"
-                  } focus:outline-none focus:ring-2`}
-                  placeholder="Digite seu nome"
-                />
-              </div>
-            )}
-        
+        <form>
+          {!isLogin && (
             <div className="mb-4">
-              <label className="block mb-2">Email</label>
+              <label className="block mb-2">Nome</label>
               <input
-                type="email"
-                className={`w-full px-4 py-2 rounded-lg ${
-                  darkMode
-                    ? "bg-gray-700 text-white focus:ring-blue-500"
-                    : "bg-gray-100 text-black focus:ring-blue-500"
-                } focus:outline-none focus:ring-2`}
-                placeholder="Digite seu email"
+                type="text"
+                className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Digite seu nome"
               />
             </div>
-            <div className="mb-4">
-              <label className="block mb-2">Senha</label>
-              <input
-                type="password"
-                className={`w-full px-4 py-2 rounded-lg ${
-                  darkMode
-                    ? "bg-gray-700 text-white focus:ring-blue-500"
-                    : "bg-gray-100 text-black focus:ring-blue-500"
-                } focus:outline-none focus:ring-2`}
-                placeholder="Digite sua senha"
-              />
-            </div>
-            <button
-              type="submit"
-              className={`w-full px-4 py-2 ${
-                darkMode
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-blue-500 hover:bg-blue-600"
-              } text-white rounded-lg transition duration-300`}
-            >
-              {isLogin ? "Entrar" : "Registrar"}
-            </button>
-          </form>
+          )}
+
+          <div className="mb-4">
+            <label className="block mb-2">Email</label>
+            <input
+              type="email"
+              className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Digite seu email"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-2">Senha</label>
+            <input
+              type="password"
+              className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Digite sua senha"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition duration-300"
+          >
+            {isLogin ? "Entrar" : "Registrar"}
+          </button>
+        </form>
 
         {/* Alternar entre Login e Registro */}
         <div className="text-center mt-4">
@@ -93,14 +66,12 @@ const AuthPage = () => {
         <div className="my-6 border-t"></div>
 
         {/* Botões de autenticação social */}
-        <div className="flex flex-col items-center" > 
-          <GoogleSignIn/>
-
-        </div>
+        <div className="flex flex-col items-center">
+          <GoogleSignIn />
         </div>
       </div>
-    );
-  };
-  
-  export default AuthPage;
-  
+    </div>
+  );
+};
+
+export default AuthPage;

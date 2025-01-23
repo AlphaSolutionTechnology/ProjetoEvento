@@ -73,31 +73,13 @@ const ProfileComponent = () => {
   }
 
   return (
-    <Box
-      sx={{
-        padding: { xs: '8px', sm: '16px' },
-        height: '100vh',
-        color: textColor,
-        backdropFilter: darkMode ? 'blur(10px)' : 'blur(10px)',
-        borderRadius: '10px',
-        boxShadow: darkMode ? '0px 4px 10px rgba(0, 0, 0, 0.5)' : '0px 4px 10px rgba(0, 0, 0, 0.2)',
-      }}
-    >
-      <Box sx={{ textAlign: 'center', marginBottom: '32px' }}>
-        <Avatar
-          sx={{
-            width: { xs: 80, sm: 100 },
-            height: { xs: 80, sm: 100 },
-            margin: 'auto',
-            marginBottom: '16px',
-            backgroundColor: darkMode ? paperColor : '#e0e0e0',
-            color: darkMode ? textColor : '#757575',
-          }}
-        />
-        <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.2rem' } }}>
-          {userData?.name || 'Usuário'}
-        </Typography>
-      </Box>
+    <ThemeProvider theme={theme}>
+      <Box className="p-6 bg-white dark:bg-gray-800 min-h-screen">
+        {/* Avatar e Nome do Usuário */}
+        <Box sx={{ textAlign: 'center', marginBottom: '32px' }}>
+          <Avatar sx={{ width: 120, height: 120, margin: 'auto', marginBottom: '16px' }} />
+          <Typography variant="h6">{userData?.name || "Usuário"}</Typography>
+        </Box>
 
       <Tabs
         value={activeTab}
@@ -137,52 +119,43 @@ const ProfileComponent = () => {
         </Box>
       )}
 
-      {activeTab === 1 && (
-        <Box sx={{ maxWidth: '400px', margin: '0 auto' }}>
-          <Typography variant="body1" sx={{ marginBottom: '16px', textAlign: 'center', color: textColor }}>
-            Digite o código do usuário ou escaneie um QR Code para se conectar.
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<QrCodeScannerIcon />}
-            onClick={() => setIsScannerOpen(true)}
-            sx={{
-              marginBottom: '16px',
-              backgroundColor: buttonColor,
-              '&:hover': { backgroundColor: darkMode ? '#9a67ea' : '#303f9f' },
-            }}
-            fullWidth
-          >
-            Escanear QR Code
-          </Button>
-          <TextField
-            label="Inserir Código"
-            variant="outlined"
-            fullWidth
-            value={inputCode}
-            onChange={(e) => setInputCode(e.target.value)}
-            sx={{
-              marginBottom: '16px',
-              backgroundColor: darkMode ? '#424242' : paperColor,
-              borderRadius: '4px',
-            }}
-          />
-          <Button
-            variant="contained"
-            endIcon={<SendIcon />}
-            fullWidth
-            onClick={() => handleSendConnection(inputCode)}
-            disabled={!inputCode}
-            sx={{
-              backgroundColor: darkMode ? buttonColor : '#ffffff',
-              color: darkMode ? '#ffffff' : '#000000',
-              '&:hover': { backgroundColor: darkMode ? '#9a67ea' : '#f5f5f5' },
-            }}
-          >
-            Conectar
-          </Button>
-        </Box>
-      )}
+        {activeTab === 1 && (
+          <Box sx={{ maxWidth: '400px', margin: '0 auto' }}>
+            <Typography variant="body1" sx={{ marginBottom: '16px', textAlign: 'center' }}>
+              Digite o código do usuário ou escaneie um QR Code para se conectar.
+            </Typography>
+            {/* Botão para Escanear QR Code */}
+            <Button
+              variant="contained"
+              startIcon={<QrCodeScannerIcon />}
+              onClick={() => setIsScannerOpen(true)}
+              sx={{ marginBottom: '16px' }}
+              fullWidth
+            >
+              Escanear QR Code
+            </Button>
+            {/* Campo para Inserir Código Manual */}
+            <TextField
+              label="Inserir Código"
+              variant="outlined"
+              fullWidth
+              value={inputCode}
+              onChange={(e) => setInputCode(e.target.value)}
+              sx={{ marginBottom: '16px', backgroundColor: 'white' }}
+            />
+            {/* Botão Conectar */}
+            <Button
+              variant="contained"
+              endIcon={<SendIcon />}
+              fullWidth
+              onClick={() => handleSendConnection(inputCode)}
+              disabled={!inputCode}
+              sx={{ marginBottom: '16px', backgroundColor: 'dark-blue' }}
+            >
+              Conectar
+            </Button>
+          </Box>
+        )}
 
       <Modal
         open={isScannerOpen}
@@ -194,6 +167,8 @@ const ProfileComponent = () => {
         </Box>
       </Modal>
 
+        {/* Modal Básico */}
+      </Box>
       <BasicModal
         open={isModalOpen}
         title={modalTitle}

@@ -7,6 +7,8 @@ function FormQuestion({
   handleChoiceChange,
   correctAnswer,
   setCorrectAnswer,
+  palestraId,
+  setPalestraId,
   handleSubmit,
 }) {
   return (
@@ -31,17 +33,19 @@ function FormQuestion({
       </div>
 
       <div className="mb-6">
-        <label className="block text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">
+        <label
+          className="block text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200"
+        >
           Opções de Resposta
         </label>
         {choices.map((choice, index) => (
-          <div key={index} className="mb-4">
+          <div key={index} className="mb-4 flex items-center">
             <input
               type="text"
-              placeholder={`Opção ${index + 1}`}
               value={choice}
               onChange={(e) => handleChoiceChange(index, e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
+              placeholder={`Opção ${index + 1}`}
+              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
             />
           </div>
         ))}
@@ -64,11 +68,28 @@ function FormQuestion({
         />
       </div>
 
+      <div className="mb-6">
+        <label
+          htmlFor="palestraId"
+          className="block text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200"
+        >
+          ID da Palestra
+        </label>
+        <input
+          id="palestraId"
+          type="text"
+          value={palestraId}
+          onChange={(e) => setPalestraId(e.target.value)}
+          placeholder="Digite o ID da palestra"
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
+        />
+      </div>
+
       <button
         type="submit"
         className="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-500 sm:w-auto sm:px-8"
       >
-        Criar Questão
+        Enviar Questão
       </button>
     </form>
   );
