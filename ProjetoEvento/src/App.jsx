@@ -32,9 +32,10 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/test" element={<TestConnection />} />
           <Route path="/googletest" element={<Test />} />
-          <Route path="/admquizz" element={<CreateQuestoes />} />
+          <Route path='/palestras' element={<PalestrasList/>}/>
           <Route path="/parent" element={<ParentComponent />} />
           <Route path="/websocket" element={<WebSTest />} />
+        <Route path='/admQuizz' element={<AdmQuizz/>}/>
         </Routes>
       </div>
     </WebSocketProvider>
