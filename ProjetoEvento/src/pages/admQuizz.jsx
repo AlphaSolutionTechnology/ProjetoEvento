@@ -74,11 +74,11 @@ return(
                
 
                 <div className="flex flex-col gap-5">
-                     <div className="text-center border border-gray-300 p-2 shadow-sm rounded-md">{questao.correctAnswer}✅</div>
                      {questao.choices.map((choice, index) => (
                         <div key={index} className="text-center border border-gray-300 p-2 shadow-sm rounded-md">{choice}</div>
                      ))}
                 </div>
+                <p>Resposta correta: {questao.correctAnswer}</p>
             </div>
             )))}
 
