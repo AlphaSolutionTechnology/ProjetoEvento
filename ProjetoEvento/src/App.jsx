@@ -11,7 +11,7 @@ import PalestrasList from "./pages/palestrasList";
 import CreateQuestoes from "./components/createquestoes";
 import ParentComponent from "./pages/ParentComponent";
 import WebSTest from "./pages/WebSTest";
-import AdmQuizz from "./pages/admQuizz"
+import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
 
 
@@ -38,7 +38,7 @@ function App() {
           <Route path='/palestras' element={<PalestrasList/>}/>
           <Route path="/parent" element={<ParentComponent />} />
           <Route path="/websocket" element={<WebSTest />} />
-        <Route path='/admQuizz' element={<CreateQuestoes/>}/>
+        <Route path='/admQuizz' element={<AdmQuizz/>} />
         </Routes>
       </div>
     </WebSocketProvider>
