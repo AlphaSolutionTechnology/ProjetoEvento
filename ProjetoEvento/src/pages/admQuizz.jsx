@@ -37,37 +37,49 @@ function AdmQuizz() {
   }, [palestraId]);
 
   return (
-    <div className="flex flex-col items-center bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen">
-      <h1 className="my-6 text-3xl">Quizzes da Palestra</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4">
+      <h1 className="text-3xl font-bold mb-8 text-center">
+        Gerenciar Quizzes da Palestra
+      </h1>
 
-      <div className="flex flex-col w-[100%] items-center gap-4">
+      {/* Componente principal para criação de questões */}
+      <div className="w-full max-w-4xl mb-12">
+        <CreateQuestoes />
+      </div>
+
+      {/* Visualização das questões */}
+      <div className="flex flex-col w-full max-w-4xl gap-6">
         {questoes.length === 0 ? (
-          <p>Nenhuma questão encontrada.</p>
+          <p className="text-lg text-gray-500 dark:text-gray-400 text-center">
+            Nenhuma questão encontrada.
+          </p>
         ) : (
           questoes.map((questao) => (
             <div
               key={questao.id}
-              className="flex flex-col p-5 gap-8 w-[70%] rounded shadow-md bg-white dark:bg-gray-800"
+              className="flex flex-col gap-4 p-6 rounded-lg shadow-lg bg-gray-100 dark:bg-gray-800"
             >
-              <p className="text-center">{questao.enunciado}</p>
-
-              <div className="flex flex-col gap-5">
+              <p className="text-lg font-medium text-white text-center">
+                {questao.enunciado}
+              </p>
+              <div className="flex flex-col gap-3">
                 {questao.choices.map((choice, index) => (
                   <div
                     key={index}
-                    className="text-center border border-gray-300 dark:border-gray-600 p-2 shadow-sm rounded-md"
+                    className="text-center border border-white text-white py-2 rounded-md"
                   >
                     {choice}
                   </div>
                 ))}
               </div>
-              <p>Resposta correta: {questao.correctAnswer}</p>
+              <p className="text-sm text-right text-blue-300">
+                Resposta correta:{" "}
+                <strong className="text-white">{questao.correctAnswer}</strong>
+              </p>
             </div>
           ))
         )}
       </div>
-
-      <CreateQuestoes />
     </div>
   );
 }
