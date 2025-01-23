@@ -126,7 +126,7 @@ const ProfileComponent = () => {
               padding: '16px',
               borderRadius: '30px',
               display: 'inline-block',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.11)',
             }}
           >
             <QRCode value={String(userData.unique_code)} size={255} />
