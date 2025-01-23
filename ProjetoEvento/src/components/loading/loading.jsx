@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './Loading.css'; // Certifique-se de importar o arquivo de estilo
+import './loading.css'; // Certifique-se de importar o arquivo de estilo
 
 const Loading = () => {
   return (

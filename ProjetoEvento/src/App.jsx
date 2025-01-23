@@ -7,11 +7,13 @@ import TestConnection from "./pages/TestConnection";
 import Home from "./pages/home";
 import LoginPage from "./pages/LoginPage";
 import { Test } from "./pages/Test";
+import PalestrasList from "./pages/palestrasList";
 import CreateQuestoes from "./components/createquestoes";
 import ParentComponent from "./pages/ParentComponent";
 import WebSTest from "./pages/WebSTest";
+import AdmQuizz from "./pages/admQuizz"
 import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
-import PalestrasList from "./pages/PalestrasList";
+
 
 function App() {
   const { user } = useAuth(); // pode ser null ou com dados
