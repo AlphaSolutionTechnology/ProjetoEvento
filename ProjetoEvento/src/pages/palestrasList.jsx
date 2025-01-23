@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import * as React from 'react';
 import Checkbox from '@mui/material/Checkbox';
+import { Navigate, useNavigate } from "react-router-dom";
+import Loading from "../components/loading/loading";
 
 
-function Palestras(){
+function PalestrasList(){
 
     const [palestras, setPalestras] = useState([]);
     const [isVisible, setIsVisible] = useState(false);
@@ -17,7 +19,8 @@ function Palestras(){
     })
 
 
-
+    const navigate = useNavigate();
+    
 
 
     const formHandleChange = (e) => {
@@ -81,9 +84,9 @@ function Palestras(){
                 console.log("Lista de palestras:", list);
                 const updatedList = list.map((palestra) => ({
                     ...palestra,
-                    checked: false, // Inicialize a propriedade 'checked'
+                    checked: false, 
                 }));
-                setPalestras(updatedList); // Atualiza o estado com a lista recebida
+                setPalestras(updatedList); 
             } else {
                 console.error("Erro ao buscar palestras:", response.statusText);
             }
@@ -111,16 +114,16 @@ function Palestras(){
 
 
   const [showCheckBoxes, setShowCheckBoxes] = useState(false);
+  const [showEditarButton, setShowEditarButton] = useState(true);
 
   const toggleShowCheckBoxes = () => {
 
     if (showCheckBoxes) {
 
-        const confirmDelete = window.confirm("Tem certeza que deseja excluir as palestras selecionadas?");
-        if (confirmDelete) {
           handleDelete();
           setShowCheckBoxes(false);
-        }
+          setShowEditarButton(true);
+        
 
       } else {
     
@@ -128,6 +131,7 @@ function Palestras(){
           prevPalestras.map(palestra => ({ ...palestra, checked: false }))
         );
         setShowCheckBoxes(true);
+        setShowEditarButton(false);
 
       }
 
@@ -151,35 +155,51 @@ function Palestras(){
         return;
     }
 
-    const idsToDelete = palestrasToDelete.map(palestra => palestra.id);
+    const confirmDelete = window.confirm("Tem certeza que deseja excluir as palestras selecionadas?");
 
-    try {
-
-        const response = await fetch("http://localhost:8080/api/palestra/excluir", {
-            method: 'DELETE',
-            headers:
-            {
-                "Content-Type" : "application/json"
-            },
-            body: JSON.stringify({ids: idsToDelete})
-        })
-
-        if (response.ok) {
-            console.log('Palestras excluídas com sucesso');
-            setPalestras(prevPalestras => prevPalestras.filter(palestra => !palestra.checked));
-        } else {
-            console.error('Erro ao excluir palestras:', response.statusText);
-            alert("Erro ao excluir palestras");
+    if(confirmDelete){
+        const idsToDelete = palestrasToDelete.map(palestra => palestra.id);
+    
+        try {
+    
+            const response = await fetch("http://localhost:8080/api/palestra/excluir", {
+                method: 'DELETE',
+                headers:
+                {
+                    "Content-Type" : "application/json"
+                },
+                body: JSON.stringify({ids: idsToDelete})
+            })
+    
+            if (response.ok) {
+                console.log('Palestras excluídas com sucesso');
+                setPalestras(prevPalestras => prevPalestras.filter(palestra => !palestra.checked));
+            } else {
+                console.error('Erro ao excluir palestras:', response.statusText);
+                alert("Erro ao excluir palestras");
+            }
+    
+    
+    
+        } catch (error) {
+            console.error('Erro na requisição:', error.message);
         }
-
-
-
-    } catch (error) {
-        console.error('Erro na requisição:', error.message);
     }
 
 
   }
+
+
+
+  const handleNavigate = (idPalestra) => {
+
+
+    navigate("/admQuizz", {state: {idPalestra: idPalestra}});
+
+
+
+  }
+
 
     const toggleVisibility = (e) => {
         const originEvent = e.target.id;
@@ -190,7 +210,6 @@ function Palestras(){
         }
 
     }
-
 
 
     return(   
@@ -216,11 +235,13 @@ function Palestras(){
                </div>
 
 
-                <div id='listContainer' className="bg-transparent w-full h-[50vh] flex-col overflow-y-auto">
-
-                {palestras.map((palestra) => (
+    <div id='listContainer' className="relative bg-transparent w-full h-[50vh] flex flex-col overflow-y-auto text-center items-center">
+                {palestras.length == 0? 
+                <p>Nenhuma palestra encontrada</p>
+                :  
+                (palestras.map((palestra) => (
                     
-                    <div key={palestra.id} className="text-black bg-transparent h-1/6 p-2 flex items-center border-t border-black cursor-pointer relative hover:bg-gray-300" >
+                    <div key={palestra.id} className="text-black bg-transparent h-1/6 p-2 flex items-center border-t border-black relative w-[100%] hover:bg-gray-300" >
 
                         { showCheckBoxes && (
                             <Checkbox
@@ -231,9 +252,12 @@ function Palestras(){
                             />
                         )}
                         <p>{palestra.tema}</p>
-                        <button className=" rounded-lg p-2 border-black right-3 absolute bg-gray-600 text-white font-bold">Editar</button>
+
+                        {showEditarButton && <button className=" rounded-lg p-2 border-black right-3 absolute bg-gray-600 text-white font-bold" onClick={() => handleNavigate(palestra.id)}>Editar</button>}
                     </div>
-                ))}
+                )))
+}
+
 
 
                 </div>          
@@ -244,4 +268,4 @@ function Palestras(){
 }
 
 
-export default Palestras;
+export default PalestrasList;

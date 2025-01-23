@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from '../context/ThemeContext';
+import { useLocation, useNavigate } from "react-router-dom";
 function CreateQuestoes() {
   const { darkMode } = useTheme(); // Importar o contexto de tema
 
@@ -9,6 +10,17 @@ function CreateQuestoes() {
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [palestraId, setPalestraId] = useState("");
   const [message, setMessage] = useState(""); // Estado para a mensagem de feedback
+
+
+
+  const location = useLocation();
+  useEffect(() => {
+
+    const id = location.state?.idPalestra;
+    setPalestraId(id || ""); 
+
+  }, [location.search])
+ 
 
   // Função para lidar com a submissão do formulário
   const handleSubmit = async (e) => {
@@ -79,7 +91,7 @@ function CreateQuestoes() {
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
-            Escolhas
+            Escolhas erradas
           </label>
           {choices.map((choice, index) => (
             <input
@@ -106,23 +118,6 @@ function CreateQuestoes() {
             placeholder="Digite a resposta correta"
             value={correctAnswer}
             onChange={(e) => setCorrectAnswer(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="palestraId"
-          >
-            ID da Palestra
-          </label>
-          <input
-            type="text"
-            id="palestraId"
-            placeholder="Digite o ID da palestra"
-            value={palestraId}
-            onChange={(e) => setPalestraId(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>

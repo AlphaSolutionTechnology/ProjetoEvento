@@ -7,9 +7,9 @@ import TestConnection from './pages/TestConnection'
 import Home from './pages/home';
 import LoginPage from './pages/LoginPage';
 import { Test } from './pages/Test';
-import CreateQuestoes from './pages/createquestoes';
 import ParentComponent from './pages/ParentComponent';
-import Palestras from './pages/palestras';
+import PalestrasList from './pages/palestrasList';
+import AdmQuizz from './pages/admQuizz';
 
 function App() {
   const { user } = useAuth(); // pode ser null ou com daddos
@@ -30,9 +30,9 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path='/test' element={<TestConnection/>}/>
         <Route path='/googletest' element={<Test/>}/>
-        <Route path='/palestras' element={<Palestras/>}/>
-        <Route path="/admquizz" element={<CreateQuestoes />} />
+        <Route path='/palestras' element={<PalestrasList/>}/>
         <Route path='/parent' element={<ParentComponent/>}/>
+        <Route path='/admQuizz' element={<AdmQuizz/>}/>
       </Routes>
     </div>
   );
