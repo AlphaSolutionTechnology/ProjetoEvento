@@ -1,60 +1,40 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext'; // Importa o hook de tema
-import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom'; // Importa o useNavigate para navegação
+
 function Home() {
   const { darkMode } = useTheme(); // Acessa o estado global do tema
-  const {user} = useAuth(); // Acessa o estado global de autenticação
-  
+  const navigate = useNavigate(); // Hook para navegação
 
   return (
     <div
       className={`min-h-screen w-full flex flex-col justify-center items-center ${
-        darkMode ? 'bg-black text-white' : 'bg-white text-black'
-      }`}>
+        darkMode ? 'bg-black text-white' : 'bg-gray-50 text-black'
+      }`}
+    >
       {/* Título da Página */}
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-6 text-center">
-        Bem-vindo, **Nome do usuário**!
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl mb-8 text-center font-bold">
+        Bem-vindo ao Painel!
       </h1>
 
-      {/* Primeiro Container */}
+      {/* Seção de Palestras */}
       <div
-        className={`w-11/12 sm:w-3/4 h-[15%] ${
-          darkMode ? 'bg-gray-800' : 'bg-gray-200'
-        } flex flex-col justify-center items-center m-4 rounded-lg shadow-lg`}
+        className={`w-11/12 sm:w-3/4 h-auto p-6 ${
+          darkMode ? 'bg-gray-800' : 'bg-white'
+        } flex flex-col justify-center items-center m-4 rounded-lg shadow-lg border ${
+          darkMode ? 'border-gray-700' : 'border-gray-200'
+        }`}
       >
-        <h2 className="text-base sm:text-lg lg:text-xl mb-4">Palestras</h2>
-        <button className="px-4 sm:px-6 lg:px-8 py-2 sm:py-3 bg-blue-500 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-lg shadow-md hover:bg-blue-600 hover:scale-105 transform transition duration-300">
-          Acessar Quiz
-        </button>
-      </div>
-
-      {/* Segundo Container */}
-      <div
-        className={`w-11/12 sm:w-3/4 h-[15%] ${
-          darkMode ? 'bg-gray-700' : 'bg-gray-300'
-        } flex flex-col justify-center items-center m-4 rounded-lg shadow-lg`}
-      >
-        <h2 className="text-base sm:text-lg lg:text-xl mb-4">QRCode</h2>
-        <button className="px-4 sm:px-6 lg:px-8 py-2 sm:py-3 bg-green-500 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-lg shadow-md hover:bg-green-600 hover:scale-105 transform transition duration-300">
-          Gerar QRCode
-        </button>
-      </div>
-
-      {/* Terceiro Container (Somente para Administradores) */}
-      {user.isAdmin && (
-        <div
-          className={`w-11/12 sm:w-3/4 h-[15%] ${
-            darkMode ? 'bg-gray-600' : 'bg-gray-400'
-          } flex flex-col justify-center items-center m-4 rounded-lg shadow-lg`}
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-4">
+          Gerencie suas Palestras
+        </h2>
+        <button
+          onClick={() => navigate('/palestras')} // Redireciona para o PalestrasList
+          className="px-6 py-3 bg-blue-500 text-white font-semibold text-base lg:text-lg rounded-lg shadow-md hover:bg-blue-600 hover:scale-105 transform transition-all duration-300"
         >
-          <h2 className="text-base sm:text-lg lg:text-xl mb-4">
-            Administrar Questões
-          </h2>
-          <button className="px-4 sm:px-6 lg:px-8 py-2 sm:py-3 bg-red-500 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-lg shadow-md hover:bg-red-600 hover:scale-105 transform transition duration-300">
-            Acessar Painel
-          </button>
-        </div>
-      )}
+          Acessar Palestras
+        </button>
+      </div>
     </div>
   );
 }
