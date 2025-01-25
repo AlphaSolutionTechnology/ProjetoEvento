@@ -8,6 +8,7 @@ import { useTheme } from '../context/ThemeContext';
 import CircularProgress from '@mui/material/CircularProgress';
 import {Stack} from '@mui/material';
 import { WebSocketContext } from '../context/WebSocketContext'; // Importa o WebSocketContext
+import QRScanner from './QRScanner';
 
 const ProfileComponent = () => {
   const [activeTab, setActiveTab] = useState(1); // Aba ativa
@@ -30,6 +31,7 @@ const ProfileComponent = () => {
   const textColor = darkMode ? '#ffffff' : '#333333';
   const buttonColor = darkMode ? '#bb86fc' : '#3f51b5';
   const [waiting,setWaiting] = useState(false);
+  const [wantToConnect, setWantToConnect] = useState(false);
 
   const handleScan = (data) => {
     setInputCode(data);
@@ -48,7 +50,7 @@ const ProfileComponent = () => {
     }
     setIsLoading(true);
     sendMessage('/app/sendrequest', {
-      to: code, // ID do usuário solicitado
+      to: code, 
     });
   };
 
@@ -85,25 +87,28 @@ const ProfileComponent = () => {
 
   useEffect(() => {
     if (messages.length > 0) {
-      setIsLoading(() => false);
-      const lastMessage = messages[messages.length - 1];     
-      if(lastMessage.to === userData?.unique_code && (lastMessage.message).indexOf("código") != -1){
+      setIsLoading(false);
+      const lastMessage = messages[messages.length - 1];
+      console.log("Última mensagem recebida:", lastMessage.message);
+  
+      if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("quer se conectar")) {
+        console.log("Mensagem de conexão recebida:", lastMessage.message);
+        setDialogData({
+          fromUser: lastMessage.message.split("quer se conectar")[0].trim().replace("[", "").replace("]", "").replace(",",""), // Extrai nomes e remove colchetes
+        });
+        setIsDialogOpen(true); // Agora abre o Dialog
+      } else if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("código")) {
         setNotFound(true);
-      }
-      else if(lastMessage.to === userData?.unique_code && (lastMessage.message).indexOf("Sucesso!") != -1){
+      } else if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("Sucesso!")) {
         setSuccessAlert(true);
-      }
-      else if(lastMessage.to === userData?.unique_code && (lastMessage.message).indexOf("resposta!" != -1)){
+      } else if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("resposta!")) {
         setWaiting(true);
-      }
-      else if (lastMessage.to === userData?.unique_code && (lastMessage.message).indexOf("conectados") != -1) {
+      } else if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("conectados")) {
         setAlreadyConnected(true);
-      }else if (lastMessage.to === userData?.unique_code && (lastMessage.message).indexOf("conectar") != -1){
-
-      } 
+      }
     }
-  }, [messages, userData]); // Executa sempre que `messages` ou `userData` forem atualizados
-
+  }, [messages, userData]);
+  
   if (!isAuthenticated) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor }}>
@@ -231,16 +236,77 @@ const ProfileComponent = () => {
 
         </Box>
       )}
+<Modal
+  open={isScannerOpen}
+  onClose={() => setIsScannerOpen(false)} // Fecha ao clicar fora
+  sx={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }}
+>
+  <Box
+    sx={{
+      backgroundColor: darkMode ? '#1e1e1e' : '#ffffff', // Alteração dinâmica para dark mode
+      color: darkMode ? '#ffffff' : '#333333', // Cor do texto baseada no tema
+      padding: '24px',
+      borderRadius: '12px',
+      boxShadow: darkMode
+        ? '0px 4px 10px rgba(0, 0, 0, 0.9)'
+        : '0px 4px 10px rgba(0, 0, 0, 0.2)', // Sombra ajustada para dark mode
+      maxWidth: '400px',
+      width: '100%',
+      textAlign: 'center',
+      position: 'relative',
+    }}
+  >
+    {/* Título */}
+    <Typography
+      variant="h6"
+      sx={{
+        marginBottom: '16px',
+        color: darkMode ? '#ffffff' : '#333333', // Cor do título
+      }}
+    >
+      Escaneando QR Code
+    </Typography>
+    
+    {/* Scanner */}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '300px', // Altura fixa para o scanner
+        overflow: 'hidden',
+        border: `1px solid ${darkMode ? '#444444' : '#ccc'}`, // Borda adaptável ao tema
+        borderRadius: '8px',
+        marginBottom: '16px',
+      }}
+    >
+      <QRScanner onScan={handleScan} />
+    </Box>
 
-      <Modal
-        open={isScannerOpen}
-        onClose={() => setIsScannerOpen(false)}
-        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-      >
-        <Box sx={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px' }}>
-          <Typography variant="h6">Escaneando QR Code...</Typography>
-        </Box>
-      </Modal>
+    {/* Botão de Fechar */}
+    <Button
+      variant="outlined"
+      onClick={() => setIsScannerOpen(false)} // Fecha o modal
+      sx={{
+        marginTop: '16px',
+        color: darkMode ? '#ffffff' : '#333333', // Cor do texto do botão
+        borderColor: darkMode ? '#bb86fc' : '#3f51b5', // Borda baseada no tema
+        '&:hover': {
+          backgroundColor: darkMode ? '#bb86fc' : '#3f51b5', // Fundo ao passar o mouse
+          color: '#ffffff',
+        },
+      }}
+    >
+      Fechar
+    </Button>
+  </Box>
+</Modal>
+
+
 
       <Snackbar
         open={successAlert}
@@ -295,6 +361,8 @@ const ProfileComponent = () => {
           Usuários já estão conectados
       </Alert>
       </Snackbar>
+
+      
 
 
       {/* Dialog para nova solicitação de conexão */}

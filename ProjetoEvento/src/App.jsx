@@ -12,6 +12,7 @@ import WebSTest from "./pages/WebSTest";
 import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
 import NotificationButton from "./components/button/NotificationButton";
+import QRScanner from "./components/QRScanner";
 
 
 function App() {
