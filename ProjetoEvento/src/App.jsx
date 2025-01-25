@@ -3,16 +3,16 @@ import { Routes, Route } from "react-router-dom";
 import Questoes from "./pages/Questoes";
 import ThemeToggle from "./components/toggleDarkMode";
 import { useAuth } from "./context/AuthContext";
-import TestConnection from "./pages/TestConnection";
+import ConnectPage from "./pages/ConnectPage";
 import Home from "./pages/home";
 import LoginPage from "./pages/LoginPage";
-import { Test } from "./pages/Test";
 import PalestrasList from "./pages/palestrasList";
 import CreateQuestoes from "./components/createquestoes";
 import ParentComponent from "./pages/ParentComponent";
 import WebSTest from "./pages/WebSTest";
 import AdmQuizz from "./pages/admQuizz"
 import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
+import NotificationButton from "./components/button/NotificationButton";
 
 
 function App() {
@@ -24,6 +24,7 @@ function App() {
         {/* Header com o botão de alternância de tema */}
         <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
           <h1 className="text-xl font-bold">LOGO</h1>
+          <NotificationButton/>
           <ThemeToggle />
         </header>
 
@@ -33,8 +34,7 @@ function App() {
           <Route path="/home" element={user ? <Home /> : <LoginPage />} />
           <Route path="/quizz" element={<Questoes />} />
           <Route path="/" element={<LoginPage />} />
-          <Route path="/test" element={<TestConnection />} />
-          <Route path="/googletest" element={<Test />} />
+          <Route path="/conectar" element={<ConnectPage />} />
           <Route path='/palestras' element={<PalestrasList/>}/>
           <Route path="/parent" element={<ParentComponent />} />
           <Route path="/websocket" element={<WebSTest />} />

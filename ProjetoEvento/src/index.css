@@ -6,3 +6,20 @@
         flex-direction: column !important;
     }
 }
+.css-1vozu6i {
+    margin-right: 15px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    position: relative;
+    right: -10px;
+}
+
+.css-93vfj5-MuiStack-root > :not(style):not(style) {
+    margin: 0;
+    position: relative !important;
+    left: 30% !important;
+}

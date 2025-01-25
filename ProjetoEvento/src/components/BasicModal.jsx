@@ -1,39 +1,31 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
+import React from "react";
+import { Modal, Box, Typography, Button } from "@mui/material";
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
-
-const BasicModal = ({ open, onClose, title, description }) => {
+const BasicModal = ({ open, title, text, onClose }) => {
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box sx={style}>
-        {title && (
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            {title}
-          </Typography>
-        )}
-        {description && (
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            {description}
-          </Typography>
-        )}
+    <Modal open={open} onClose={onClose}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 300,
+          bgcolor: "background.paper",
+          boxShadow: 24,
+          p: 4,
+          borderRadius: 2,
+        }}
+      >
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          {title}
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          {text}
+        </Typography>
+        <Button variant="contained" color="primary" onClick={onClose} fullWidth>
+          Fechar
+        </Button>
       </Box>
     </Modal>
   );
