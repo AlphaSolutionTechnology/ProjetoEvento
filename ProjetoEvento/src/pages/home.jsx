@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext'; // Importa o hook de tema
 import { useNavigate } from 'react-router-dom'; // Importa o useNavigate para navegação
 
 function Home() {
   const { darkMode } = useTheme(); // Acessa o estado global do tema
   const navigate = useNavigate(); // Hook para navegação
+
 
   return (
     <div

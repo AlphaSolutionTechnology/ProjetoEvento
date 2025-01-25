@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Questoes from "./pages/Questoes";
 import ThemeToggle from "./components/toggleDarkMode";
@@ -17,7 +18,28 @@ import QRScanner from "./components/QRScanner";
 
 function App() {
   const { user } = useAuth(); // pode ser null ou com dados
+  const checkAuthentication = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/validate", {
+        method: "POST",
+        credentials: "include",
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('user_data', JSON.stringify(data));
+      } else {
+
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthentication();
+  }, [])
+  
   return (
     <WebSocketProvider> {/* Provedor do WebSocket */}
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
