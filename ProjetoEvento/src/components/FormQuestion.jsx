@@ -7,8 +7,6 @@ function FormQuestion({
   handleChoiceChange,
   correctAnswer,
   setCorrectAnswer,
-  palestraId,
-  setPalestraId,
   handleSubmit,
 }) {
   return (
@@ -65,23 +63,6 @@ function FormQuestion({
           onChange={(e) => setCorrectAnswer(e.target.value)}
           placeholder="Digite a resposta correta"
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
-        />
-      </div>
-
-      <div className="mb-6">
-        <label
-          htmlFor="palestraId"
-          className="block text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200"
-        >
-          ID da Palestra
-        </label>
-        <input
-          id="palestraId"
-          type="text"
-          value={palestraId}
-          onChange={(e) => setPalestraId(e.target.value)}
-          placeholder="Digite o ID da palestra"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
         />
       </div>
 

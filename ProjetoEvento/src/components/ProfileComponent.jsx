@@ -203,10 +203,11 @@ const ProfileComponent = () => {
             onChange={(e) => setInputCode(e.target.value)}
             sx={{
               marginBottom: '16px',
-              backgroundColor: darkMode ? '#424242' : paperColor,
+              backgroundColor: darkMode ? '#8C8C8C' : '#FFFFFF', // Fundo adequado para cada modo
               borderRadius: '4px',
             }}ló
           />
+
           <Button
             variant="contained"
             endIcon={<SendIcon />}
@@ -214,13 +215,20 @@ const ProfileComponent = () => {
             onClick={() => handleSendConnection(inputCode)}
             disabled={!inputCode}
             sx={{
-              backgroundColor: darkMode ? buttonColor : '#ffffff',
-              color: darkMode ? '#ffffff' : '#000000',
-              '&:hover': { backgroundColor: darkMode ? '#9a67ea' : '#f5f5f5' },
+              backgroundColor: darkMode ? buttonColor : '#1976D2', // Cor de fundo do botão
+              color: darkMode ? '#ffffff' : '#ffffff', // Cor do texto no botão (sempre branco para boa legibilidade)
+              '&:hover': {
+                backgroundColor: darkMode ? '#9a67ea' : '#1565C0', // Cor do botão quando estiver com hover
+              },
+              '&:disabled': {
+                backgroundColor: darkMode ? '#444444' : '#e0e0e0', // Cor de fundo quando o botão estiver desabilitado
+                color: '#bdbdbd', // Cor do texto quando desabilitado
+              },
             }}
           >
             Conectar
           </Button>
+
         </Box>
       )}
 

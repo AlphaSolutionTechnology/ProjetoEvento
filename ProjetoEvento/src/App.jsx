@@ -7,10 +7,9 @@ import ConnectPage from "./pages/ConnectPage";
 import Home from "./pages/home";
 import LoginPage from "./pages/LoginPage";
 import PalestrasList from "./pages/palestrasList";
-import CreateQuestoes from "./components/createquestoes";
 import ParentComponent from "./pages/ParentComponent";
 import WebSTest from "./pages/WebSTest";
-import AdmQuizz from "./pages/admQuizz"
+import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
 import NotificationButton from "./components/button/NotificationButton";
 
@@ -38,7 +37,7 @@ function App() {
           <Route path='/palestras' element={<PalestrasList/>}/>
           <Route path="/parent" element={<ParentComponent />} />
           <Route path="/websocket" element={<WebSTest />} />
-        <Route path='/admQuizz' element={<CreateQuestoes/>}/>
+          <Route path='/admQuizz' element={<AdmQuizz/>} /> 
         </Routes>
       </div>
     </WebSocketProvider>
