@@ -3,7 +3,9 @@ import { FiFile } from "react-icons/fi";
 
 export default function Chat() {
   const [messages, setMessages] = useState([
-    { role: "assistant", content: `
+    {
+      role: "assistant",
+      content: `
         Olá! Sou o QuizBuddy, seu assistente para criar quizzes. 
         Aqui estão as instruções para criar questões incríveis:
 
@@ -15,7 +17,8 @@ export default function Chat() {
         🚀 Dica: Use o botão de upload para enviar um PDF com conteúdo e eu posso ajudar a criar perguntas automaticamente!
 
         Vamos começar? Envie sua primeira pergunta ou me peça ajuda! 😊
-      ` },
+      `,
+    },
   ]);
   const [userInput, setUserInput] = useState("");
   const [file, setFile] = useState(null);
@@ -67,12 +70,10 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
       {/* Cabeçalho do chat */}
-      <header className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 font-bold text-center md:text-left md:flex md:items-center md:justify-between transition-colors">
-        <h1 className="text-lg">
-          QuizBuddy - Seu assistente para criar quizzes!
-        </h1>
+      <header className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 shadow-md font-bold text-center md:text-left md:flex md:items-center md:justify-between transition-colors">
+        <h1 className="text-lg">QuizBuddy - Seu assistente para criar quizzes!</h1>
       </header>
 
       {/* Área de mensagens */}
@@ -80,8 +81,8 @@ export default function Chat() {
         {messages.map((msg, index) => {
           const isUser = msg.role === "user";
           const bubbleClass = isUser
-            ? "bg-blue-500 text-white self-end rounded-br-none"
-            : "bg-gray-300 dark:bg-gray-700 dark:text-gray-100 self-start rounded-bl-none";
+            ? "bg-blue-500 text-white self-end rounded-br-md shadow-md"
+            : "bg-gray-200 dark:bg-gray-700 dark:text-gray-100 self-start rounded-bl-md shadow-md";
 
           return (
             <div
@@ -96,7 +97,7 @@ export default function Chat() {
       </main>
 
       {/* Área de input e upload */}
-      <footer className="p-4 bg-white dark:bg-gray-700 border-t border-gray-300 dark:border-gray-600">
+      <footer className="p-4 bg-white dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 shadow-inner">
         <div className="flex items-center">
           {/* Botão de upload de arquivo */}
           <div className="relative">
@@ -117,7 +118,7 @@ export default function Chat() {
 
           {/* Campo de texto */}
           <textarea
-            className="flex-1 ml-2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="flex-1 ml-2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-600"
             rows={1}
             placeholder="Digite sua mensagem..."
             value={userInput}
