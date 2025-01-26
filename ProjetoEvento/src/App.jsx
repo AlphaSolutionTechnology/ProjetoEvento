@@ -12,6 +12,7 @@ import ParentComponent from "./pages/ParentComponent";
 import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
 import NotificationButton from "./components/button/NotificationButton";
+import Chat from "./components/chatAI";
 
 
 function App() {
@@ -59,6 +60,7 @@ function App() {
           <Route path='/palestras' element={<PalestrasList/>}/>
           <Route path="/parent" element={<ParentComponent />} />
           <Route path='/admQuizz' element={<AdmQuizz/>} /> 
+          <Route path="/chat-ia" element={<Chat />} />
         </Routes>
       </div>
     </WebSocketProvider>

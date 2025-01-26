@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
 import FormQuestion from "./FormQuestion";
-import FeedbackMessage from "./FeedbackMessage"
-import { useLocation } from "react-router-dom";
+import FeedbackMessage from "./FeedbackMessage";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function CreateQuestoes() {
   const [questionText, setQuestionText] = useState("");
   const [choices, setChoices] = useState(["", "", "", ""]);
   const [correctAnswer, setCorrectAnswer] = useState("");
-  const [palestraId, setPalestraId] = useState("");
   const [message, setMessage] = useState("");
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Configura o palestraId a partir da localização
   useEffect(() => {
     const id = location.state?.idPalestra; // Recupera idPalestra do state
-    setPalestraId(id || "");
+    if (!id) {
+      setMessage("ID da palestra não encontrado. Verifique o fluxo de navegação.");
+    }
   }, [location.state]);
 
   const handleSubmit = async (e) => {
@@ -26,7 +28,7 @@ function CreateQuestoes() {
         enunciado: questionText,
         choices,
         correctAnswer,
-        idPalestra: palestraId,
+        idPalestra: location.state?.idPalestra,
       };
 
       const response = await fetch("http://localhost:8080/api/questoes", {
@@ -42,7 +44,6 @@ function CreateQuestoes() {
         setQuestionText("");
         setChoices(["", "", "", ""]);
         setCorrectAnswer("");
-        setPalestraId("");
       } else {
         setMessage("Erro ao enviar o quiz.");
       }
@@ -58,6 +59,10 @@ function CreateQuestoes() {
     setChoices(updatedChoices);
   };
 
+  const redirectToChat = () => {
+    navigate("/chat-ia"); // Redireciona para o componente de chat
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen dark:bg-gray-800 bg-gray-100">
       <h1 className="text-2xl font-bold mb-6">Criar Nova Questão</h1>
@@ -68,9 +73,8 @@ function CreateQuestoes() {
         handleChoiceChange={handleChoiceChange}
         correctAnswer={correctAnswer}
         setCorrectAnswer={setCorrectAnswer}
-        palestraId={palestraId}
-        setPalestraId={setPalestraId}
         handleSubmit={handleSubmit}
+        redirectToChat={redirectToChat} // Passa a função para redirecionar
       />
       <FeedbackMessage message={message} />
     </div>

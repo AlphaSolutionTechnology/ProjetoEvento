@@ -3,16 +3,16 @@ import React from "react";
 function FeedbackMessage({ message }) {
   if (!message) return null;
 
-  const isSuccess = message.includes("sucesso");
+  const isSuccess = message.toLowerCase().includes("sucesso");
 
   return (
-    <p
-      className={`mt-4 text-lg font-bold ${
-        isSuccess ? "text-green-500" : "text-red-500"
+    <div
+      className={`mt-4 p-4 rounded w-full max-w-md text-center ${
+        isSuccess ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
       }`}
     >
       {message}
-    </p>
+    </div>
   );
 }
 
