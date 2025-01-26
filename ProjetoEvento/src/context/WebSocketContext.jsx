@@ -27,16 +27,24 @@ const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) =>
           }
         });
 
-        // Inscreve-se no canal privado do usuário
         stompClient.subscribe("/user/queue/notification", (message) => {
           try {
             const parsedMessage = JSON.parse(message.body);
-            console.log("Mensagem recebida no canal privado:", parsedMessage);
-            onMessage(parsedMessage);
+            const currentUserId = JSON.parse(localStorage.getItem("user_data")).unique_code;
+        
+            // Verifica se a mensagem pertence ao usuário logado
+            if (parsedMessage.to === currentUserId) {
+              console.log("Nova notificação recebida:", parsedMessage);
+              onMessage(parsedMessage); // Adiciona como notificação válida
+            } else {
+              console.log("Mensagem de sucesso ignorada:", parsedMessage);
+              // Mensagem de sucesso ignorada, pois não é uma notificação válida
+            }
           } catch (error) {
             console.error("Erro ao processar mensagem privada:", error);
           }
         });
+        
       },
       (error) => {
         console.error("Erro ao conectar ao WebSocket:", error);

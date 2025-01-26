@@ -9,15 +9,13 @@ import Home from "./pages/home";
 import LoginPage from "./pages/LoginPage";
 import PalestrasList from "./pages/palestrasList";
 import ParentComponent from "./pages/ParentComponent";
-import WebSTest from "./pages/WebSTest";
 import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
 import NotificationButton from "./components/button/NotificationButton";
-import QRScanner from "./components/QRScanner";
 
 
 function App() {
-  const { user } = useAuth(); // pode ser null ou com dados
+  const { user,setUser } = useAuth(); // pode ser null ou com dados
   const checkAuthentication = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/validate", {
@@ -37,6 +35,7 @@ function App() {
   };
 
   useEffect(() => {
+  
     checkAuthentication();
   }, [])
   
@@ -59,7 +58,6 @@ function App() {
           <Route path="/conectar" element={<ConnectPage />} />
           <Route path='/palestras' element={<PalestrasList/>}/>
           <Route path="/parent" element={<ParentComponent />} />
-          <Route path="/websocket" element={<WebSTest />} />
           <Route path='/admQuizz' element={<AdmQuizz/>} /> 
         </Routes>
       </div>

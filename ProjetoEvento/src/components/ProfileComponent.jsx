@@ -1,38 +1,42 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Avatar, Typography, Button, Tabs, Tab, TextField, Modal, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert } from '@mui/material';
+import { 
+  Box, Avatar, Typography, Button, Tabs, Tab, TextField, 
+  Modal, Dialog, DialogTitle, DialogContent, DialogContentText, 
+  DialogActions, Snackbar, Alert, Stack 
+} from '@mui/material';
 import QRCode from 'react-qr-code';
 import SendIcon from '@mui/icons-material/Send';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import CircularProgress from '@mui/material/CircularProgress';
-import {Stack} from '@mui/material';
 import { WebSocketContext } from '../context/WebSocketContext'; // Importa o WebSocketContext
 import QRScanner from './QRScanner';
 
 const ProfileComponent = () => {
-  const [activeTab, setActiveTab] = useState(1); // Aba ativa
-  const [isScannerOpen, setIsScannerOpen] = useState(false); // Controle do modal scanner
-  const [inputCode, setInputCode] = useState(''); // Código inserido manualmente
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Autenticação
-  const [userData, setUserData] = useState(null); // Dados do usuário autenticado
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // Controle do Dialog
-  const [dialogData, setDialogData] = useState(null); // Dados da solicitação recebida
-  const [successAlert, setSuccessAlert] = useState(false); // Controle do alerta de sucesso
+  const [activeTab, setActiveTab] = useState(1); 
+  const [isScannerOpen, setIsScannerOpen] = useState(false); 
+  const [inputCode, setInputCode] = useState(''); 
+  const [isAuthenticated, setIsAuthenticated] = useState(false); 
+  const [userData, setUserData] = useState(null); 
+  const [isDialogOpen, setIsDialogOpen] = useState(false); 
+  const [dialogData, setDialogData] = useState(null); // <= Para armazenar dados do pedido
+  const [successAlert, setSuccessAlert] = useState(false); 
   const [unautorized, setUnautorized] = useState(false);
   const [isLoading,setIsLoading] = useState(false);
   const [alreadyConnected,setAlreadyConnected] = useState(false);
   const navigate = useNavigate();
   const { darkMode } = useTheme();
-  const { sendMessage, messages } = useContext(WebSocketContext); // Obtém o WebSocketContext
+  const { sendMessage, messages } = useContext(WebSocketContext); 
   const [notFound,setNotFound] = useState(false);
+  const [waiting,setWaiting] = useState(false);
+
   const backgroundColor = darkMode ? '#121212' : '#f5f5f5';
   const paperColor = darkMode ? '#1e1e1e' : '#ffffff';
   const textColor = darkMode ? '#ffffff' : '#333333';
   const buttonColor = darkMode ? '#bb86fc' : '#3f51b5';
-  const [waiting,setWaiting] = useState(false);
-  const [wantToConnect, setWantToConnect] = useState(false);
 
+  // Função que é chamada quando o QRScanner lê um QR Code
   const handleScan = (data) => {
     setInputCode(data);
     setIsScannerOpen(false);
@@ -40,6 +44,7 @@ const ProfileComponent = () => {
     console.log('QR Code Lido:', data);
   };
 
+  // Função para enviar solicitação de conexão
   const handleSendConnection = (code) => {
     setInputCode("");
     if (!code) return;
@@ -49,6 +54,7 @@ const ProfileComponent = () => {
       return;
     }
     setIsLoading(true);
+    // Envia via WebSocket (STOMP) para o backend
     sendMessage('/app/sendrequest', {
       to: code, 
     });
@@ -79,36 +85,110 @@ const ProfileComponent = () => {
     setUserData(() => JSON.parse(localStorage.getItem('user_data')));
   };
 
-
+  // Verifica autenticação no mount
   useEffect(() => {
     checkAuthentication();
     populateZone();
   }, []);
 
+  // Escuta mensagens WebSocket
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && userData) {
       setIsLoading(false);
+
       const lastMessage = messages[messages.length - 1];
       console.log("Última mensagem recebida:", lastMessage.message);
-  
-      if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("quer se conectar")) {
+
+      // 1) Notificação de pedido de conexão
+      if (
+        lastMessage.to === userData.unique_code &&
+        lastMessage.message.includes("quer se conectar")
+      ) {
         console.log("Mensagem de conexão recebida:", lastMessage.message);
+        
+        // Salva dados necessários para aceitar/recusar
         setDialogData({
-          fromUser: lastMessage.message.split("quer se conectar")[0].trim().replace("[", "").replace("]", "").replace(",",""), // Extrai nomes e remove colchetes
+          fromUserName: lastMessage.name, // nome de quem enviou
+          fromUserCode: lastMessage.from, // unique_code de quem enviou
         });
-        setIsDialogOpen(true); // Agora abre o Dialog
-      } else if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("código")) {
+
+        setIsDialogOpen(true);
+
+      // 2) Usuário não encontrado
+      } else if (
+        lastMessage.to === userData.unique_code &&
+        lastMessage.message.includes("código")
+      ) {
         setNotFound(true);
-      } else if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("Sucesso!")) {
+
+      // 3) Sucesso no envio
+      } else if (
+        lastMessage.to === userData.unique_code &&
+        lastMessage.message.includes("Sucesso!")
+      ) {
         setSuccessAlert(true);
-      } else if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("resposta!")) {
+
+      // 4) Aguardando resposta
+      } else if (
+        lastMessage.to === userData.unique_code &&
+        lastMessage.message.includes("resposta!")
+      ) {
         setWaiting(true);
-      } else if (lastMessage.to === userData?.unique_code && lastMessage.message.includes("conectados")) {
+
+      // 5) Já conectados
+      } else if (
+        lastMessage.to === userData.unique_code &&
+        lastMessage.message.includes("conectados")
+      ) {
         setAlreadyConnected(true);
       }
     }
   }, [messages, userData]);
-  
+
+  // Função para aceitar solicitação
+  const handleAcceptConnection = async () => {
+    try {
+      await fetch("http://localhost:8080/api/connection/answerconnectionrequest", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          to: userData.unique_code,             // Você
+          from: dialogData.fromUserCode,        // Quem fez o pedido
+          status: "ACCEPTED"
+        }),
+      });
+
+      setIsDialogOpen(false);
+      // Caso queira mostrar um alert de sucesso
+      setSuccessAlert(true);
+    } catch (error) {
+      console.error("Erro ao aceitar conexão:", error);
+      // Exibir algum alert de erro, se quiser
+    }
+  };
+
+  // Função para recusar solicitação
+  const handleDeclineConnection = async () => {
+    try {
+      await fetch("http://localhost:8080/api/connection/answerconnectionrequest", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          to: userData.unique_code,
+          from: dialogData.fromUserCode,
+          status: "DECLINED"
+        }),
+      });
+
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Erro ao recusar conexão:", error);
+      // Exibir algum alert de erro, se quiser
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor }}>
@@ -128,6 +208,7 @@ const ProfileComponent = () => {
         boxShadow: darkMode ? '0px 4px 10px rgba(0, 0, 0, 0.5)' : '0px 4px 10px rgba(0, 0, 0, 0.2)',
       }}
     >
+      {/* Header Profile */}
       <Box sx={{ textAlign: 'center', marginBottom: '32px' }}>
         <Avatar
           sx={{
@@ -144,6 +225,7 @@ const ProfileComponent = () => {
         </Typography>
       </Box>
 
+      {/* Tabs */}
       <Tabs
         value={activeTab}
         onChange={(e, newValue) => setActiveTab(newValue)}
@@ -160,6 +242,7 @@ const ProfileComponent = () => {
         <Tab label="Conectar" />
       </Tabs>
 
+      {/* Aba 0: Meu QR Code */}
       {activeTab === 0 && (
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="body1" sx={{ marginBottom: '16px', color: textColor }}>
@@ -182,6 +265,7 @@ const ProfileComponent = () => {
         </Box>
       )}
 
+      {/* Aba 1: Conectar */}
       {activeTab === 1 && (
         <Box sx={{ maxWidth: '400px', margin: '0 auto' }}>
           <Typography variant="body1" sx={{ marginBottom: '16px', textAlign: 'center', color: textColor }}>
@@ -208,9 +292,9 @@ const ProfileComponent = () => {
             onChange={(e) => setInputCode(e.target.value)}
             sx={{
               marginBottom: '16px',
-              backgroundColor: darkMode ? '#8C8C8C' : '#FFFFFF', // Fundo adequado para cada modo
+              backgroundColor: darkMode ? '#8C8C8C' : '#FFFFFF', 
               borderRadius: '4px',
-            }}ló
+            }}
           />
 
           <Button
@@ -220,94 +304,96 @@ const ProfileComponent = () => {
             onClick={() => handleSendConnection(inputCode)}
             disabled={!inputCode}
             sx={{
-              backgroundColor: darkMode ? buttonColor : '#1976D2', // Cor de fundo do botão
-              color: darkMode ? '#ffffff' : '#ffffff', // Cor do texto no botão (sempre branco para boa legibilidade)
+              backgroundColor: darkMode ? buttonColor : '#1976D2',
+              color: '#ffffff',
               '&:hover': {
-                backgroundColor: darkMode ? '#9a67ea' : '#1565C0', // Cor do botão quando estiver com hover
+                backgroundColor: darkMode ? '#9a67ea' : '#1565C0',
               },
               '&:disabled': {
-                backgroundColor: darkMode ? '#444444' : '#e0e0e0', // Cor de fundo quando o botão estiver desabilitado
-                color: '#bdbdbd', // Cor do texto quando desabilitado
+                backgroundColor: darkMode ? '#444444' : '#e0e0e0',
+                color: '#bdbdbd',
               },
             }}
           >
             Conectar
           </Button>
-
         </Box>
       )}
-<Modal
-  open={isScannerOpen}
-  onClose={() => setIsScannerOpen(false)} // Fecha ao clicar fora
-  sx={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }}
->
-  <Box
-    sx={{
-      backgroundColor: darkMode ? '#1e1e1e' : '#ffffff', // Alteração dinâmica para dark mode
-      color: darkMode ? '#ffffff' : '#333333', // Cor do texto baseada no tema
-      padding: '24px',
-      borderRadius: '12px',
-      boxShadow: darkMode
-        ? '0px 4px 10px rgba(0, 0, 0, 0.9)'
-        : '0px 4px 10px rgba(0, 0, 0, 0.2)', // Sombra ajustada para dark mode
-      maxWidth: '400px',
-      width: '100%',
-      textAlign: 'center',
-      position: 'relative',
-    }}
-  >
-    {/* Título */}
-    <Typography
-      variant="h6"
-      sx={{
-        marginBottom: '16px',
-        color: darkMode ? '#ffffff' : '#333333', // Cor do título
-      }}
-    >
-      Escaneando QR Code
-    </Typography>
-    
-    {/* Scanner */}
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '300px', // Altura fixa para o scanner
-        overflow: 'hidden',
-        border: `1px solid ${darkMode ? '#444444' : '#ccc'}`, // Borda adaptável ao tema
-        borderRadius: '8px',
-        marginBottom: '16px',
-      }}
-    >
-      <QRScanner onScan={handleScan} />
-    </Box>
 
-    {/* Botão de Fechar */}
-    <Button
-      variant="outlined"
-      onClick={() => setIsScannerOpen(false)} // Fecha o modal
-      sx={{
-        marginTop: '16px',
-        color: darkMode ? '#ffffff' : '#333333', // Cor do texto do botão
-        borderColor: darkMode ? '#bb86fc' : '#3f51b5', // Borda baseada no tema
-        '&:hover': {
-          backgroundColor: darkMode ? '#bb86fc' : '#3f51b5', // Fundo ao passar o mouse
-          color: '#ffffff',
-        },
-      }}
-    >
-      Fechar
-    </Button>
-  </Box>
-</Modal>
+      {/* Modal de Scanner */}
+      <Modal
+        open={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
+            color: darkMode ? '#ffffff' : '#333333',
+            padding: '24px',
+            borderRadius: '12px',
+            boxShadow: darkMode
+              ? '0px 4px 10px rgba(0, 0, 0, 0.9)'
+              : '0px 4px 10px rgba(0, 0, 0, 0.2)',
+            maxWidth: '400px',
+            width: '100%',
+            textAlign: 'center',
+            position: 'relative',
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              marginBottom: '16px',
+              color: darkMode ? '#ffffff' : '#333333',
+            }}
+          >
+            Escaneando QR Code
+          </Typography>
+          
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '300px',
+              overflow: 'hidden',
+              border: `1px solid ${darkMode ? '#444444' : '#ccc'}`,
+              borderRadius: '8px',
+              marginBottom: '16px',
+            }}
+          >
+            <QRScanner onScan={handleScan} />
+          </Box>
 
+          <Button
+            variant="outlined"
+            onClick={() => setIsScannerOpen(false)}
+            sx={{
+              marginTop: '16px',
+              color: darkMode ? '#ffffff' : '#333333',
+              borderColor: darkMode ? '#bb86fc' : '#3f51b5',
+              '&:hover': {
+                backgroundColor: darkMode ? '#bb86fc' : '#3f51b5',
+                color: '#ffffff',
+              },
+            }}
+          >
+            Fechar
+          </Button>
+        </Box>
+      </Modal>
 
+      {/* Indicador de loading ao enviar requisição */}
+      <Stack right="-14%" top="-1%" position="relative" spacing={2} direction="row" alignItems="center">
+        {isLoading ? <CircularProgress size="3rem"/> : null}
+      </Stack>
 
+      {/* Snackbars */}
       <Snackbar
         open={successAlert}
         autoHideDuration={3000}
@@ -315,21 +401,18 @@ const ProfileComponent = () => {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setSuccessAlert(false)} severity="success" sx={{ width: '100%' }}>
-          Solicitação enviada com sucesso!
+          Solicitação enviada/atualizada com sucesso!
         </Alert>
       </Snackbar>
-      <Stack right="-14%" top="-1%" position="relative" spacing={2} direction="row" alignItems="center">
-      {isLoading ? <CircularProgress size="3rem"/> : <></>}
-     </Stack>
       <Snackbar
         open={unautorized}
         autoHideDuration={3000}
         onClose={() => setUnautorized(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-      <Alert onClose={() => setUnautorized(false)} severity="error" sx={{ width: '100%' }}>
+        <Alert onClose={() => setUnautorized(false)} severity="error" sx={{ width: '100%' }}>
           Você não pode se conectar consigo mesmo!
-      </Alert>
+        </Alert>
       </Snackbar>
       <Snackbar
         open={notFound}
@@ -337,9 +420,9 @@ const ProfileComponent = () => {
         onClose={() => setNotFound(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-      <Alert onClose={() => setNotFound(false)} severity="error" sx={{ width: '100%' }}>
+        <Alert onClose={() => setNotFound(false)} severity="error" sx={{ width: '100%' }}>
           Usuário não encontrado!
-      </Alert>
+        </Alert>
       </Snackbar>
       <Snackbar
         open={waiting}
@@ -347,9 +430,9 @@ const ProfileComponent = () => {
         onClose={() => setWaiting(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-      <Alert onClose={() => setWaiting(false)} severity="error" sx={{ width: '100%' }}>
+        <Alert onClose={() => setWaiting(false)} severity="info" sx={{ width: '100%' }}>
           Aguardando resposta!
-      </Alert>
+        </Alert>
       </Snackbar>
       <Snackbar
         open={alreadyConnected}
@@ -357,13 +440,10 @@ const ProfileComponent = () => {
         onClose={() => setAlreadyConnected(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-      <Alert onClose={() => setAlreadyConnected(false)} severity="error" sx={{ width: '100%' }}>
+        <Alert onClose={() => setAlreadyConnected(false)} severity="warning" sx={{ width: '100%' }}>
           Usuários já estão conectados
-      </Alert>
+        </Alert>
       </Snackbar>
-
-      
-
 
       {/* Dialog para nova solicitação de conexão */}
       <Dialog
@@ -375,18 +455,12 @@ const ProfileComponent = () => {
         <DialogTitle id="alert-dialog-title">{"Nova Solicitação de Conexão"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {dialogData?.fromUser || "Um usuário"} quer se conectar com você.
+            {dialogData?.fromUserName || "Um usuário"} quer se conectar com você.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsDialogOpen(false)}>Recusar</Button>
-          <Button
-            onClick={() => {
-              // Aqui você pode chamar a função para aceitar a conexão
-              setIsDialogOpen(false);
-            }}
-            autoFocus
-          >
+          <Button onClick={handleDeclineConnection}>Recusar</Button>
+          <Button onClick={handleAcceptConnection} autoFocus>
             Aceitar
           </Button>
         </DialogActions>
