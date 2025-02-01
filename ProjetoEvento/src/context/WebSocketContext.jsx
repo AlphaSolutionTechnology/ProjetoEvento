@@ -1,4 +1,7 @@
+// WebSocketContext.jsx
+
 import React, { createContext, useState, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -6,6 +9,7 @@ export const WebSocketContext = createContext();
 
 let stompClient = null;
 
+// Remova a checagem de user_data aqui
 const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) => {
   if (!stompClient || !stompClient.connected) {
     const socket = new SockJS("http://localhost:8080/websocket");
@@ -15,9 +19,9 @@ const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) =>
       {},
       () => {
         console.log("Conectado ao WebSocket!");
-        setConnected(true); // Atualiza o estado para indicar que está conectado
+        setConnected(true);
 
-        // Inscreve-se no canal global para mensagens
+        // Inscrição em canais
         stompClient.subscribe("/topic/messages", (message) => {
           try {
             const parsedMessage = JSON.parse(message.body);
@@ -31,33 +35,29 @@ const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) =>
           try {
             const parsedMessage = JSON.parse(message.body);
             const currentUserId = JSON.parse(localStorage.getItem("user_data")).unique_code;
-        
-            // Verifica se a mensagem pertence ao usuário logado
+            
             if (parsedMessage.to === currentUserId) {
               console.log("Nova notificação recebida:", parsedMessage);
-              onMessage(parsedMessage); // Adiciona como notificação válida
+              onMessage(parsedMessage);
             } else {
-              console.log("Mensagem de sucesso ignorada:", parsedMessage);
-              // Mensagem de sucesso ignorada, pois não é uma notificação válida
+              console.log("Mensagem ignorada (não é do usuário atual):", parsedMessage);
             }
           } catch (error) {
             console.error("Erro ao processar mensagem privada:", error);
           }
         });
-        
       },
       (error) => {
         console.error("Erro ao conectar ao WebSocket:", error);
-        setConnected(false); // Indica que a conexão foi perdida
-        onDisconnect(); // Chama a função de reconexão
+        setConnected(false);
+        onDisconnect();
       }
     );
 
-    // Detectar desconexões
     stompClient.onclose = () => {
       console.warn("WebSocket desconectado.");
       setConnected(false);
-      onDisconnect(); // Chama a função de reconexão
+      onDisconnect();
     };
   }
 };
@@ -66,31 +66,29 @@ export const WebSocketProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const location = useLocation();
+  const userData = localStorage.getItem('user_data');
 
-  // Adiciona uma nova mensagem ao estado
   const addMessage = useCallback((message) => {
     setMessages((prev) => [...prev, message]);
   }, []);
 
-  // Função de reconexão
   const reconnect = useCallback(() => {
-    if (reconnectAttempts < 5) { // Limita o número de tentativas
+    if (reconnectAttempts < 5) {
       console.log(`Tentativa de reconexão #${reconnectAttempts + 1}`);
       setReconnectAttempts((prev) => prev + 1);
       setTimeout(() => {
         initializeWebSocketConnection(addMessage, reconnect, setConnected);
-      }, 3000); // Aguarda 3 segundos antes de tentar reconectar
+      }, 3000);
     } else {
       console.error("Número máximo de tentativas de reconexão atingido.");
     }
   }, [reconnectAttempts, addMessage]);
 
-  // Configuração inicial da conexão
   const setupConnection = useCallback(() => {
     initializeWebSocketConnection(addMessage, reconnect, setConnected);
   }, [addMessage, reconnect]);
 
-  // Função para enviar mensagens ao servidor
   const sendMessage = useCallback((destination, message) => {
     if (stompClient && stompClient.connected) {
       try {
@@ -104,14 +102,13 @@ export const WebSocketProvider = ({ children }) => {
     }
   }, []);
 
-  // Efeito para inicializar a conexão
   useEffect(() => {
-    if (!connected) {
+    const userData = localStorage.getItem("user_data");
+    if (!connected && userData) {
       setupConnection();
     }
-  }, [connected, setupConnection]);
+  }, [userData,connected, setupConnection]);
 
-  // Expondo valores via contexto
   return (
     <WebSocketContext.Provider
       value={{

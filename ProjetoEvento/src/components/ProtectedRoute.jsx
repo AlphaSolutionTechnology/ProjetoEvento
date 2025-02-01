@@ -1,16 +1,29 @@
-import React from 'react';
-import {Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ children, role }) => {
-    const { user } = useAuth();
-
-    // se o usuario nao esta autenticado ou nao tem o papel necessario, redireciona para a pagina de login
-    if (!user || user.role !== role) {
-        return <Navigate to="/login" replace />;
+    const { user, isLoading } = useAuth();
+    
+    // Fallback para dados do localStorage se isLoading for false
+    const localUser = JSON.parse(localStorage.getItem("user_data"));
+  
+    if (isLoading) {
+      return <div>Carregando...</div>;
     }
-
+  
+    // Usa user ou localUser para evitar null
+    const currentUser = user || localUser;
+  
+    if (!currentUser) {
+      return <Navigate to="/login" replace />;
+    }
+  
+    if (role && currentUser.role !== role) {
+      return <Navigate to="/home" replace />;
+    }
+  
     return children;
-};
+  };
 
 export default ProtectedRoute;

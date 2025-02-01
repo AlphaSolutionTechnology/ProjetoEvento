@@ -17,7 +17,12 @@ export default function NotificationButton() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [animateBadge, setAnimateBadge] = useState(false);
-  const currentUser = JSON.parse(localStorage.getItem("user_data")).unique_code;
+  let currentUser = "";
+  try {
+    currentUser = JSON.parse(localStorage.getItem('user_data'));
+  } catch (error) {
+    console.log(error);
+  }
 
   const open = Boolean(anchorEl);
 
@@ -43,7 +48,7 @@ export default function NotificationButton() {
       method: "PATCH",
       credentials: "include",
       body: JSON.stringify({
-        to: JSON.parse(localStorage.getItem("user_data")).unique_code,
+        to: currentUser.unique_code,
         from: userId, // Aceitando a requisição que veio de userId
         status: "ACCEPTED",
       }),
@@ -77,7 +82,7 @@ export default function NotificationButton() {
       method: "PATCH",
       credentials: "include",
       body: JSON.stringify({
-        to: JSON.parse(localStorage.getItem("user_data")).unique_code,
+        to: currentUser.unique_code,
         from: userId,
         status: "DECLINED",
       }),
