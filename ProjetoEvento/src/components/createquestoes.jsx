@@ -10,7 +10,6 @@ function CreateQuestoes() {
   const [message, setMessage] = useState("");
 
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Configura o palestraId a partir da localização
   useEffect(() => {
@@ -59,9 +58,6 @@ function CreateQuestoes() {
     setChoices(updatedChoices);
   };
 
-  const redirectToChat = () => {
-    navigate("/chat-ia"); // Redireciona para o componente de chat
-  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen dark:bg-gray-800 bg-gray-100">
@@ -74,7 +70,6 @@ function CreateQuestoes() {
         correctAnswer={correctAnswer}
         setCorrectAnswer={setCorrectAnswer}
         handleSubmit={handleSubmit}
-        redirectToChat={redirectToChat} // Passa a função para redirecionar
       />
       <FeedbackMessage message={message} />
     </div>

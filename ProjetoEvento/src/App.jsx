@@ -9,7 +9,6 @@ import PalestrasList from "./pages/palestrasList";
 import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import NotificationButton from "./components/button/NotificationButton";
-import Chat from "./components/chatAI";
 import AccountMenu from "./components/AccountMenu";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -35,8 +34,7 @@ function App() {
           <Route path="/quizz" element={<ProtectedRoute><Questoes /></ProtectedRoute>} />
           <Route path="/conectar" element={<ProtectedRoute><ConnectPage /></ProtectedRoute>} />
           <Route path="/palestras" element={<ProtectedRoute><PalestrasList /></ProtectedRoute>} />
-          <Route path="/admQuizz" element={<ProtectedRoute role="admin"><AdmQuizz /></ProtectedRoute>} />
-          <Route path="/chat-ia" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+          <Route path="/admQuizz" element={<ProtectedRoute><AdmQuizz /></ProtectedRoute>} />
         </Routes>
       </div>
     </WebSocketProvider>

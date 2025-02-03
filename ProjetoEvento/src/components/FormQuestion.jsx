@@ -53,13 +53,6 @@ function FormQuestion({
         >
           Enviar Questão
         </button>
-        <button
-          type="button"
-          onClick={redirectToChat}
-          className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
-        >
-          Criar com a IA
-        </button>
       </div>
     </form>
   );
