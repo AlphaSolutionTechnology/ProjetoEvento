@@ -11,9 +11,14 @@ function FormQuestion({
   redirectToChat,
 }) {
   return (
-    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-700 p-6 rounded shadow-md w-full max-w-md">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white dark:bg-gray-700 p-6 rounded shadow-md w-full max-w-md"
+    >
       <div className="mb-4">
-        <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">Enunciado da Pergunta</label>
+        <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
+          Enunciado da Pergunta
+        </label>
         <textarea
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
@@ -37,7 +42,9 @@ function FormQuestion({
         </div>
       ))}
       <div className="mb-4">
-        <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">Resposta Correta</label>
+        <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
+          Resposta Correta
+        </label>
         <input
           type="text"
           value={correctAnswer}

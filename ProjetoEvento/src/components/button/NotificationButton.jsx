@@ -19,7 +19,7 @@ export default function NotificationButton() {
   const [animateBadge, setAnimateBadge] = useState(false);
   let currentUser = "";
   try {
-    currentUser = JSON.parse(localStorage.getItem('user_data'));
+    currentUser = JSON.parse(localStorage.getItem("user_data"));
   } catch (error) {
     console.log(error);
   }
@@ -36,11 +36,11 @@ export default function NotificationButton() {
 
   const handleConfirm = (userId) => {
     console.log("Notificação confirmada para quem veio de:", userId);
-  
+
     setNotifications((prev) =>
-      prev.filter((notification) => notification.userId !== userId)
+      prev.filter((notification) => notification.userId !== userId),
     );
-  
+
     fetch("http://localhost:8080/api/connection/answerconnectionrequest", {
       headers: {
         "Content-Type": "application/json",
@@ -66,15 +66,14 @@ export default function NotificationButton() {
         console.error("Erro ao enviar a resposta:", error);
       });
   };
-  
 
   const handleDeny = (userId) => {
     console.log("Notificação negada para quem veio de:", userId);
-  
+
     setNotifications((prev) =>
-      prev.filter((notification) => notification.userId !== userId)
+      prev.filter((notification) => notification.userId !== userId),
     );
-  
+
     fetch("http://localhost:8080/api/connection/answerconnectionrequest", {
       headers: {
         "Content-Type": "application/json",
@@ -100,13 +99,14 @@ export default function NotificationButton() {
         console.error("Erro ao enviar a resposta:", error);
       });
   };
-  
 
   useEffect(() => {
     if (messages.length > 0) {
       const newMessage = messages[messages.length - 1];
-      const currentUser = JSON.parse(localStorage.getItem("user_data")).unique_code;
-  
+      const currentUser = JSON.parse(
+        localStorage.getItem("user_data"),
+      ).unique_code;
+
       // Exemplo: checa se a mensagem tem 'name' e é endereçada a mim
       if (newMessage.name && newMessage.to === currentUser) {
         setNotifications((prev) => {
@@ -114,16 +114,16 @@ export default function NotificationButton() {
           const isDuplicate = prev.some((notification) => {
             return notification.userId === newMessage.from;
           });
-  
+
           if (!isDuplicate) {
             // Aqui, vamos adicionar a propriedade "userId" = "from"
             // para padronizar como você trata lá em handleConfirm/handleDeny
             return [...prev, { ...newMessage, userId: newMessage.from }];
           }
-  
+
           return prev;
         });
-  
+
         // Animação do sino
         setAnimateBadge(true);
         setTimeout(() => setAnimateBadge(false), 1000);
@@ -132,7 +132,6 @@ export default function NotificationButton() {
       }
     }
   }, [messages]);
-  
 
   // Efeito para buscar notificações iniciais via GET
   useEffect(() => {
@@ -147,7 +146,7 @@ export default function NotificationButton() {
             // Remove possíveis duplicadas no carregamento inicial
             const uniqueNotifications = data.server.filter(
               (notification) =>
-                !prev.some((n) => n.userId === notification.userId)
+                !prev.some((n) => n.userId === notification.userId),
             );
             return [...prev, ...uniqueNotifications];
           });

@@ -21,20 +21,57 @@ function App() {
         {location.pathname !== "/login" && (
           <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
             <h1 className="text-xl font-bold">LOGO</h1>
-            <NotificationButton />
-            <ThemeToggle />
-            <AccountMenu />
+            <div className="flex justify-around items-center">
+              <NotificationButton />
+              <ThemeToggle />
+              <AccountMenu />
+            </div>
           </header>
         )}
 
         <Routes>
           <Route path="/" element={<Navigate to={"/login"} />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/home" element={<ProtectedRoute><Home/></ProtectedRoute>} />
-          <Route path="/quizz" element={<ProtectedRoute><Questoes /></ProtectedRoute>} />
-          <Route path="/conectar" element={<ProtectedRoute><ConnectPage /></ProtectedRoute>} />
-          <Route path="/palestras" element={<ProtectedRoute><PalestrasList /></ProtectedRoute>} />
-          <Route path="/admQuizz" element={<ProtectedRoute><AdmQuizz /></ProtectedRoute>} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quizz"
+            element={
+              <ProtectedRoute>
+                <Questoes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/conectar"
+            element={
+              <ProtectedRoute>
+                <ConnectPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/palestras"
+            element={
+              <ProtectedRoute>
+                <PalestrasList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admQuizz"
+            element={
+              <ProtectedRoute>
+                <AdmQuizz />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </WebSocketProvider>

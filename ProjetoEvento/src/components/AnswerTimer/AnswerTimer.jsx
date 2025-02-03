@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from "react";
 
 function AnswerTimer({ duration, onTimeUp }) {
   const [counter, setCounter] = useState(0); // Contador de tempo
@@ -32,7 +32,7 @@ function AnswerTimer({ duration, onTimeUp }) {
     <div className="w-full h-4 bg-gray-300 rounded-lg overflow-hidden">
       <div
         className={`h-full transition-all ${
-          progressLoaded > 80 ? 'bg-red-500' : 'bg-green-500'
+          progressLoaded > 80 ? "bg-red-500" : "bg-green-500"
         }`}
         style={{ width: `${progressLoaded}%` }}
       ></div>

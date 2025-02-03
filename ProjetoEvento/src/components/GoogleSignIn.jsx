@@ -1,7 +1,7 @@
-import { Height } from '@mui/icons-material';
-import { color } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Height } from "@mui/icons-material";
+import { color } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const GoogleSignIn = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -27,26 +27,24 @@ const GoogleSignIn = () => {
     };
   }, []);
 
-
   const checkAuthentication = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/validate", {
         method: "POST",
-        credentials: "include", 
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
-        localStorage.setItem('user_data',JSON.stringify(data));
-      
-        if(location.pathname === "/login"){
-          
-          navigate("/home"); 
+        localStorage.setItem("user_data", JSON.stringify(data));
+
+        if (location.pathname === "/login") {
+          navigate("/home");
         }
       } else {
         console.log("Usuário não autenticado.");
-        setIsAuthenticated(false); 
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error("Erro ao verificar autenticação:", error);
@@ -54,7 +52,7 @@ const GoogleSignIn = () => {
   };
 
   const initializeGoogleSignIn = () => {
-    if (isAuthenticated) return; 
+    if (isAuthenticated) return;
 
     window.google.accounts.id.initialize({
       client_id: googleClientId,
@@ -63,15 +61,21 @@ const GoogleSignIn = () => {
 
     window.google.accounts.id.renderButton(
       document.getElementById("googleSignInButton"),
-      { theme: "outline", size: "large", width: "240px", Height: "50px", text: "continue_with", locale: "pt-BR"}
+      {
+        theme: "outline",
+        size: "large",
+        width: "240px",
+        Height: "50px",
+        text: "continue_with",
+        locale: "pt-BR",
+      },
     );
   };
   const goTo = () => {
-    navigate('/home')
-  }
+    navigate("/home");
+  };
 
   const handleCredentialResponse = (response) => {
-  
     fetch("http://localhost:8080/api/auth/google", {
       method: "POST",
       headers: {
@@ -96,10 +100,9 @@ const GoogleSignIn = () => {
         navigate("/login");
       });
   };
-  
 
   if (isAuthenticated) {
-    return <div>Redirecionando...</div>; 
+    return <div>Redirecionando...</div>;
   }
 
   return (

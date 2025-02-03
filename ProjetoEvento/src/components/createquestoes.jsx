@@ -15,7 +15,9 @@ function CreateQuestoes() {
   useEffect(() => {
     const id = location.state?.idPalestra; // Recupera idPalestra do state
     if (!id) {
-      setMessage("ID da palestra não encontrado. Verifique o fluxo de navegação.");
+      setMessage(
+        "ID da palestra não encontrado. Verifique o fluxo de navegação.",
+      );
     }
   }, [location.state]);
 
@@ -57,7 +59,6 @@ function CreateQuestoes() {
     updatedChoices[index] = value;
     setChoices(updatedChoices);
   };
-
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen dark:bg-gray-800 bg-gray-100">

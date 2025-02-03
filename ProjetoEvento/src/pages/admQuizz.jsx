@@ -18,7 +18,7 @@ function AdmQuizz() {
   const searchQuestoes = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/questoes/palestraQuizz?idPalestra=${palestraId}`
+        `http://localhost:8080/api/questoes/palestraQuizz?idPalestra=${palestraId}`,
       );
 
       if (response.ok) {

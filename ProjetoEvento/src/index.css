@@ -2,44 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 @media (min-width: 600px) {
-    .css-1t7h5qn{
-        flex-direction: column !important;
-    }
+  .css-1t7h5qn {
+    flex-direction: column !important;
+  }
 }
 .css-1vozu6i {
-    margin-right: 15px;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
-    position: relative;
-    right: -10px;
+  margin-right: 15px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  position: relative;
+  right: -10px;
 }
 
 .css-93vfj5-MuiStack-root > :not(style):not(style) {
-    margin: 0;
-    position: relative !important;
-    left: 30% !important;
+  margin: 0;
+  position: relative !important;
+  left: 30% !important;
 }
 
 .tilt-animation {
-    animation: tilt 0.5s ease-in-out;
+  animation: tilt 0.5s ease-in-out;
+}
+
+@keyframes tilt {
+  0%,
+  100% {
+    transform: rotate(0deg);
   }
-  
-  @keyframes tilt {
-    0%, 100% {
-      transform: rotate(0deg);
-    }
-    25% {
-      transform: rotate(-15deg);
-    }
-    50% {
-      transform: rotate(15deg);
-    }
-    75% {
-      transform: rotate(-10deg);
-    }
+  25% {
+    transform: rotate(-15deg);
   }
-  
+  50% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+}

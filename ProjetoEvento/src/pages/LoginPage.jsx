@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import GoogleSignIn from '../components/GoogleSignIn';
+import React, { useState } from "react";
+import GoogleSignIn from "../components/GoogleSignIn";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);

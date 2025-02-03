@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 
-
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
 
 const Quiz = () => {
@@ -54,7 +53,7 @@ const Quiz = () => {
         : {
             ...prev,
             wrongAnswers: prev.wrongAnswers + 1,
-          }
+          },
     );
 
     if (currentQuestion !== questions.length - 1) {
@@ -77,22 +76,21 @@ const Quiz = () => {
   return (
     // Contêiner principal do quiz
     <div className="result text-center mt-6 p-4 bg-gray-300 dark:bg-gray-800 rounded-lg shadow-md max-w-md mx-auto">
-      
       {/* Condicional para exibir o quiz ou o resultado, dependendo do estado "showResult" */}
       {!showResult ? (
         <>
           {/* Componente para contar o tempo da questão */}
           <AnswerTimer duration={10} onTimeUp={() => onClickNext(false)} />
-          
+
           {/* Exibe a questão atual e o número total de questões */}
           <div className="flex items-center gap-2 text-xl font-semibold mt-2">
             <span className="active-question-no">{currentQuestion + 1}</span>
             <span className="total-question">/{questions.length}</span>
           </div>
-          
+
           {/* Exibe a pergunta atual */}
           <h2 className="text-2xl md:text-3xl font-bold mt-2">{question}</h2>
-          
+
           {/* Lista de opções de respostas */}
           <ul className="mt-4 space-y-4">
             {choices.map((choice, index) => (
@@ -103,14 +101,14 @@ const Quiz = () => {
                 className={`cursor-pointer p-3 rounded-lg transition-colors duration-300 ease-in-out 
                   ${answerIdx === index ? "bg-blue-500 text-white" : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"} 
                    dark:hover:bg-blue-700 hover:bg-blue-200`}
-                role="button" 
+                role="button"
                 aria-pressed={answerIdx === index ? "true" : "false"} // Define se a opção está selecionada para acessibilidade
               >
                 {choice}
               </li>
             ))}
           </ul>
-          
+
           {/* Rodapé com o botão para avançar ou finalizar */}
           <div className="footer mt-6">
             <button
@@ -120,7 +118,9 @@ const Quiz = () => {
               aria-label="Próxima pergunta ou finalizar" // Texto de acessibilidade para o botão
             >
               {/* Se for a última questão, o botão exibe 'Finalizar', caso contrário, 'Próximo' */}
-              {currentQuestion === questions.length - 1 ? "Finalizar" : "Próximo"}
+              {currentQuestion === questions.length - 1
+                ? "Finalizar"
+                : "Próximo"}
             </button>
           </div>
         </>
@@ -129,12 +129,20 @@ const Quiz = () => {
         <div className="result text-center mt-6">
           <h3 className="text-2xl font-semibold mb-4">Resultado</h3>
           {/* Exibe a quantidade de acertos, erros e a pontuação final */}
-          <p className="text-lg">Total de Acertos: <span className="font-bold">{result.correctAnswers}</span></p>
-          <p className="text-lg">Total de Erros: <span className="font-bold">{result.wrongAnswers}</span></p>
-          <p className="text-lg">Pontuação Final: <span className="font-bold">{result.score}</span></p>
-          
+          <p className="text-lg">
+            Total de Acertos:{" "}
+            <span className="font-bold">{result.correctAnswers}</span>
+          </p>
+          <p className="text-lg">
+            Total de Erros:{" "}
+            <span className="font-bold">{result.wrongAnswers}</span>
+          </p>
+          <p className="text-lg">
+            Pontuação Final: <span className="font-bold">{result.score}</span>
+          </p>
+
           {/* Botão para sair do quiz */}
-          <button 
+          <button
             onClick={onExit} // Função chamada para sair do quiz
             className="exit-button mt-6 py-2 px-4 bg-red-500 text-white rounded-lg transition-all hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
@@ -144,9 +152,6 @@ const Quiz = () => {
       )}
     </div>
   );
-  
-  
-
 };
 
 export default Quiz;

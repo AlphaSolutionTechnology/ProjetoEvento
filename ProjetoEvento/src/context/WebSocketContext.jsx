@@ -10,7 +10,11 @@ export const WebSocketContext = createContext();
 let stompClient = null;
 
 // Remova a checagem de user_data aqui
-const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) => {
+const initializeWebSocketConnection = (
+  onMessage,
+  onDisconnect,
+  setConnected,
+) => {
   if (!stompClient || !stompClient.connected) {
     const socket = new SockJS("http://localhost:8080/websocket");
     stompClient = Stomp.over(socket);
@@ -34,13 +38,18 @@ const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) =>
         stompClient.subscribe("/user/queue/notification", (message) => {
           try {
             const parsedMessage = JSON.parse(message.body);
-            const currentUserId = JSON.parse(localStorage.getItem("user_data")).unique_code;
-            
+            const currentUserId = JSON.parse(
+              localStorage.getItem("user_data"),
+            ).unique_code;
+
             if (parsedMessage.to === currentUserId) {
               console.log("Nova notificação recebida:", parsedMessage);
               onMessage(parsedMessage);
             } else {
-              console.log("Mensagem ignorada (não é do usuário atual):", parsedMessage);
+              console.log(
+                "Mensagem ignorada (não é do usuário atual):",
+                parsedMessage,
+              );
             }
           } catch (error) {
             console.error("Erro ao processar mensagem privada:", error);
@@ -51,7 +60,7 @@ const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) =>
         console.error("Erro ao conectar ao WebSocket:", error);
         setConnected(false);
         onDisconnect();
-      }
+      },
     );
 
     stompClient.onclose = () => {
@@ -67,7 +76,7 @@ export const WebSocketProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const location = useLocation();
-  const userData = localStorage.getItem('user_data');
+  const userData = localStorage.getItem("user_data");
 
   const addMessage = useCallback((message) => {
     setMessages((prev) => [...prev, message]);
@@ -107,7 +116,7 @@ export const WebSocketProvider = ({ children }) => {
     if (!connected && userData) {
       setupConnection();
     }
-  }, [userData,connected, setupConnection]);
+  }, [userData, connected, setupConnection]);
 
   return (
     <WebSocketContext.Provider
