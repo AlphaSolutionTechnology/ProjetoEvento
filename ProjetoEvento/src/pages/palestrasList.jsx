@@ -160,8 +160,8 @@ function PalestrasList() {
   };
 
   return (
-    <div className="bg-white p-4">
-      <h1 className="text-black text-center text-3xl font-bold mb-4">
+    <div className="bg-white text-gray-800 p-4 dark:bg-gray-900 dark:text-gray-50 h-screen">
+      <h1 className="text-gray-800 dark:text-gray-100 text-center text-3xl font-bold mb-4 ">
         PALESTRAS
       </h1>
       <div className="flex justify-between mb-4">
@@ -215,7 +215,7 @@ function PalestrasList() {
         </motion.form>
       )}
 
-      <div className="h-64 overflow-y-auto space-y-2">
+      <div className="overflow-y-auto space-y-2 overflow-x-hidden ">
         {palestras.length === 0 ? (
           <p className="text-center text-gray-500">
             Nenhuma palestra encontrada
@@ -225,12 +225,13 @@ function PalestrasList() {
             <motion.div
               key={palestra.id}
               whileHover={{ scale: 1.02 }}
-              className="flex items-center justify-between p-4 bg-gray-100 rounded-lg shadow-sm"
+              className="flex items-center justify-between p-4 bg-gray-100 cursor-pointer rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
+              onClick={() => handleNavigate(palestra.id)}
             >
-              <p className="text-black font-medium">{palestra.tema}</p>
+              <p className="text-black font-medium dark:text-gray-100">{palestra.tema}</p>
               {showEditarButton && (
                 <button
-                  className="bg-gray-600 text-white p-2 rounded-lg flex items-center gap-1"
+                  className="bg-gray-600 text-white p-2 rounded-lg flex items-center gap-1 dark:bg-white dark:text-black"
                   onClick={() => handleNavigate(palestra.id)}
                 >
                   <Edit size={16} /> Editar
