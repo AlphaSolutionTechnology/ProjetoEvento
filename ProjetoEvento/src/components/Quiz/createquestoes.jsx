@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import FormQuestion from "./FormQuestion";
-import FeedbackMessage from "./FeedbackMessage";
+import FormQuestion from "../FormQuestion";
+import FeedbackMessage from "../FeedbackMessage";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function CreateQuestoes() {

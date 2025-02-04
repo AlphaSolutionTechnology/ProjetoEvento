@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CreateQuestoes from "../components/createquestoes";
+import CreateQuestoes from "../components/Quiz/createquestoes";
 import { useLocation } from "react-router-dom";
 
 function AdmQuizz() {
