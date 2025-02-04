@@ -1,13 +1,16 @@
-import { createContext, useContext, useState, useEffect } from "react";
+// src/context/ThemeContext.jsx
+import React, { createContext, useState, useEffect } from "react";
 
+// Criação do contexto
 const ThemeContext = createContext();
 
+// Provedor de tema
 export const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") == "dark" || false,
+    localStorage.getItem("theme") === "dark" || false
   );
 
-  // sicronixar o estado com a classe dark no <html>
+  // Sincronizar o estado com a classe "dark" no <html>
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -25,4 +28,4 @@ export const ThemeProvider = ({ children }) => {
   );
 };
 
-export const useTheme = () => useContext(ThemeContext);
+export default ThemeContext;

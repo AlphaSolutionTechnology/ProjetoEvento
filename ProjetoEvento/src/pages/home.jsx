@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "../context/ThemeContext";
-import { useAuth } from "../context/AuthContext"; // Importa a autenticação
+import useTheme from "../hooks/useTheme";
+import useAuth from '../hooks/useAuth';
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { UserIcon, ChartBar } from "lucide-react";

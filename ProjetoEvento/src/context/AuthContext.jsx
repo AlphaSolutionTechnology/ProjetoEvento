@@ -1,6 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+// src/context/AuthContext.jsx
+import React, { createContext, useState, useEffect } from "react";
 
+// Criação do contexto
 const AuthContext = createContext();
+
+// Provedor de autenticação
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     // Carregar dados do localStorage inicialmente
@@ -42,4 +46,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export default AuthContext;

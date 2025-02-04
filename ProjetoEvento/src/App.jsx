@@ -8,7 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import PalestrasList from "./pages/palestrasList";
 import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext";
-import NotificationButton from "./components/button/NotificationButton";
+import NotificationButton from "./components/notification/NotificationButton";
 import AccountMenu from "./components/AccountMenu";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -21,7 +21,7 @@ function App() {
         {location.pathname !== "/login" && (
           <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
             <h1 className="text-xl font-bold">LOGO</h1>
-            <div className="flex justify-around items-center">
+            <div className=" w-48 flex justify-around items-center">
               <NotificationButton />
               <ThemeToggle />
               <AccountMenu />

@@ -21,7 +21,7 @@ import QRCode from "react-qr-code";
 import SendIcon from "@mui/icons-material/Send";
 import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import useTheme from "../hooks/useTheme";
 import CircularProgress from "@mui/material/CircularProgress";
 import { WebSocketContext } from "../context/WebSocketContext"; // Importa o WebSocketContext
 import QRScanner from "./QRScanner";
