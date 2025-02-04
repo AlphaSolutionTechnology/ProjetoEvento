@@ -29,4 +29,3 @@ const QRCodeSection = ({ userData, textColor, paperColor }) => {
 };
 
 export default QRCodeSection;
-
