@@ -5,8 +5,8 @@ import { useLocation } from "react-router-dom";
 function AdmQuizz() {
   const [questoes, setQuestoes] = useState([]);
   const [palestraId, setPalestraId] = useState(null);
-  const [showQuestoes, setShowQuestoes] = useState(false); // Controle para alternar entre formulário e lista
-  const [currentSlide, setCurrentSlide] = useState(0); // Controle do slider
+  const [showQuestoes, setShowQuestoes] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const location = useLocation();
 
@@ -18,7 +18,7 @@ function AdmQuizz() {
   const searchQuestoes = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/questoes/palestraQuizz?idPalestra=${palestraId}`,
+        `http://localhost:8080/api/questoes/palestraQuizz?idPalestra=${palestraId}`
       );
 
       if (response.ok) {
@@ -38,6 +38,30 @@ function AdmQuizz() {
     }
   }, [palestraId]);
 
+  const deleteQuestao = async (idQuestao) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/questoes/delete/${idQuestao}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Garante que cookies sejam enviados
+        }
+      );
+  
+      if (response.ok) {
+        setQuestoes(questoes.filter((questao) => questao.id !== idQuestao));
+      } else {
+        throw new Error("Erro ao excluir a questão.");
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+    }
+  };
+  
+  
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % questoes.length);
   };
@@ -52,7 +76,6 @@ function AdmQuizz() {
         Gerenciar Quizzes da Palestra
       </h1>
 
-      {/* Botões para alternar entre seções */}
       <div className="mb-8 flex gap-4">
         {!showQuestoes ? (
           <button
@@ -71,7 +94,6 @@ function AdmQuizz() {
         )}
       </div>
 
-      {/* Alternar entre CreateQuestoes e lista de questões */}
       {showQuestoes ? (
         <div className="w-full max-w-4xl">
           {questoes.length === 0 ? (
@@ -80,7 +102,6 @@ function AdmQuizz() {
             </p>
           ) : (
             <div className="relative">
-              {/* Slider de Questões */}
               <div className="flex justify-center items-center mb-4">
                 <button
                   className="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
@@ -106,11 +127,14 @@ function AdmQuizz() {
                     ))}
                   </div>
                   <p className="text-sm text-blue-300 mt-4">
-                    Resposta:{" "}
-                    <strong className="text-white">
-                      {questoes[currentSlide].correctAnswer}
-                    </strong>
+                    Resposta: <strong className="text-white">{questoes[currentSlide].correctAnswer}</strong>
                   </p>
+                  <button
+                    className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    onClick={() => deleteQuestao(questoes[currentSlide].id)}
+                  >
+                    Excluir Questão
+                  </button>
                 </div>
                 <button
                   className="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
