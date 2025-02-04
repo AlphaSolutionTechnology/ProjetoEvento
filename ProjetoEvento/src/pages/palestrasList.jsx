@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import * as React from "react";
-import Checkbox from "@mui/material/Checkbox";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Trash2, Plus, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 

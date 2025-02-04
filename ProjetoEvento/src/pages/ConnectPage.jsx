@@ -1,10 +1,10 @@
 import React from "react"
-import ProfileComponent2 from "../components/profile/ProfileComponent2"
+import ProfileComponent from "../components/ProfileComponent";
 
 function TestConnection() {
   return (
     <div className="flex flex-col items-center p-5">
-      <ProfileComponent2 />
+      <ProfileComponent />
     </div>
   );
 }

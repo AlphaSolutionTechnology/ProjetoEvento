@@ -8,7 +8,6 @@ function FormQuestion({
   correctAnswer,
   setCorrectAnswer,
   handleSubmit,
-  redirectToChat,
 }) {
   return (
     <form
