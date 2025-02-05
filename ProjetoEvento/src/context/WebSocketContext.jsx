@@ -1,4 +1,4 @@
-// WebSocketContext.jsx
+// path: src/context/WebSocketContext.jsx
 
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
@@ -29,6 +29,7 @@ const initializeWebSocketConnection = (
         stompClient.subscribe("/topic/messages", (message) => {
           try {
             const parsedMessage = JSON.parse(message.body);
+            console.log("Mensagem recebida de /topic/messages:", parsedMessage); // adicionando logs para depuração
             onMessage(parsedMessage);
           } catch (error) {
             console.error("Erro ao processar mensagem global:", error);
@@ -38,9 +39,9 @@ const initializeWebSocketConnection = (
         stompClient.subscribe("/user/queue/notification", (message) => {
           try {
             const parsedMessage = JSON.parse(message.body);
-            const currentUserId = JSON.parse(
-              localStorage.getItem("user_data"),
-            ).unique_code;
+            const currentUserId = JSON.parse(localStorage.getItem("user_data"),).unique_code;
+
+            console.log("Mensagem privada recebida:", parsedMessage); // adicionando logs para depuração
 
             if (parsedMessage.to === currentUserId) {
               console.log("Nova notificação recebida:", parsedMessage);
