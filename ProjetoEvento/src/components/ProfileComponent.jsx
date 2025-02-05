@@ -23,8 +23,9 @@ import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import { useNavigate } from "react-router-dom";
 import useTheme from "../hooks/useTheme";
 import CircularProgress from "@mui/material/CircularProgress";
-import { WebSocketContext } from "../context/WebSocketContext"; // Importa o WebSocketContext
+import { WebSocketContext } from "../context/WebSocketContext"; 
 import QRScanner from "./QRScanner";
+import AlertToast from "./alert/AlertToast";
 
 const ProfileComponent = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -48,6 +49,8 @@ const ProfileComponent = () => {
   const paperColor = darkMode ? "#1e1e1e" : "#ffffff";
   const textColor = darkMode ? "#ffffff" : "#333333";
   const buttonColor = darkMode ? "#bb86fc" : "#3f51b5";
+  const [ alert, setAlert ] = useState({ open: false, message: "", type: "" });
+  
 
   // Função que é chamada quando o QRScanner lê um QR Code
   const handleScan = (data) => {
@@ -57,21 +60,49 @@ const ProfileComponent = () => {
     console.log("QR Code Lido:", data);
   };
 
-  // Função para enviar solicitação de conexão
-  const handleSendConnection = (code) => {
+// Função para enviar solicitação de conexão
+
+  const handleSendConnection = async (code) => {
     setInputCode("");
-    if (!code) return;
+
+    if (!code) {
+      setAlert({ open: true, message: "Por favor, insira um código.", type: "error" });
+      return;
+    }
+
+    if (typeof code !== "string" || code.trim().length !== 6) {
+      setAlert({ open: true, message: "O código deve ter exatamente 6 caracteres.", type: "error" });
+      return;
+    }
 
     if (code === userData.unique_code) {
       setUnautorized(true);
+      setAlert({ open: true, message: "Você não pode se conectar consigo mesmo!", type: "error" });
       return;
     }
+
     setIsLoading(true);
-    // Envia via WebSocket (STOMP) para o backend
-    sendMessage("/app/sendrequest", {
-      to: code,
-    });
+
+    try {
+      const userExists = await checkAuthentication(code);
+
+      if (!userExists) {
+        setAlert({ open: true, message: "Código inválido ou usuário não encontrado.", type: "error" });
+        return;
+      }
+
+      await sendMessage("/app/sendrequest", { to: code });
+
+      setAlert({ open: true, message: "Solicitação de conexão enviada com sucesso!", type: "success" });
+    } catch (error) {
+      setAlert({ open: true, message: "Erro ao enviar solicitação. Tente novamente.", type: "error" });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+
+  // Função para verificar se o usuário existe
 
   const checkAuthentication = async () => {
     try {
@@ -440,77 +471,13 @@ const ProfileComponent = () => {
         {isLoading ? <CircularProgress size="3rem" /> : null}
       </Stack>
 
-      {/* Snackbars */}
-      <Snackbar
-        open={successAlert}
-        autoHideDuration={3000}
-        onClose={() => setSuccessAlert(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setSuccessAlert(false)}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          Solicitação enviada/atualizada com sucesso!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={unautorized}
-        autoHideDuration={3000}
-        onClose={() => setUnautorized(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setUnautorized(false)}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          Você não pode se conectar consigo mesmo!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={notFound}
-        autoHideDuration={3000}
-        onClose={() => setNotFound(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setNotFound(false)}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          Usuário não encontrado!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={waiting}
-        autoHideDuration={3000}
-        onClose={() => setWaiting(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setWaiting(false)}
-          severity="info"
-          sx={{ width: "100%" }}
-        >
-          Aguardando resposta!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={alreadyConnected}
-        autoHideDuration={3000}
-        onClose={() => setAlreadyConnected(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setAlreadyConnected(false)}
-          severity="warning"
-          sx={{ width: "100%" }}
-        >
-          Usuários já estão conectados
-        </Alert>
-      </Snackbar>
+      {/* Alerta de sucesso */}
+      <AlertToast
+        open={alert.open}
+        message={alert.message}
+        type={alert.type}
+        onClose={() => setAlert({ ...alert, open: false })}
+      />
 
       {/* Dialog para nova solicitação de conexão */}
       <Dialog

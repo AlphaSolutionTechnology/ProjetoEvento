@@ -1,66 +1,81 @@
-//path: src/components/profile/ConnectionForm.jsx
-
 import React from "react";
-import { Box, Button, TextField } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
-import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
-import Typography from "@mui/material/Typography";
+import { motion } from "framer-motion";
+import { QrCode } from "lucide-react"; 
+import { Send } from "lucide-react";
 
-const ConnectionForm = ({ inputCode, setInputCode, handleSendConnection, setIsScannerOpen, darkMode, buttonColor }) => {
+const ConnectionForm = ({
+  inputCode,
+  setInputCode,
+  handleSendConnection,
+  setIsScannerOpen,
+  darkMode,
+  buttonColor,
+}) => {
+  const textColor = darkMode ? "text-white" : "text-gray-800";
+  const buttonBgColor = darkMode ? buttonColor : "#1976D2";
+
   return (
-    <Box sx={{ maxWidth: "400px", margin: "0 auto" }}>
-      <Typography
-        variant="body1"
-        sx={{ marginBottom: "16px", textAlign: "center", color: darkMode ? "#ffffff" : "#333333" }}
+    <motion.div
+      className="max-w-md mx-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+
+      {/* Título */}
+      <motion.p
+        className={`text-center mb-4 ${textColor}`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
       >
         Digite o código do usuário ou escaneie um QR Code para se conectar.
-      </Typography>
-      <Button
-        variant="contained"
-        startIcon={<QrCodeScannerIcon />}
+      </motion.p>
+
+      {/* Botão de Escanear QR Code */}
+      <motion.button
+        className={`w-full py-2 px-4 mb-4 rounded-lg flex items-center justify-center bg-gray-200 dark:bg-gray-800`}
         onClick={() => setIsScannerOpen(true)}
-        sx={{
-          marginBottom: "16px",
-          backgroundColor: buttonColor,
-          "&:hover": { backgroundColor: darkMode ? "#9a67ea" : "#303f9f" },
-        }}
-        fullWidth
+        whileHover={{ scale: 1.05 }}
+        transition={{ duration: 0.3 }}
       >
+        <QrCode className="mr-2" /> {/* Usando o ícone de QR Code do Lucide */}
         Escanear QR Code
-      </Button>
-      <TextField
-        label="Inserir Código"
-        variant="outlined"
-        fullWidth
+      </motion.button>
+
+      {/* Input de Código */}
+      <motion.input
+        type="text"
+        className={`w-full py-2 px-4 mb-4 rounded-lg 
+          ${darkMode ? "bg-gray-800 text-white placeholder-gray-400" : "bg-white text-gray-800 placeholder-gray-600 border border-gray-300 focus:outline-none focus:border-blue-500"}`}
         value={inputCode}
         onChange={(e) => setInputCode(e.target.value)}
-        sx={{
-          marginBottom: "16px",
-          backgroundColor: darkMode ? "#8C8C8C" : "#FFFFFF",
-          borderRadius: "4px",
-        }}
+        placeholder="Inserir Código"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
       />
-      <Button
-        variant="contained"
-        endIcon={<SendIcon />}
-        fullWidth
+
+      {/* Botão de Conectar */}
+      <motion.button
+        className={`flex flex-row space-x-2 justify-center w-full py-2 px-4 rounded-lg 
+          ${inputCode ? (darkMode ? "bg-purple-600 text-white" : "bg-blue-600 text-white") : buttonBgColor} 
+          ${darkMode ? "hover:bg-purple-700 disabled:bg-gray-600" : "hover:bg-blue-700 disabled:bg-gray-300"} 
+          disabled:opacity-50 focus:outline-none focus:ring-2 ${darkMode ? "focus:ring-purple-500" : "focus:ring-blue-500"}`}
         onClick={() => handleSendConnection(inputCode)}
-        disabled={!inputCode}
-        sx={{
-          backgroundColor: darkMode ? buttonColor : "#1976D2",
-          color: "#ffffff",
-          "&:hover": {
-            backgroundColor: darkMode ? "#9a67ea" : "#1565C0",
-          },
-          "&:disabled": {
-            backgroundColor: darkMode ? "#444444" : "#e0e0e0",
-            color: "#bdbdbd",
-          },
-        }}
+        disabled={!inputCode} // Desabilita o botão se inputCode estiver vazio
+        whileHover={{ scale: 1.05 }}
+        transition={{ duration: 0.3 }}
       >
+        <Send className="mr-2" />
         Conectar
-      </Button>
-    </Box>
+      </motion.button>
+
+
+
+
+
+    </motion.div>
   );
 };
 

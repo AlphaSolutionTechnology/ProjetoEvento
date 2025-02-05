@@ -1,77 +1,59 @@
-// path: src/components/profile/QRScannerModal.jsx
-
 import React from "react";
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { motion } from "framer-motion";
 import QRScanner from "../QRScanner";
 
 const QRScannerModal = ({ isScannerOpen, setIsScannerOpen, handleScan, darkMode }) => {
+  // Se isScannerOpen for false, não renderiza o modal
+  if (!isScannerOpen) return null;
+
   return (
-    <Modal
-      open={isScannerOpen}
-      onClose={() => setIsScannerOpen(false)}
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+    <motion.div
+      className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
     >
-      <Box
-        sx={{
-          backgroundColor: darkMode ? "#1e1e1e" : "#ffffff",
-          color: darkMode ? "#ffffff" : "#333333",
-          padding: "24px",
-          borderRadius: "12px",
-          boxShadow: darkMode
-            ? "0px 4px 10px rgba(0, 0, 0, 0.9)"
-            : "0px 4px 10px rgba(0, 0, 0, 0.2)",
-          maxWidth: "400px",
-          width: "100%",
-          textAlign: "center",
-          position: "relative",
-        }}
+      <motion.div
+        className={`p-6 rounded-lg shadow-xl max-w-sm w-full text-center relative ${
+          darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+        }`}
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.4 }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            marginBottom: "16px",
-            color: darkMode ? "#ffffff" : "#333333",
-          }}
+        <motion.h6
+          className="mb-4 text-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
         >
           Escaneando QR Code
-        </Typography>
+        </motion.h6>
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "300px",
-            overflow: "hidden",
-            border: `1px solid ${darkMode ? "#444444" : "#ccc"}`,
-            borderRadius: "8px",
-            marginBottom: "16px",
-          }}
+        <motion.div
+          className="flex justify-center items-center mb-4 border rounded-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
         >
           <QRScanner onScan={handleScan} />
-        </Box>
+        </motion.div>
 
-        <Button
-          variant="outlined"
+        <motion.button
+          className={`mt-4 px-6 py-2 border rounded-lg ${
+            darkMode
+              ? "text-white border-purple-400 hover:bg-purple-400 hover:text-white"
+              : "text-gray-800 border-blue-500 hover:bg-blue-500 hover:text-white"
+          }`}
           onClick={() => setIsScannerOpen(false)}
-          sx={{
-            marginTop: "16px",
-            color: darkMode ? "#ffffff" : "#333333",
-            borderColor: darkMode ? "#bb86fc" : "#3f51b5",
-            "&:hover": {
-              backgroundColor: darkMode ? "#bb86fc" : "#3f51b5",
-              color: "#ffffff",
-            },
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
         >
           Fechar
-        </Button>
-      </Box>
-    </Modal>
+        </motion.button>
+      </motion.div>
+    </motion.div>
   );
 };
 
