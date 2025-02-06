@@ -1,6 +1,5 @@
 // path: src/components/FeedbackMessage.jsx
-
-import { motion } from "framer-motion";
+import React from "react";
 
 function FeedbackMessage({ message }) {
   if (!message) return null;
@@ -8,16 +7,13 @@ function FeedbackMessage({ message }) {
   const isSuccess = message.includes("sucesso");
 
   return (
-    <motion.p
-      className={`mt-4 text-lg font-semibold transition-all ${
+    <p
+      className={`mt-4 text-lg font-bold ${
         isSuccess ? "text-green-500" : "text-red-500"
       }`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
     >
       {message}
-    </motion.p>
+    </p>
   );
 }
 
