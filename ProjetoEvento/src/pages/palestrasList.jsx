@@ -228,7 +228,7 @@ function PalestrasList() {
           <motion.div
             key={palestra.id}
             whileHover={{ scale: 1.02 }} // Animação de hover nos cards
-            className="flex justify-between items-center dark:bg-gray-900 dark:text-white p-6 rounded-xl shadow-md relative cursor-pointer text-sm sm:text-base md:text-lg lg:text-base xl:text-lg max-w-xl w-full mx-auto" 
+            className="flex justify-between items-center al dark:bg-gray-900 dark:text-white p-6 rounded-xl shadow-md relative cursor-pointer text-sm sm:text-base md:text-lg lg:text-base xl:text-lg max-w-xl w-full mx-auto" 
             onClick={() => navigate("/admQuizz", { state: { idPalestra: palestra.id } })} // Ao clicar no card, redireciona para a edição
             initial={{ x: 0 }} 
             animate={{ x: 0 }} 
@@ -271,13 +271,13 @@ function PalestrasList() {
           <p className="text-center mb-6 text-gray-800 dark:text-gray-200">Você está prestes a excluir esta palestra.</p> 
           <div className="flex justify-center gap-4">
             <button
-              className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
+              className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 flex-1"
               onClick={confirmDelete}
             >
               Excluir
             </button>
             <button
-              className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
+              className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 flex-1"
               onClick={closeDeleteModal}
             >
               Cancelar
