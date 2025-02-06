@@ -1,6 +1,8 @@
+// path: src/components/Quiz/createquestoes.jsx
+
 import { useEffect, useState } from "react";
-import FormQuestion from "../FormQuestion";
-import FeedbackMessage from "../FeedbackMessage";
+import FormQuestion from "./FormQuestion";
+import FeedbackMessage from "./FeedbackMessage";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function CreateQuestoes() {
@@ -62,7 +64,6 @@ function CreateQuestoes() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen dark:bg-gray-800 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-6">Criar Nova Questão</h1>
       <FormQuestion
         questionText={questionText}
         setQuestionText={setQuestionText}

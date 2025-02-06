@@ -26,11 +26,27 @@ function Home() {
   }
 
   return (
-    <div
-      className={`min-h-screen w-full flex flex-col justify-center items-center px-4 py-8 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-      }`}
-    >
+    <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
+
+      {/* Círculos decorativos com blur */}
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1] }}
+        transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
+        className="absolute top-10 left-10 w-40 h-40 bg-blue-400 dark:bg-blue-500 opacity-30 blur-3xl rounded-full"
+      ></motion.div>
+
+      <motion.div 
+        animate={{ scale: [1, 1.3, 1] }}
+        transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
+        className="absolute bottom-10 right-20 w-52 h-52 bg-green-300 dark:bg-green-800 opacity-30 blur-3xl rounded-full"
+      ></motion.div>
+
+      <motion.div 
+        animate={{ scale: [1, 1.1, 1] }}
+        transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
+        className="absolute bottom-20 left-32 w-36 h-36 bg-pink-300 dark:bg-pink-500 opacity-30 blur-3xl rounded-full"
+      ></motion.div>
+
       {/* Título */}
       <motion.h1
         className="text-4xl sm:text-5xl lg:text-6xl mb-4 text-center font-extrabold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"
@@ -44,14 +60,17 @@ function Home() {
         O que você gostaria de fazer hoje?
       </p>
 
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
         {/* Card de Palestras */}
-        <div
-          className={`p-6 rounded-2xl shadow-xl transition-transform transform hover:scale-105 ${
+        <motion.div
+          className={`p-6 rounded-2xl shadow-xl ${
             darkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200"
+              ? "bg-gray-800 bg-opacity-70 backdrop-blur-lg border-gray-700"
+              : "bg-white bg-opacity-70 backdrop-blur-lg border-gray-200"
           } border flex flex-col items-center text-center`}
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
         >
           <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
           <h2 className="text-2xl font-bold mb-2">Gerencie suas Palestras</h2>
@@ -64,15 +83,17 @@ function Home() {
           >
             Acessar Palestras
           </button>
-        </div>
+        </motion.div>
 
         {/* Card de Conexões */}
-        <div
-          className={`p-6 rounded-2xl shadow-xl transition-transform transform hover:scale-105 ${
+        <motion.div
+          className={`p-6 rounded-2xl shadow-xl ${
             darkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200"
+              ? "bg-gray-800 bg-opacity-70 backdrop-blur-lg border-gray-700"
+              : "bg-white bg-opacity-70 backdrop-blur-lg border-gray-200"
           } border flex flex-col items-center text-center`}
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
         >
           <UserIcon className="h-12 w-12 text-purple-500 mb-4" />
           <h2 className="text-2xl font-bold mb-2">Gerencie suas Conexões</h2>
@@ -85,7 +106,7 @@ function Home() {
           >
             Conectar-se a outro usuário
           </button>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

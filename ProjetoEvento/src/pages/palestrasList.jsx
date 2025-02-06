@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import * as React from "react";
-import Checkbox from "@mui/material/Checkbox";
-import { Navigate, useNavigate } from "react-router-dom";
-import { Trash2, Plus, Edit } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Trash2, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 
 function PalestrasList() {
@@ -16,6 +15,8 @@ function PalestrasList() {
       data: "2025-03-25",
     },
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [palestraToDelete, setPalestraToDelete] = useState(null);
 
   const navigate = useNavigate();
 
@@ -71,7 +72,7 @@ function PalestrasList() {
 
       if (response.ok) {
         const list = await response.json();
-        setPalestras(list.map((palestra) => ({ ...palestra, checked: false })));
+        setPalestras(list);
       } else {
         console.error("Erro ao buscar palestras:", response.statusText);
       }
@@ -84,41 +85,7 @@ function PalestrasList() {
     handlePalestrasList();
   }, []);
 
-  const handleChange = (id) => {
-    setPalestras((prevPalestras) =>
-      prevPalestras.map((palestra) =>
-        palestra.id === id
-          ? { ...palestra, checked: !palestra.checked }
-          : palestra
-      )
-    );
-  };
-
-  const [showCheckBoxes, setShowCheckBoxes] = useState(false);
-  const [showEditarButton, setShowEditarButton] = useState(true);
-
-  const toggleShowCheckBoxes = () => {
-    if (showCheckBoxes) {
-      handleDelete();
-      setShowCheckBoxes(false);
-      setShowEditarButton(true);
-    } else {
-      setPalestras((prevPalestras) =>
-        prevPalestras.map((palestra) => ({ ...palestra, checked: false }))
-      );
-      setShowCheckBoxes(true);
-      setShowEditarButton(false);
-    }
-  };
-
-  const [checkedCount, setCheckedCount] = useState(0);
-
-  useEffect(() => {
-    setCheckedCount(palestras.filter((palestra) => palestra.checked).length);
-  }, [palestras]);
-
   const handleDeleteSingle = async (id) => {
-    const confirmDelete = window.confirm("Tem certeza que deseja excluir esta palestra?");
     if (confirmDelete) {
       try {
         const response = await fetch("http://localhost:8080/api/palestra/excluir", {
@@ -144,7 +111,21 @@ function PalestrasList() {
     }
   };
   
-  
+  const openDeleteModal = (id) => {
+    setPalestraToDelete(id);
+    setIsModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsModalOpen(false);
+    setPalestraToDelete(null);
+  };
+  const confirmDelete = async () => {
+    if (palestraToDelete) {
+      handleDeleteSingle(palestraToDelete);
+      closeDeleteModal();
+    }
+  };
 
   const handleNavigate = (idPalestra) => {
     navigate("/admQuizz", { state: { idPalestra: idPalestra } });
@@ -157,84 +138,157 @@ function PalestrasList() {
   };
 
   return (
-    <div className=" min-h-screen p-6 text-white dark:bg-[#0d1117]">
-      <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
-        Gerencie suas Palestras
-      </h1>
+  <div className="min-h-screen p-6 text-white dark:bg-[#0d1117]">
+    {/* Círculos decorativos com animação de escala */}
+    <motion.div 
+      animate={{ scale: [1, 1.2, 1] }}
+      transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
+      className="absolute top-10 left-10 w-40 h-40 bg-blue-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" // pointer-events: none para os círculos
+    ></motion.div>
 
-      <div className="flex justify-start gap-4 mb-6">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-xl shadow-lg"
-          onClick={() => setIsVisible(!isVisible)}
-        >
-          <Plus size={20} /> Criar Palestra
-        </motion.button>
-      </div>
+    {/* Outro círculo */}
+    <motion.div 
+      animate={{ scale: [1, 1.3, 1] }}
+      transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
+      className="absolute bottom-10 right-20 w-52 h-52 bg-green-800 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" // pointer-events: none para os círculos
+    ></motion.div>
 
-      {isVisible && (
-        <motion.form
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          onSubmit={handleSubmit}
-          className="bg-gray-800 p-4 rounded-xl shadow-md mb-6"
+    {/* Um terceiro círculo */}
+    <motion.div 
+      animate={{ scale: [1, 1.1, 1] }}
+      transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
+      className="absolute bottom-20 left-32 w-36 h-36 bg-pink-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" // pointer-events: none para os círculos
+    ></motion.div>
+
+    {/* Título principal */}
+    <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6 sm:text-3xl md:text-4xl lg:text-4xl">
+      Gerencie suas Palestras
+    </h1>
+
+    {/* Botão para criar palestra */}
+    <div className="flex justify-start gap-4 mb-6">
+      <motion.button
+        whileHover={{ scale: 1.05 }} // Animação de escala mais suave
+        whileTap={{ scale: 1 }} // Remove animação durante o clique
+        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-3 rounded-xl shadow-lg text-sm sm:text-base md:text-lg lg:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        onClick={() => setIsVisible(!isVisible)} // Alterna a visibilidade do formulário
+        style={{ pointerEvents: 'auto' }} // Garante que o botão receba eventos de clique corretamente
+      >
+        <Plus size={20} /> Criar Palestra
+      </motion.button>
+    </div>
+
+    {/* Formulário de criação de palestra (visível quando isVisible é true) */}
+    {isVisible && (
+      <motion.form
+        initial={{ opacity: 0, y: -20 }} 
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        onSubmit={handleSubmit}
+        className="bg-white bg-opacity-80 backdrop-blur-lg p-6 rounded-xl shadow-md mb-6 border border-gray-300 dark:bg-gray-800 dark:bg-opacity-70 dark:border-gray-700 w-full sm:w-80 md:w-96 lg:w-96 xl:w-1/2 mx-auto"
+      >
+        {/* Campo de input para tema da palestra */}
+        <input
+          type="text"
+          name="tema"
+          placeholder="Ex.: Tema da palestra..."
+          className="w-full p-4 rounded-lg text-black dark:text-white bg-transparent border-2 border-gray-400 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-md dark:shadow-lg backdrop-blur-md"
+          value={formData.tema}
+          onChange={formHandleChange}
+          required
+        />
+
+        {/* Botões de confirmar e cancelar */}
+        <div className="flex justify-end gap-4 mt-6">
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 px-6 py-3 rounded-lg text-white transition duration-300"
+          >
+            Confirmar
+          </button>
+          <button
+            type="button"
+            className="bg-purple-600 hover:bg-purple-800 focus:ring-2 focus:ring-orange-400 px-6 py-3 rounded-lg text-white transition duration-300"
+            onClick={() => setIsVisible(false)} // Fecha o formulário ao cancelar
+          >
+            Cancelar
+          </button>
+        </div>
+      </motion.form>
+    )}
+
+    {/* Lista de palestras */}
+    <div className="space-y-4">
+      {/* Exibe mensagem caso não haja palestras */}
+      {palestras.length === 0 ? (
+        <p className="text-center text-gray-400">Nenhuma palestra encontrada.</p>
+      ) : (
+        // Mapeia todas as palestras e exibe cada uma
+        palestras.map((palestra) => (
+          <motion.div
+            key={palestra.id}
+            whileHover={{ scale: 1.02 }} // Animação de hover nos cards
+            className="flex justify-between items-center al dark:bg-gray-900 dark:text-white p-6 rounded-xl shadow-md relative cursor-pointer text-sm sm:text-base md:text-lg lg:text-base xl:text-lg max-w-xl w-full mx-auto" 
+            onClick={() => navigate("/admQuizz", { state: { idPalestra: palestra.id } })} // Ao clicar no card, redireciona para a edição
+            initial={{ x: 0 }} 
+            animate={{ x: 0 }} 
+            exit={{ x: -100 }} 
+            transition={{ duration: 0.5 }} 
+          >
+            <p className="text-black dark:text-white flex-1">{palestra.tema}</p> {/* Texto do card */}
+            
+            {/* Botão de excluir palestra */}
+            <motion.button
+              whileTap={{ scale: 0.95 }} 
+              className="text-red-600 hover:text-red-800 transition absolute top-1/2 right-4 transform -translate-y-1/2"
+              onClick={(e) => {
+                e.stopPropagation(); // Impede que o clique no botão de lixo acione o redirecionamento
+                openDeleteModal(palestra.id); // Abre o modal de confirmação
+              }}
+            >
+              <Trash2 size={24} />
+            </motion.button>
+          </motion.div>
+        ))
+      )}
+    </div>
+
+    {/* Modal de confirmação de exclusão */}
+    {isModalOpen && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50"
+      >
+        <motion.div
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0.8 }}
+          className="bg-white p-6 rounded-xl shadow-lg w-80 dark:bg-gray-800 dark:text-white sm:w-72 md:w-80 lg:w-96 xl:w-1/2 mx-auto"
         >
-          <input
-            type="text"
-            name="tema"
-            placeholder="Ex.: Tema da palestra..."
-            className="w-full p-3 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={formData.tema}
-            onChange={formHandleChange}
-            required
-          />
-          <div className="flex justify-end gap-2 mt-4">
-            <button type="submit" className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-white">
-              Confirmar
+          <h3 className="text-lg font-semibold text-center mb-4 text-black dark:text-white">Tem certeza?</h3> 
+          <p className="text-center mb-6 text-gray-800 dark:text-gray-200">Você está prestes a excluir esta palestra.</p> 
+          <div className="flex justify-center gap-4">
+            <button
+              className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 flex-1"
+              onClick={confirmDelete}
+            >
+              Excluir
             </button>
             <button
-              type="button"
-              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-white"
-              onClick={() => setIsVisible(false)}
+              className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 flex-1"
+              onClick={closeDeleteModal}
             >
               Cancelar
             </button>
           </div>
-        </motion.form>
-      )}
-
-      <div className="space-y-4">
-        {palestras.length === 0 ? (
-          <p className="text-center text-gray-400">Nenhuma palestra encontrada.</p>
-        ) : (
-          palestras.map((palestra) => (
-            <motion.div
-              key={palestra.id} // id precisa ser único
-              whileHover={{ scale: 1.02 }}
-              className="flex justify-between items-center dark:bg-gray-900 dark:text-white p-4 rounded-xl shadow-md relative"
-            >
-              <p className="text-black dark:text-white">{palestra.tema}</p>
-              <div className="flex flex-col items-center gap-2">
-                <button
-                  className="text-white bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded-lg flex items-center gap-1"
-                  onClick={() => navigate("/admQuizz", { state: { idPalestra: palestra.id } })}
-                >
-                  <Edit size={16} /> Editar
-                </button>
-                <motion.button
-                  whileTap={{ x: -100, opacity: 0 }}
-                  className="text-red-600 hover:text-red-800"
-                  onClick={() => handleDeleteSingle(palestra.id)}
-                >
-                  <Trash2 size={20} />
-                </motion.button>
-              </div>
-            </motion.div>
-          ))
-        )}
-      </div>
-    </div>
-  );
+        </motion.div>
+      </motion.div>
+    )}
+  </div>
+);
+    
 }
 
 export default PalestrasList;
