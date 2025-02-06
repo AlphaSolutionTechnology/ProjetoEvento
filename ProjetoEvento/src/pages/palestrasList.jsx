@@ -43,7 +43,15 @@ function PalestrasList() {
       if (response.ok) {
         const data = await response.json();
         setPalestras((prevPalestras) => [...prevPalestras, data]);
-        setFormData({ tema: "" });
+        setFormData({
+          tema: "",
+          evento: {
+            id: "1",
+            nome: "Primeiro Evento",
+            data: "2025-03-25",
+          },
+        });
+        
       } else {
         alert("Erro ao criar palestra");
       }
@@ -109,45 +117,34 @@ function PalestrasList() {
     setCheckedCount(palestras.filter((palestra) => palestra.checked).length);
   }, [palestras]);
 
-  const handleDelete = async () => {
-    const palestrasToDelete = palestras.filter((palestra) => palestra.checked);
-
-    if (palestrasToDelete.length === 0) {
-      alert("Nenhuma palestra selecionada para excluir.");
-      return;
-    }
-
-    const confirmDelete = window.confirm(
-      "Tem certeza que deseja excluir as palestras selecionadas?"
-    );
-
+  const handleDeleteSingle = async (id) => {
+    const confirmDelete = window.confirm("Tem certeza que deseja excluir esta palestra?");
     if (confirmDelete) {
-      const idsToDelete = palestrasToDelete.map((palestra) => palestra.id);
-
       try {
-        const response = await fetch(
-          "http://localhost:8080/api/palestra/excluir",
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ ids: idsToDelete }),
-          }
-        );
-
+        const response = await fetch("http://localhost:8080/api/palestra/excluir", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ids: [id] }), // Enviando o ID em um array
+        });
+  
         if (response.ok) {
           setPalestras((prevPalestras) =>
-            prevPalestras.filter((palestra) => !palestra.checked)
+            prevPalestras.filter((palestra) => palestra.id !== id)
           );
         } else {
-          alert("Erro ao excluir palestras");
+          const errorData = await response.json();
+          console.error("Erro ao excluir a palestra:", errorData);
+          alert("Erro ao excluir a palestra.");
         }
       } catch (error) {
         console.error("Erro na requisição:", error.message);
       }
     }
   };
+  
+  
 
   const handleNavigate = (idPalestra) => {
     navigate("/admQuizz", { state: { idPalestra: idPalestra } });
@@ -160,25 +157,19 @@ function PalestrasList() {
   };
 
   return (
-    <div className="bg-white text-gray-800 p-4 dark:bg-gray-900 dark:text-gray-50 h-screen">
-      <h1 className="text-gray-800 dark:text-gray-100 text-center text-3xl font-bold mb-4 ">
-        PALESTRAS
+    <div className=" min-h-screen p-6 text-white dark:bg-[#0d1117]">
+      <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
+        Gerencie suas Palestras
       </h1>
-      <div className="flex justify-between mb-4">
-        <button
-          className="bg-blue-600 text-white rounded-lg p-2 font-bold flex items-center gap-2"
-          id="criarButton"
-          onClick={toggleVisibility}
+
+      <div className="flex justify-start gap-4 mb-6">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-xl shadow-lg"
+          onClick={() => setIsVisible(!isVisible)}
         >
-          <Plus size={20} /> Criar
-        </button>
-        <button
-          className="bg-red-600 text-white rounded-lg p-2 font-bold flex items-center gap-2"
-          id="excluirButton"
-          onClick={toggleShowCheckBoxes}
-        >
-          <Trash2 size={20} /> Excluir {showCheckBoxes && `(${checkedCount})`}
-        </button>
+          <Plus size={20} /> Criar Palestra
+        </motion.button>
       </div>
 
       {isVisible && (
@@ -186,28 +177,25 @@ function PalestrasList() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           onSubmit={handleSubmit}
-          className="flex flex-col gap-2 mb-4"
+          className="bg-gray-800 p-4 rounded-xl shadow-md mb-6"
         >
           <input
             type="text"
             name="tema"
-            placeholder="Ex.: tema saúde..."
-            className="rounded border border-black p-2 text-black"
+            placeholder="Ex.: Tema da palestra..."
+            className="w-full p-3 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={formData.tema}
             onChange={formHandleChange}
             required
           />
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="bg-green-600 text-white p-2 rounded-lg"
-            >
+          <div className="flex justify-end gap-2 mt-4">
+            <button type="submit" className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-white">
               Confirmar
             </button>
             <button
               type="button"
-              className="bg-red-700 text-white p-2 rounded-lg"
-              onClick={toggleVisibility}
+              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-white"
+              onClick={() => setIsVisible(false)}
             >
               Cancelar
             </button>
@@ -215,35 +203,32 @@ function PalestrasList() {
         </motion.form>
       )}
 
-      <div className="overflow-y-auto space-y-2 overflow-x-hidden ">
+      <div className="space-y-4">
         {palestras.length === 0 ? (
-          <p className="text-center text-gray-500">
-            Nenhuma palestra encontrada
-          </p>
+          <p className="text-center text-gray-400">Nenhuma palestra encontrada.</p>
         ) : (
           palestras.map((palestra) => (
             <motion.div
-              key={palestra.id}
+              key={palestra.id} // id precisa ser único
               whileHover={{ scale: 1.02 }}
-              className="flex items-center justify-between p-4 bg-gray-100 cursor-pointer rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
-              onClick={() => handleNavigate(palestra.id)}
+              className="flex justify-between items-center dark:bg-gray-900 dark:text-white p-4 rounded-xl shadow-md relative"
             >
-              <p className="text-black font-medium dark:text-gray-100">{palestra.tema}</p>
-              {showEditarButton && (
+              <p className="text-black dark:text-white">{palestra.tema}</p>
+              <div className="flex flex-col items-center gap-2">
                 <button
-                  className="bg-gray-600 text-white p-2 rounded-lg flex items-center gap-1 dark:bg-white dark:text-black"
-                  onClick={() => handleNavigate(palestra.id)}
+                  className="text-white bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded-lg flex items-center gap-1"
+                  onClick={() => navigate("/admQuizz", { state: { idPalestra: palestra.id } })}
                 >
                   <Edit size={16} /> Editar
                 </button>
-              )}
-              {showCheckBoxes && (
-                <Checkbox
-                  checked={palestra.checked}
-                  onChange={() => handleChange(palestra.id)}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              )}
+                <motion.button
+                  whileTap={{ x: -100, opacity: 0 }}
+                  className="text-red-600 hover:text-red-800"
+                  onClick={() => handleDeleteSingle(palestra.id)}
+                >
+                  <Trash2 size={20} />
+                </motion.button>
+              </div>
             </motion.div>
           ))
         )}
