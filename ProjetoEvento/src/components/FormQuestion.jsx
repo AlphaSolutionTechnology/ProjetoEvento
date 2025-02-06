@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 function FormQuestion({
   questionText,
@@ -10,24 +11,36 @@ function FormQuestion({
   handleSubmit,
 }) {
   return (
-    <form
+    <motion.form
       onSubmit={handleSubmit}
-      className="bg-white dark:bg-gray-700 p-6 rounded shadow-md w-full max-w-md"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.4 }}
+      className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full max-w-lg mb-8 border border-gray-300 dark:border-gray-700"
     >
-      <div className="mb-4">
+      {/* Título do formulário */}
+      <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
+        Criar Questão
+      </h1>
+
+      {/* Enunciado da Pergunta */}
+      <div className="mb-6">
         <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
           Enunciado da Pergunta
         </label>
         <textarea
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           rows="3"
           placeholder="Digite o enunciado da questão..."
         />
       </div>
+
+      {/* Alternativas */}
       {choices.map((choice, index) => (
-        <div key={index} className="mb-4">
+        <div key={index} className="mb-6">
           <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
             Alternativa {index + 1}
           </label>
@@ -35,12 +48,14 @@ function FormQuestion({
             type="text"
             value={choice}
             onChange={(e) => handleChoiceChange(index, e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             placeholder={`Digite a alternativa ${index + 1}...`}
           />
         </div>
       ))}
-      <div className="mb-4">
+
+      {/* Resposta Correta */}
+      <div className="mb-6">
         <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
           Resposta Correta
         </label>
@@ -48,19 +63,23 @@ function FormQuestion({
           type="text"
           value={correctAnswer}
           onChange={(e) => setCorrectAnswer(e.target.value)}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           placeholder="Digite a alternativa correta..."
         />
       </div>
-      <div className="flex flex-col space-y-4">
-        <button
+
+      {/* Botão de envio */}
+      <div className="flex justify-center">
+        <motion.button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
         >
           Enviar Questão
-        </button>
+        </motion.button>
       </div>
-    </form>
+    </motion.form>
   );
 }
 
