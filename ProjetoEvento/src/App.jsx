@@ -1,36 +1,80 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Questoes from './pages/Questoes';
-import AuthPage from './pages/login';
-import ThemeToggle from './components/toggleDarkMode';  
-import { useAuth } from './context/AuthContext';
-import TestConnection from './pages/TestConnection'
-import Home from './pages/home';
-import LoginPage from './pages/LoginPage';
-import { Test } from './pages/Test';
+import React, { useEffect } from "react";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import Questoes from "./pages/Questoes";
+import ThemeToggle from "./components/toggleDarkMode";
+import ConnectPage from "./pages/ConnectPage";
+import Home from "./pages/home";
+import LoginPage from "./pages/LoginPage";
+import PalestrasList from "./pages/palestrasList";
+import AdmQuizz from "./pages/admQuizz";
+import { WebSocketProvider } from "./context/WebSocketContext";
+import NotificationButton from "./components/notification/NotificationButton";
+import AccountMenu from "./components/AccountMenu";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const { user } = useAuth(); // pode ser null ou com daddos
+  const location = useLocation();
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <WebSocketProvider>
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        {location.pathname !== "/login" && (
+          <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
+            <h1 className="text-xl font-bold">LOGO</h1>
+            <div className=" w-48 flex justify-around items-center">
+              <NotificationButton />
+              <ThemeToggle />
+              <AccountMenu />
+            </div>
+          </header>
+        )}
 
-      {/* Header com o botão de alternância de tema */}
-      <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
-        <h1 className="text-xl font-bold">LOGO</h1>
-        <ThemeToggle />
-      </header>
-
-      {/* Rotas da aplicação */}
-      <Routes>
-        <Route path="/re" element={<LoginPage />} />
-        <Route path="/home" element={user ? <Home /> : <AuthPage />} /> 
-        <Route path="/login" element={<AuthPage />} />
-        <Route path="/quizz" element={<Questoes />} />
-        <Route path="/" element={<AuthPage />} />
-        <Route path='/test' element={<TestConnection/>}/>
-        <Route path='/googletest' element={<Test/>}/>
-      </Routes>
-    </div>
+        <Routes>
+          <Route path="/" element={<Navigate to={"/login"} />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quizz"
+            element={
+              <ProtectedRoute>
+                <Questoes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/conectar"
+            element={
+              <ProtectedRoute>
+                <ConnectPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/palestras"
+            element={
+              <ProtectedRoute role={"Administrador"}>
+                <PalestrasList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admQuizz"
+            element={
+              <ProtectedRoute role={"Administrador"}>
+                <AdmQuizz />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </div>
+    </WebSocketProvider>
   );
 }
 

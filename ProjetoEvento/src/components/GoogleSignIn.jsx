@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Height } from "@mui/icons-material";
+import { color } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const GoogleSignIn = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!googleClientId) {
@@ -12,10 +15,8 @@ const GoogleSignIn = () => {
       return;
     }
 
-    // Verifica se o usuário já está autenticado
     checkAuthentication();
 
-    // Carrega o script do Google
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.onload = initializeGoogleSignIn;
@@ -30,17 +31,20 @@ const GoogleSignIn = () => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/validate", {
         method: "POST",
-        credentials: "include", 
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
-        setIsAuthenticated(true); 
+        setIsAuthenticated(true);
         localStorage.setItem("user_data", JSON.stringify(data));
-        navigate("/home"); 
+
+        if (location.pathname === "/login") {
+          navigate("/home");
+        }
       } else {
         console.log("Usuário não autenticado.");
-        setIsAuthenticated(false); 
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error("Erro ao verificar autenticação:", error);
@@ -48,7 +52,7 @@ const GoogleSignIn = () => {
   };
 
   const initializeGoogleSignIn = () => {
-    if (isAuthenticated) return; // Não exibe o botão se já estiver autenticado
+    if (isAuthenticated) return;
 
     window.google.accounts.id.initialize({
       client_id: googleClientId,
@@ -57,34 +61,48 @@ const GoogleSignIn = () => {
 
     window.google.accounts.id.renderButton(
       document.getElementById("googleSignInButton"),
-      { theme: "outline", size: "large" }
+      {
+        theme: "outline",
+        size: "large",
+        width: "240px",
+        Height: "50px",
+        text: "continue_with",
+        locale: "pt-BR",
+      },
     );
+  };
+  const goTo = () => {
+    navigate("/home");
   };
 
   const handleCredentialResponse = (response) => {
-    console.log("Token JWT recebido:", response.credential);
-
-    fetch("http://localhost:8080/auth/google", {
+    fetch("http://localhost:8080/api/auth/google", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // Envia o cookie na requisição
+      credentials: "include",
       body: JSON.stringify({ token: response.credential }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Erro ao autenticar com o Google");
+        }
+        return res.json();
+      })
       .then((data) => {
-        localStorage.setItem("user_data", JSON.stringify(data)); // Armazena os dados do usuário
-        setIsAuthenticated(true); // Atualiza o estado de autenticação
-        navigate("/main"); // Redireciona para a página principal
+        console.log("Dados do usuário recebidos:", data);
+        localStorage.setItem("user_data", JSON.stringify(data));
+        goTo();
       })
       .catch((error) => {
         console.error("Erro ao autenticar com Google:", error);
+        navigate("/login");
       });
   };
 
   if (isAuthenticated) {
-    return <div>Redirecionando...</div>; // Opcional: Indicador de redirecionamento
+    return <div>Redirecionando...</div>;
   }
 
   return (
