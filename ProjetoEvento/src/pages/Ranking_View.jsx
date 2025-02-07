@@ -1,6 +1,6 @@
 import React from "react";
 
-import Ranking from '../components/Ranking_Component';
+import Ranking from '../components/Ranking_Component/Ranking';
 
 
 function ShowRank(){
