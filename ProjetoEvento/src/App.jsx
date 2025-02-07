@@ -59,7 +59,7 @@ function App() {
           <Route
             path="/palestras"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute role={"Administrador"}>
                 <PalestrasList />
               </ProtectedRoute>
             }
@@ -67,7 +67,7 @@ function App() {
           <Route
             path="/admQuizz"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute role={"Administrador"}>
                 <AdmQuizz />
               </ProtectedRoute>
             }

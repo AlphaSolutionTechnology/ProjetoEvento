@@ -11,6 +11,12 @@ function Home() {
   const navigate = useNavigate();
   const [isPageLoading, setIsPageLoading] = useState(true);
 
+  const retrieveName = (fullname) => {
+    
+    var splittedName = fullname.split(" ");
+    console.log(splittedName[0])
+    return splittedName[1] !== null ? splittedName[0]  + " " + splittedName[1] : "";
+  }
   useEffect(() => {
     if (!isLoading) {
       setIsPageLoading(false);
@@ -54,7 +60,7 @@ function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        Bem-vindo, {user?.name}!
+        Bem-vindo, {retrieveName(user?.name)}!
       </motion.h1>
       <p className="text-base sm:text-lg text-gray-400 mb-6">
         O que você gostaria de fazer hoje?
