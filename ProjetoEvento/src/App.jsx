@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Questoes from "./pages/Questoes";
 import ThemeToggle from "./components/toggleDarkMode";
@@ -11,12 +11,9 @@ import { WebSocketProvider } from "./context/WebSocketContext";
 import NotificationButton from "./components/notification/NotificationButton";
 import AccountMenu from "./components/AccountMenu";
 import ProtectedRoute from "./components/ProtectedRoute";
-import useAuth from "./hooks/useAuth";
 import Ranking_View from "./pages/Ranking_View"
 function App() {
   const location = useLocation();
-  const user = useAuth();
-  console.log("hi "+user?.name);
   return (
     <WebSocketProvider>
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">

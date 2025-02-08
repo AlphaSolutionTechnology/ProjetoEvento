@@ -1,10 +1,10 @@
-import { Height } from "@mui/icons-material";
-import { color } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth"; // Importa o AuthContext
 
 const GoogleSignIn = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const { setUser } = useAuth(); // Pega a função setUser do contexto de autenticação
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,6 +38,7 @@ const GoogleSignIn = () => {
         const data = await response.json();
         setIsAuthenticated(true);
         localStorage.setItem("user_data", JSON.stringify(data));
+        setUser(data); // 🔥 Atualiza o estado global imediatamente
 
         if (location.pathname === "/login") {
           navigate("/home");
@@ -65,14 +66,11 @@ const GoogleSignIn = () => {
         theme: "outline",
         size: "large",
         width: "240px",
-        Height: "50px",
+        height: "50px",
         text: "continue_with",
         locale: "pt-BR",
       },
     );
-  };
-  const goTo = () => {
-    navigate("/home");
   };
 
   const handleCredentialResponse = (response) => {
@@ -93,7 +91,8 @@ const GoogleSignIn = () => {
       .then((data) => {
         console.log("Dados do usuário recebidos:", data);
         localStorage.setItem("user_data", JSON.stringify(data));
-        goTo();
+        setUser(data); // 🔥 Atualiza o estado global imediatamente
+        navigate("/home");
       })
       .catch((error) => {
         console.error("Erro ao autenticar com Google:", error);
