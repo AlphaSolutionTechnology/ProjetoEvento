@@ -126,16 +126,7 @@ function PalestrasList() {
       closeDeleteModal();
     }
   };
-
-  const handleNavigate = (idPalestra) => {
-    navigate("/admQuizz", { state: { idPalestra: idPalestra } });
-  };
-
-  const toggleVisibility = (e) => {
-    const originEvent = e.target.id;
-    if (isVisible && originEvent === "criarButton") return;
-    setIsVisible(!isVisible);
-  };
+  
 
   return (
   <div className="min-h-screen p-6 text-white dark:bg-[#0d1117]">
