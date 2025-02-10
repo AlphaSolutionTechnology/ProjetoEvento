@@ -140,14 +140,14 @@ const Quiz = () => {
           <p className="text-lg">
             Pontuação Final: <span className="font-bold">{result.score}</span>
           </p>
-
-          {/* Botão para sair do quiz */}
+          
           <button
-            onClick={onExit} // Função chamada para sair do quiz
-            className="exit-button mt-6 py-2 px-4 bg-red-500 text-white rounded-lg transition-all hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+          onClick={() => (window.location.href = "/home")}
+          className="exit-button mt-6 py-2 px-4 bg-red-500 text-white rounded-lg transition-all hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
-            Sair
-          </button>
+          Sair
+        </button>
+
         </div>
       )}
     </div>
