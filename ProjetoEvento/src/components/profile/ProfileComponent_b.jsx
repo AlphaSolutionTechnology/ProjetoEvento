@@ -105,18 +105,6 @@ const ProfileComponent = () => {
     setIsLoading(true);
 
     try {
-      const userExists = await checkAuthentication(code);
-  
-      if (!userExists) {
-        console.error("Usuário não encontrado ou código inválido."); // Log no console
-        setAlert({
-          open: true,
-          message: "Código inválido ou usuário não encontrado.",
-          type: "error",
-        });
-        return;
-      }
-  
       await sendMessage("/app/sendrequest", { to: code });
   
       setAlert({

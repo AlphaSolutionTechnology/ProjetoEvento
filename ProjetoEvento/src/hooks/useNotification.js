@@ -1,7 +1,6 @@
 // src/components/notification/useNotifications.js
 import { useState, useEffect, useContext } from "react";
 import { WebSocketContext } from "../context/WebSocketContext";
-
 function useNotifications() {
   const { messages } = useContext(WebSocketContext);
   const [notifications, setNotifications] = useState([]);
@@ -10,7 +9,7 @@ function useNotifications() {
   useEffect(() => {
     if (messages.length > 0) {
       const newMessage = messages[messages.length - 1];
-      const currentUser = JSON.parse(localStorage.getItem("user_data")).unique_code;
+      const currentUser = JSON.parse(localStorage.getItem("user_data"))?.unique_code;
 
       if (newMessage.name && newMessage.to === currentUser) {
         setNotifications((prev) => {
@@ -34,7 +33,7 @@ function useNotifications() {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data && data.server) {
+        if (data?.server) {
           setNotifications((prev) => {
             const uniqueNotifications = data.server.filter(
               (notification) => !prev.some((n) => n.userId === notification.userId)
@@ -46,7 +45,7 @@ function useNotifications() {
       .catch((error) => console.error("Erro ao buscar notificações:", error));
   }, []);
 
-  return { notifications, animateBadge };
+  return { notifications, setNotifications, animateBadge }; // ✅ Adicionado setNotifications
 }
 
 export default useNotifications;

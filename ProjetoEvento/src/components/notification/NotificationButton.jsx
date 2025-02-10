@@ -1,4 +1,3 @@
-// src/components/notification/NotificationButton.jsx
 import React, { useState } from "react";
 import { Bell } from "lucide-react";
 import { motion } from "framer-motion";
@@ -7,7 +6,7 @@ import NotificationItem from "./NotificationItem";
 import useNotifications from "../../hooks/useNotification";
 
 export default function NotificationButton() {
-  const { notifications, animateBadge } = useNotifications();
+  const { notifications, setNotifications, animateBadge } = useNotifications();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -20,18 +19,58 @@ export default function NotificationButton() {
     }
   };
 
-  const handleConfirm = (userId) => {
-    console.log("Notificação confirmada para quem veio de:", userId);
-    setNotifications((prev) =>
-      prev.filter((notification) => notification.userId !== userId)
-    );
+  // Função para aceitar um pedido de conexão
+  const handleAccept =  async (userId) => {
+    const userUniqueCode = await JSON.parse(localStorage.getItem("user_data")).unique_code;
+    try {
+      const response = await fetch("http://localhost:8080/api/connection/answerconnectionrequest", {
+        method: "PATCH",
+        credentials: "include", // Para enviar o cookie de autenticação
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: userUniqueCode, 
+          from: userId, 
+          status: "ACCEPTED",
+        }),
+      });
+      console.log(response.status)
+      if (response.ok) {
+        setNotifications((prev) => prev.filter((notification) => notification.userId !== userId));
+      } else {
+        console.error("Erro ao aceitar conexão:",  response);
+      }
+    } catch (error) {
+      console.error("Erro na solicitação:", error);
+    }
   };
 
-  const handleDeny = (userId) => {
-    console.log("Notificação negada para quem veio de:", userId);
-    setNotifications((prev) =>
-      prev.filter((notification) => notification.userId !== userId)
-    );
+  // Função para recusar um pedido de conexão
+  const handleDeny = async (userId) => {
+    const userUniqueCode = await JSON.parse(localStorage.getItem("user_data")).unique_code;
+    try {
+      const response = await fetch("http://localhost:8080/api/connection/answerconnectionrequest", {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: userUniqueCode, 
+          from: userId, // Substitua pelo ID real do usuário atual
+          status: "DECLINED",
+        }),
+      });
+      if (response.ok) {
+        console.log(`Pedido de conexão recusado para: ${userId}`);
+        setNotifications((prev) => prev.filter((notification) => notification.userId !== userId));
+      } else {
+        console.error("Erro ao recusar conexão:", await response.text());
+      }
+    } catch (error) {
+      console.error("Erro na solicitação:", error);
+    }
   };
 
   return (
@@ -63,8 +102,8 @@ export default function NotificationButton() {
               <NotificationItem
                 key={notification.userId || index}
                 notification={notification}
-                onConfirm={handleConfirm}
-                onDeny={handleDeny}
+                onConfirm={() => handleAccept(notification.userId)}
+                onDeny={() => handleDeny(notification.userId)}
               />
             ))
           ) : (

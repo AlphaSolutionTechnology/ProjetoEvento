@@ -7,9 +7,33 @@ import { UserIcon, ChartBar } from "lucide-react";
 
 function Home() {
   const { darkMode } = useTheme();
-  const { user, isLoading, checkAuthentication } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [isPageLoading, setIsPageLoading] = useState(true);
+
+  const retrieveName = (fullname) => {
+    if (!fullname) return ""; // Verifica se o nome existe antes de processar
+    const splittedName = fullname.split(" ");
+    return splittedName.length > 1 ? `${splittedName[0]} ${splittedName[1]}` : splittedName[0];
+  };
+
+  async function becomeAdmin() {
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/admin', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        
+        throw new Error('Não foi possível se tornar admin');
+      }else{
+          alert("relogue agora")
+      }
+      
+    } catch (error) {
+      console.error('Erro durante a chamada do becomeAdmin:', error);
+    }
+  }
 
   useEffect(() => {
     if (!isLoading) {
@@ -26,9 +50,13 @@ function Home() {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
 
+    
+    <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
       {/* Círculos decorativos com blur */}
+      <div>
+        <button onClick={becomeAdmin} src="https://www.universocraft.com/attachments/muveeqtecky41-jpg.4714/" alt="quieroadmin" srcset="">Admin</button>
+      </div>
       <motion.div 
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
@@ -54,38 +82,39 @@ function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        Bem-vindo, {user?.name}!
+        Bem-vindo, {retrieveName(user?.name)}!
       </motion.h1>
       <p className="text-base sm:text-lg text-gray-400 mb-6">
         O que você gostaria de fazer hoje?
       </p>
 
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-        {/* Card de Palestras */}
-        <motion.div
-          className={`p-6 rounded-2xl shadow-xl ${
-            darkMode
-              ? "bg-gray-800 bg-opacity-70 backdrop-blur-lg border-gray-700"
-              : "bg-white bg-opacity-70 backdrop-blur-lg border-gray-200"
-          } border flex flex-col items-center text-center`}
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.3 }}
-        >
-          <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Gerencie suas Palestras</h2>
-          <p className="text-gray-400 mb-4">
-            Acesse, edite e organize suas palestras de forma prática.
-          </p>
-          <button
-            onClick={() => navigate("/palestras")}
-            className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
+      <div className={`grid ${user?.role === "Administrador" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"} gap-6 w-full max-w-4xl`}>
+        {/* Se for administrador, mostrar "Gerencie suas Palestras" */}
+        {user?.role === "Administrador" && (
+          <motion.div
+            className={`p-6 rounded-2xl shadow-xl ${
+              darkMode
+                ? "bg-gray-800 bg-opacity-70 backdrop-blur-lg border-gray-700"
+                : "bg-white bg-opacity-70 backdrop-blur-lg border-gray-200"
+            } border flex flex-col items-center text-center`}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
           >
-            Acessar Palestras
-          </button>
-        </motion.div>
+            <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Gerencie suas Palestras</h2>
+            <p className="text-gray-400 mb-4">
+              Acesse, edite e organize suas palestras de forma prática.
+            </p>
+            <button
+              onClick={() => navigate("/palestras")}
+              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
+            >
+              Acessar Palestras
+            </button>
+          </motion.div>
+        )}
 
-        {/* Card de Conexões */}
+        {/* Card de Conexões (Disponível para todos os usuários) */}
         <motion.div
           className={`p-6 rounded-2xl shadow-xl ${
             darkMode

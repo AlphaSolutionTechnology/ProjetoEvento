@@ -8,23 +8,17 @@ function FormQuestion({
   handleChoiceChange,
   correctAnswer,
   setCorrectAnswer,
-  handleSubmit,
+  handleSubmit, // usado somente no modo "único"
+  multiMode,     // nova prop: se true, renderiza sem form e sem botão de submit
 }) {
-  return (
-    <motion.form
-      onSubmit={handleSubmit}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.4 }}
-      className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full max-w-lg mb-8 border border-gray-300 dark:border-gray-700"
-    >
-      {/* Título do formulário */}
+  // Conteúdo dos campos (mantém o mesmo visual)
+  const content = (
+    <>
       <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
         Criar Questão
       </h1>
 
-      {/* Enunciado da Pergunta */}
+      {/* Enunciado */}
       <div className="mb-6">
         <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
           Enunciado da Pergunta
@@ -68,19 +62,50 @@ function FormQuestion({
         />
       </div>
 
-      {/* Botão de envio */}
-      <div className="flex justify-center">
-        <motion.button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          Enviar Questão
-        </motion.button>
-      </div>
-    </motion.form>
+      {/* Botão de envio somente no modo "único" */}
+      {!multiMode && (
+        <div className="flex justify-center">
+          <motion.button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            Enviar Questão
+          </motion.button>
+        </div>
+      )}
+    </>
   );
+
+  // Se estiver em modo multi, não utiliza o elemento form
+  if (multiMode) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.4 }}
+        className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full max-w-lg mb-8 border border-gray-300 dark:border-gray-700"
+      >
+        {content}
+      </motion.div>
+    );
+  } else {
+    // Modo "único": envolve em um form e usa handleSubmit
+    return (
+      <motion.form
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.4 }}
+        className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full max-w-lg mb-8 border border-gray-300 dark:border-gray-700"
+      >
+        {content}
+      </motion.form>
+    );
+  }
 }
 
 export default FormQuestion;

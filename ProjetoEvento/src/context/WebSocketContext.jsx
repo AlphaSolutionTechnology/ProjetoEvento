@@ -24,12 +24,12 @@ const initializeWebSocketConnection = (
       () => {
         console.log("Conectado ao WebSocket!");
         setConnected(true);
-
+        
         // Inscrição em canais
-        stompClient.subscribe("/topic/messages", (message) => {
+        stompClient.subscribe("/topic/ranking", (message) => {
           try {
             const parsedMessage = JSON.parse(message.body);
-            console.log("Mensagem recebida de /topic/messages:", parsedMessage); // adicionando logs para depuração
+            console.log("Mensagem recebida de /topic/ranking:", parsedMessage); 
             onMessage(parsedMessage);
           } catch (error) {
             console.error("Erro ao processar mensagem global:", error);
@@ -41,7 +41,7 @@ const initializeWebSocketConnection = (
             const parsedMessage = JSON.parse(message.body);
             const currentUserId = JSON.parse(localStorage.getItem("user_data"),).unique_code;
 
-            console.log("Mensagem privada recebida:", parsedMessage); // adicionando logs para depuração
+            console.log("Mensagem privada recebida:", parsedMessage); 
 
             if (parsedMessage.to === currentUserId) {
               console.log("Nova notificação recebida:", parsedMessage);

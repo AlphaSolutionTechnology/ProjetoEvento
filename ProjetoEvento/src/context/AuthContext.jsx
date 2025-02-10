@@ -1,17 +1,13 @@
-// src/context/AuthContext.jsx
-
 import React, { createContext, useState, useEffect } from "react";
 
-// Criação do contexto
 const AuthContext = createContext();
 
-// Provedor de autenticação
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    // Carregar dados do localStorage inicialmente
     const storedUser = localStorage.getItem("user_data");
     return storedUser ? JSON.parse(storedUser) : null;
   });
+
   const [isLoading, setIsLoading] = useState(true);
 
   const checkAuthentication = async () => {
@@ -24,10 +20,9 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("user_data", JSON.stringify(data));
-        setUser(data); // Atualiza o estado
+        setUser(data); // 🔥 Atualiza o estado global
       } else {
-        localStorage.removeItem("user_data");
-        setUser(null);
+        logout();
       }
     } catch (error) {
       console.error("Erro:", error);
@@ -36,12 +31,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:8080/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    } finally {
+      localStorage.removeItem("user_data");
+      setUser(null); // 🔥 Atualiza o estado global
+    }
+  };
+
   useEffect(() => {
     checkAuthentication();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, checkAuthentication }}>
+    <AuthContext.Provider value={{ user, setUser, isLoading, logout }}>
       {children}
     </AuthContext.Provider>
   );

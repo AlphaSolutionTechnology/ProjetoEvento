@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
@@ -9,36 +9,24 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Logout from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 export default function AccountMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const { user, logout } = useAuth(); // Agora pegamos `logout` do contexto
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const goTo = () => {
     navigate("/conectar");
-  };
-
-  const logout = () => {
-    fetch("http://localhost:8080/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    })
-      .then((res) => {
-        if (res.ok) {
-          navigate("/login");
-          localStorage.removeItem("user_data");
-        }
-      })
-      .catch((error) => {
-        console.log("something is wrong ", error);
-      });
   };
 
   return (
@@ -54,9 +42,7 @@ export default function AccountMenu() {
             aria-expanded={open ? "true" : undefined}
           >
             <Avatar sx={{ width: 32, height: 32 }}>
-              {localStorage.getItem("user_data") != null
-                ? JSON.parse(localStorage.getItem("user_data")).name[0]
-                : "R"}
+              {user ? user.name[0] : "R"}
             </Avatar>
           </IconButton>
         </Tooltip>
@@ -98,12 +84,17 @@ export default function AccountMenu() {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={() => goTo()}>
+        <MenuItem onClick={goTo}>
           <Avatar /> Perfil
         </MenuItem>
         <MenuItem onClick={handleClose}>Minhas Conexões</MenuItem>
         <Divider />
-        <MenuItem onClick={() => logout()}>
+        <MenuItem
+          onClick={() => {
+            logout();
+            navigate("/login");
+          }}
+        >
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
