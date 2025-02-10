@@ -55,8 +55,7 @@ function Home() {
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
       {/* Círculos decorativos com blur */}
       <div>
-        CLique no amigo pra virar admin
-        <img onClick={becomeAdmin} src="https://www.universocraft.com/attachments/muveeqtecky41-jpg.4714/" alt="quieroadmin" srcset="" />
+        <button onClick={becomeAdmin} src="https://www.universocraft.com/attachments/muveeqtecky41-jpg.4714/" alt="quieroadmin" srcset="">Admin</button>
       </div>
       <motion.div 
         animate={{ scale: [1, 1.2, 1] }}
