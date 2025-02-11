@@ -54,7 +54,7 @@ export default function AccountMenu() {
         <motion.div
           id="account-menu"
           ref={menuRef}
-          className="absolute right-0 mt-2 w-48 rounded-lg bg-white bg-opacity-10 backdrop-blur-md shadow-lg dark:bg-gray-800 dark:bg-opacity-60 dark:text-gray-200"
+          className="absolute right-0 mt-2 w-48 rounded-lg bg-white bg-opacity-10 backdrop-blur-md shadow-lg dark:bg-gray-800 dark:bg-opacity-60 dark:text-gray-200 z-50"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
