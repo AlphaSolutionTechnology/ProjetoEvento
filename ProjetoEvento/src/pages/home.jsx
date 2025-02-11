@@ -50,8 +50,6 @@ function Home() {
   }
 
   return (
-
-    
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
       {/* Círculos decorativos com blur */}
       <div>
