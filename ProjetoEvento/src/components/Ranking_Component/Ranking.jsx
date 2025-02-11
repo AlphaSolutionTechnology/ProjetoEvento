@@ -1,34 +1,52 @@
 // path: src/components/Ranking_Component/Ranking.jsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { Loader, AlertCircle, Medal, Trophy, Users, HelpCircle } from "lucide-react";
+import { WebSocketContext } from "../../context/WebSocketContext";
 
 const Ranking = () => {
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { messages } = useContext(WebSocketContext);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/ranking/getupdatedranking");
-
-        if (!response.ok) {
-          throw new Error(`Erro na requisição: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setRankingData(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]; 
+  
+      if (lastMessage?.type === "ranking_update") {
+        console.log("Sinal de atualização do ranking recebido. Buscando novos dados...");
+        fetchUpdatedRanking();
+      } else {
+        console.log("Mensagem WebSocket ignorada. Não é uma atualização do ranking.");
       }
-    };
-
-    fetchData();
+    }
+  }, [messages]);
+  
+  
+  const fetchUpdatedRanking = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/ranking/getupdatedranking");
+  
+      if (!response.ok) {
+        throw new Error(`Erro na requisição: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      setRankingData(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Chama a API na montagem inicial da página
+  useEffect(() => {
+    fetchUpdatedRanking();
   }, []);
+  
 
   // para medalhas de ouro, prata e bronze
   const getMedal = (position) => {

@@ -87,7 +87,7 @@ export default function NotificationButton() {
 
       {anchorEl && (
         <motion.div
-          className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg"
+          className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg z-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
