@@ -236,7 +236,14 @@ const ProfileComponent = () => {
       <QRScannerModal
         isScannerOpen={isScannerOpen}
         setIsScannerOpen={setIsScannerOpen}
+        handleScan={(data) => {
+          setIsScannerOpen(false);
+          setInputCode(data); // Atualiza o campo de input
+          handleSendConnection(data); // Envia o código automaticamente
+        }}
+        darkMode={darkMode}
       />
+
       <ConnectionRequestDialog
         fromUserName={dialogData.fromUserName}
         fromUserCode={dialogData.fromUserCode}
