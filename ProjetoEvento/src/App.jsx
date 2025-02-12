@@ -12,6 +12,7 @@ import NotificationButton from "./components/notification/NotificationButton";
 import AccountMenu from "./components/AccountMenu";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Ranking_View from "./pages/Ranking_View"
+
 function App() {
   const location = useLocation();
   return (
@@ -79,6 +80,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+         
+
+
         </Routes>
       </div>
     </WebSocketProvider>

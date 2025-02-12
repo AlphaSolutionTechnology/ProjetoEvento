@@ -88,9 +88,9 @@ function Home() {
         O que você gostaria de fazer hoje?
       </p>
 
-      <div className={`grid ${user?.role === "Administrador" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"} gap-6 w-full max-w-4xl`}>
+      <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl`}>
         {/* Se for administrador, mostrar "Gerencie suas Palestras" */}
-        {user?.role === "Administrador" && (
+        {user?.role === "Administrador" ? (
           <motion.div
             className={`p-6 rounded-2xl shadow-xl ${
               darkMode
@@ -112,7 +112,29 @@ function Home() {
               Acessar Palestras
             </button>
           </motion.div>
-        )}
+        ):
+        <motion.div
+            className={`p-6 rounded-2xl shadow-xl ${
+              darkMode
+                ? "bg-gray-800 bg-opacity-70 backdrop-blur-lg border-gray-700"
+                : "bg-white bg-opacity-70 backdrop-blur-lg border-gray-200"
+            } border flex flex-col items-center text-center`}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Meus Cadastros</h2>
+            <p className="text-gray-400 mb-4">
+              Cadastre-se, acesse suas palestras e quizzes de forma prática.
+            </p>
+            <button
+              onClick={() => navigate("/meusCadastros")}
+              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
+            >
+              Acessar Palestras
+            </button>
+          </motion.div> 
+        }
 
         {/* Card de Conexões (Disponível para todos os usuários) */}
         <motion.div
