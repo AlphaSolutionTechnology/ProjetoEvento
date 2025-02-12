@@ -12,15 +12,22 @@ import NotificationButton from "./components/notification/NotificationButton";
 import AccountMenu from "./components/AccountMenu";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Ranking_View from "./pages/Ranking_View"
+import { useNavigate } from "react-router-dom";
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavigateHome = () => {
+    navigate("/home");
+  }
   return (
     <WebSocketProvider>
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {location.pathname !== "/login" && (
           <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
-            <h1 className="text-xl font-bold">LOGO</h1>
+            <h1 onClick={handleNavigateHome}
+            className="text-xl font-bold cursor-pointer">Home</h1>
             <div className=" w-48 flex justify-around items-center">
               <NotificationButton />
               <ThemeToggle />

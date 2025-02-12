@@ -1,106 +1,104 @@
-import React from "react";
-import Box from "@mui/material/Box";
-import Avatar from "@mui/material/Avatar";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import Logout from "@mui/icons-material/Logout";
+import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import { LogOut, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 export default function AccountMenu() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // Agora pegamos `logout` do contexto
+  const { user, logout } = useAuth();
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = () => {
+    setIsOpen(!isOpen);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setIsOpen(false);
   };
 
   const goTo = () => {
     navigate("/conectar");
+    handleClose();
   };
 
+  const handleClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      handleClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <React.Fragment>
-      <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
-        <Tooltip title="Account settings">
-          <IconButton
-            onClick={handleClick}
-            size="small"
-            sx={{ ml: 2 }}
-            aria-controls={open ? "account-menu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? "true" : undefined}
-          >
-            <Avatar sx={{ width: 32, height: 32 }}>
-              {user ? user.name[0] : "R"}
-            </Avatar>
-          </IconButton>
-        </Tooltip>
-      </Box>
-      <Menu
-        anchorEl={anchorEl}
-        id="account-menu"
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
-        slotProps={{
-          paper: {
-            elevation: 0,
-            sx: {
-              overflow: "visible",
-              filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-              mt: 1.5,
-              "& .MuiAvatar-root": {
-                width: 32,
-                height: 32,
-                ml: -0.5,
-                mr: 1,
-              },
-              "&::before": {
-                content: '""',
-                display: "block",
-                position: "absolute",
-                top: 0,
-                right: 14,
-                width: 10,
-                height: 10,
-                bgcolor: "background.paper",
-                transform: "translateY(-50%) rotate(45deg)",
-                zIndex: 0,
-              },
-            },
-          },
-        }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+    <div className="relative">
+      <motion.button
+        onClick={handleClick}
+        aria-expanded={isOpen ? "true" : "false"}
+        aria-controls="account-menu"
+        aria-label="Abrir menu de conta"
+        className="p-2 rounded-full bg-transparent border-2 border-gray-400 dark:border-gray-600 focus:outline-none"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <MenuItem onClick={goTo}>
-          <Avatar /> Perfil
-        </MenuItem>
-        <MenuItem onClick={handleClose}>Minhas Conexões</MenuItem>
-        <Divider />
-        <MenuItem
-          onClick={() => {
-            logout();
-            navigate("/login");
-          }}
+        <User size={32} />
+      </motion.button>
+
+      {isOpen && (
+        <motion.div
+          id="account-menu"
+          ref={menuRef}
+          className="absolute right-0 mt-2 w-48 rounded-lg bg-white bg-opacity-10 backdrop-blur-md shadow-lg dark:bg-gray-800 dark:bg-opacity-60 dark:text-gray-200 z-50"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
         >
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Sair
-        </MenuItem>
-      </Menu>
-    </React.Fragment>
+          <ul className="py-2 text-sm">
+            <li>
+              <button
+                onClick={goTo}
+                className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
+                aria-label="Ir para o perfil"
+              >
+                <User size={20} className="mr-2" />
+                Perfil
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={handleClose}
+                className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
+                aria-label="Minhas conexões"
+              >
+                Minhas Conexões
+              </button>
+            </li>
+            <li>
+              <hr className="my-1 border-gray-500 dark:border-gray-600" />
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                }}
+                className="flex items-center px-4 py-2 w-full text-left text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
+                aria-label="Sair"
+              >
+                <LogOut size={20} className="mr-2" />
+                Sair
+              </button>
+            </li>
+          </ul>
+        </motion.div>
+      )}
+    </div>
   );
 }

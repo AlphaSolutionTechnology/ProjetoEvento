@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
 
 const Quiz = () => {
@@ -7,12 +6,15 @@ const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answerIdx, setAnswerIdx] = useState(null);
   const [answer, setAnswer] = useState(null);
+  const [quizStartTime, setQuizStartTime] = useState(null);
+  const [quizEndTime, setQuizEndTime] = useState(null);
   const [result, setResult] = useState({
     correctAnswers: 0,
     wrongAnswers: 0,
   });
   const [showResult, setShowResult] = useState(false);
 
+  // Buscar perguntas do backend
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -22,6 +24,7 @@ const Quiz = () => {
         }
         const data = await response.json();
         setQuestions(data);
+        setQuizStartTime(Date.now()); 
       } catch (error) {
         console.error(error.message);
       }
@@ -37,18 +40,60 @@ const Quiz = () => {
 
   const onClickNext = () => {
     setAnswerIdx(null);
-    setResult((prev) =>
-      answer
-        ? { ...prev, correctAnswers: prev.correctAnswers + 1 }
-        : { ...prev, wrongAnswers: prev.wrongAnswers + 1 }
-    );
+    setResult((prev) => ({
+      correctAnswers: answer ? prev.correctAnswers + 1 : prev.correctAnswers,
+      wrongAnswers: !answer ? prev.wrongAnswers + 1 : prev.wrongAnswers,
+    }));
 
     if (currentQuestion !== questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
+      setQuizEndTime(Date.now());
       setShowResult(true);
     }
   };
+
+  const getTotalTimeTaken = () => {
+    if (!quizStartTime || !quizEndTime) return "Calculando...";
+    const totalSeconds = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
+    return `${totalSeconds} segundos`;
+  };
+
+  const enviarResultado = async () => {
+    const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
+
+    const resultData = {
+        correctAnswerCount: result.correctAnswers,
+        wrongAnswerCount: result.wrongAnswers,
+        score: result.correctAnswers * 5, 
+        totalTime: parseFloat(totalTime),
+    };
+
+    try {
+        const response = await fetch("http://localhost:8080/api/questoes/registerresult", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(resultData),
+        });
+
+        if (response.ok) {
+            console.log("Resultado enviado com sucesso!");
+        } else {
+            console.error("Erro ao enviar resultado:", response.statusText);
+        }
+    } catch (error) {
+        console.error("Erro ao conectar com o servidor:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (showResult) {
+        enviarResultado();
+    }
+  }, [showResult]);
 
   if (questions.length === 0) {
     return <p>Carregando...</p>;
@@ -105,7 +150,10 @@ const Quiz = () => {
           <p className="text-lg">
             Total de Erros: <span className="font-bold">{result.wrongAnswers}</span>
           </p>
-          
+
+          <h4 className="text-lg font-semibold mt-4">Tempo total do Quiz:</h4>
+          <p className="text-md font-bold">{getTotalTimeTaken()}</p>
+
           <button
             onClick={() => (window.location.href = "/home")}
             className="exit-button mt-6 py-2 px-4 bg-red-500 text-white rounded-lg transition-all hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
