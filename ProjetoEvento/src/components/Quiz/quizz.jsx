@@ -14,6 +14,7 @@ const Quiz = () => {
   });
   const [showResult, setShowResult] = useState(false);
 
+  // Buscar perguntas do backend
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -47,7 +48,7 @@ const Quiz = () => {
     if (currentQuestion !== questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
-      setQuizEndTime(Date.now()); // Registra o tempo de término do quiz
+      setQuizEndTime(Date.now());
       setShowResult(true);
     }
   };
@@ -57,6 +58,42 @@ const Quiz = () => {
     const totalSeconds = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
     return `${totalSeconds} segundos`;
   };
+
+  const enviarResultado = async () => {
+    const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
+
+    const resultData = {
+        correctAnswerCount: result.correctAnswers,
+        wrongAnswerCount: result.wrongAnswers,
+        score: result.correctAnswers * 5, 
+        totalTime: parseFloat(totalTime),
+    };
+
+    try {
+        const response = await fetch("http://localhost:8080/api/questoes/registerresult", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(resultData),
+        });
+
+        if (response.ok) {
+            console.log("Resultado enviado com sucesso!");
+        } else {
+            console.error("Erro ao enviar resultado:", response.statusText);
+        }
+    } catch (error) {
+        console.error("Erro ao conectar com o servidor:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (showResult) {
+        enviarResultado();
+    }
+  }, [showResult]);
 
   if (questions.length === 0) {
     return <p>Carregando...</p>;

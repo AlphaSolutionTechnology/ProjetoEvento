@@ -17,23 +17,7 @@ function Home() {
     return splittedName.length > 1 ? `${splittedName[0]} ${splittedName[1]}` : splittedName[0];
   };
 
-  async function becomeAdmin() {
-    try {
-      const response = await fetch('http://localhost:8080/api/auth/admin', {
-        method: 'POST',
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        
-        throw new Error('Não foi possível se tornar admin');
-      }else{
-          alert("relogue agora")
-      }
-      
-    } catch (error) {
-      console.error('Erro durante a chamada do becomeAdmin:', error);
-    }
-  }
+
 
   useEffect(() => {
     if (!isLoading) {
@@ -52,9 +36,7 @@ function Home() {
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
       {/* Círculos decorativos com blur */}
-      <div>
-        <button onClick={becomeAdmin} src="https://www.universocraft.com/attachments/muveeqtecky41-jpg.4714/" alt="quieroadmin" srcset="">Admin</button>
-      </div>
+     
       <motion.div 
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
