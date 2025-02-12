@@ -35,6 +35,7 @@ function PalestrasList() {
     try {
       const response = await fetch("http://localhost:8080/api/palestra/criar", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -65,6 +66,7 @@ function PalestrasList() {
     try {
       const response = await fetch("http://localhost:8080/api/palestra/lista", {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
