@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
 
-const BasicModal = ({ open, title, text, onClose }) => {
+const BasicModal = ({ open, title, text, onClose, children }) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -23,6 +23,7 @@ const BasicModal = ({ open, title, text, onClose }) => {
         <Typography variant="body1" sx={{ mb: 2 }}>
           {text}
         </Typography>
+        {children} 
         <Button variant="contained" color="primary" onClick={onClose} fullWidth>
           Fechar
         </Button>

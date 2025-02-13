@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
 import CreateQuestoes from "../components/createQuestion/createquestoes";
 import { useLocation } from "react-router-dom";
+import QrCode from "react-qr-code";
+
 
 function AdmQuizz() {
   const [questoes, setQuestoes] = useState([]);
   const [palestraId, setPalestraId] = useState(null);
   const [showQuestoes, setShowQuestoes] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [codigoPalestra, setCodigoPalestra] = useState("");
 
   const location = useLocation();
 
   useEffect(() => {
+
     const id = location.state?.idPalestra;
     setPalestraId(id || "");
+
+    const codigo = location.state?.codigoPalestra;
+    setCodigoPalestra(codigo || "");
+
   }, [location.search]);
+
 
   const searchQuestoes = async () => {
     try {
@@ -151,6 +160,13 @@ function AdmQuizz() {
           <CreateQuestoes />
         </div>
       )}
+
+
+      <h1 className="mt-40 mb-28">QR CODE DA PALESTRA</h1>
+      <h3 className="mb-11">Código: {codigoPalestra}</h3>
+      {palestraId &&(<QrCode value={codigoPalestra} size={255} className="mb-10" />)} {/*Espera o valor de palestraId antes de renderizar o qrcode*/}
+
+
     </div>
   );
 }

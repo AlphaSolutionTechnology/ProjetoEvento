@@ -6,34 +6,31 @@ const QRScanner = ({ onScan }) => {
   const onScanRef = useRef(onScan);
 
   useEffect(() => {
-    onScanRef.current = onScan;
-  }, [onScan]);
-
-  useEffect(() => {
     if (videoRef.current) {
-      const qrScanner = new QrScanner(
-        videoRef.current,
-        (result) => {
-          if (result?.data) {
-            onScanRef.current(result.data); 
+      setTimeout(() => {
+        const qrScanner = new QrScanner(
+          videoRef.current,
+          (result) => {
+            if (result?.data) {
+              onScanRef.current(result.data);
+            }
+          },
+          {
+            highlightScanRegion: true,
+            highlightCodeOutline: true,
           }
-        },
-        {
-          highlightScanRegion: true,
-          highlightCodeOutline: true,
-        }
-      );
-      
-
-      qrScanner.start().catch((err) => {
-        console.error("Error accessing camera:", err);
-      });
-
-      return () => {
-        qrScanner.destroy();
-      };
+        );
+  
+        qrScanner.start().catch((err) => {
+          console.error("Erro ao acessar a câmera:", err);
+        });
+  
+        return () => {
+          qrScanner.destroy();
+        };
+      }, 300); // Pequeno atraso para garantir que o <video> existe
     }
-  }, []); // Empty dependency array ensures setup runs once
+  }, []);// Empty dependency array ensures setup runs once
 
   return (
     <div

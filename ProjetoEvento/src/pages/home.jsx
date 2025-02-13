@@ -4,12 +4,17 @@ import useAuth from '../hooks/useAuth';
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { UserIcon, ChartBar } from "lucide-react";
+import BasicModal from "../components/BasicModal";
+import QRScanner from "../components/QRScanner";
 
 function Home() {
   const { darkMode } = useTheme();
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [codigoPalestra, setCodigoPalestra] = useState("");
 
   const retrieveName = (fullname) => {
     if (!fullname) return ""; // Verifica se o nome existe antes de processar
@@ -32,6 +37,19 @@ function Home() {
       </div>
     );
   }
+
+  const validarPalestra = async (codigo) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8080/api/palestra/${codigo}`);
+      if (!response.ok) throw new Error("Palestra não encontrada");
+  
+      // Se a palestra existir, redireciona
+      navigate(`/palestra/${codigo}`);
+    } catch (error) {
+      alert("Palestra inválida ou não encontrada. Verifique o código.");
+    }
+  };
+
 
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
@@ -93,6 +111,7 @@ function Home() {
             </button>
           </motion.div>
         ):
+        (
         <motion.div
             className={`p-6 rounded-2xl shadow-xl ${
               darkMode
@@ -103,18 +122,56 @@ function Home() {
             transition={{ duration: 0.3 }}
           >
             <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Meus Cadastros</h2>
+            <h2 className="text-2xl font-bold mb-2">Entrar em palestra</h2>
             <p className="text-gray-400 mb-4">
               Cadastre-se, acesse suas palestras e quizzes de forma prática.
             </p>
             <button
-              onClick={() => navigate("/meusCadastros")}
+              onClick={() => setIsModalOpen(true)}
               className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
             >
-              Acessar Palestras
+              Acessar Palestra
             </button>
           </motion.div> 
-        }
+        )}
+
+        {/* Modal para entrada de código */}
+      <BasicModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className="p-6">
+          <h2 className="text-xl font-bold mb-4">Digite o código da palestra</h2>
+          <input
+            type="text"
+            value={codigoPalestra}
+            onChange={(e) => setCodigoPalestra(e.target.value)}
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Código da palestra"
+          />
+          <div className="flex justify-between mt-4">
+            <button
+              onClick={ () => validarPalestra(codigoPalestra)}
+              disabled={!codigoPalestra}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
+            >
+              Confirmar
+            </button>
+            <button
+              onClick={() => setIsScanning(true)}
+              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+            >
+              Escanear QR Code
+            </button>
+          </div>
+        </div>
+      </BasicModal>
+
+         {/* Modal de Scanner de QR Code */}
+      <BasicModal open={isScanning} onClose={() => setIsScanning(false)}>
+        <QRScanner onScan={ async (data) => {
+          setIsScanning(false);
+          await validarPalestra(data);
+        }} />
+      </BasicModal>
+
 
         {/* Card de Conexões (Disponível para todos os usuários) */}
         <motion.div
@@ -139,6 +196,10 @@ function Home() {
           </button>
         </motion.div>
       </div>
+
+        
+      
+
     </div>
   );
 }
