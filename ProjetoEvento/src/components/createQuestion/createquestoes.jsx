@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import FormQuestion from "./FormQuestion";
 import FeedbackMessage from "./FeedbackMessage";
 import { useLocation, useNavigate } from "react-router-dom";
+import ChatComponent from "../AI/Groq.jsX";
 
 function CreateQuestoes() {
   // Estado para armazenar um array de questões
@@ -150,6 +151,7 @@ function CreateQuestoes() {
         </div>
       </form>
       <FeedbackMessage message={message} />
+      <ChatComponent />
     </div>
   );
 }
