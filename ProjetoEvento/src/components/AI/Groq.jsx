@@ -13,7 +13,7 @@ export default function ChatComponent() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: "tudo bem?" }),
+        body: JSON.stringify({ message: "Você é uma IA para criar questões. você vai receber um tema e vai retornar um JSON assim {id:/question:/choices:/correctAnswer:} o tema é comidas tipicas do NE, OBS: só me retorne UMA por chamada"  }),
       });
   
       if (!res.ok) {
