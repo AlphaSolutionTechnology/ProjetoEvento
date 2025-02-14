@@ -10,10 +10,11 @@ import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import NotificationButton from "./components/notification/NotificationButton";
 import AccountMenu from "./components/AccountMenu";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
 import Ranking_View from "./pages/Ranking_View"
 import { useNavigate } from "react-router-dom";
 import QuizzesPage from "./pages/QuizzesPage";
+import ProtectedRouteInscricao from "./components/ProtectedRouteInscricao";
 
 function App() {
   const location = useLocation();
@@ -43,49 +44,53 @@ function App() {
           <Route
             path="/home"
             element={
-              <ProtectedRoute>
+              <ProtectedRouteLogin>
                 <Home />
-              </ProtectedRoute>
+              </ProtectedRouteLogin>
             }
           />
           <Route
-            path="/quizz"
+            path="/quizz/:idPalestra"
             element={
-              <ProtectedRoute>
+              <ProtectedRouteLogin>
+                <ProtectedRouteInscricao>
                 <Questoes />
-              </ProtectedRoute>
+                </ProtectedRouteInscricao>
+              </ProtectedRouteLogin>
             }
           />
           <Route
             path="/conectar"
             element={
-              <ProtectedRoute>
+              <ProtectedRouteLogin>
                 <ConnectPage />
-              </ProtectedRoute>
+              </ProtectedRouteLogin>
             }
           />
           <Route
             path="/palestras"
             element={
-              <ProtectedRoute role={"Administrador"}>
+              <ProtectedRouteLogin role={"Administrador"}>
                 <PalestrasList />
-              </ProtectedRoute>
+              </ProtectedRouteLogin>
             }
           />
           <Route
             path="/admQuizz"
             element={
-              <ProtectedRoute role={"Administrador"}>
+              <ProtectedRouteLogin role={"Administrador"}>
                 <AdmQuizz />
-              </ProtectedRoute>
+              </ProtectedRouteLogin>
             }
           />
           <Route
             path='/palestra/:idPalestra'
             element={
-              <ProtectedRoute role={"Participante"}>
+              <ProtectedRouteLogin role={"Participante"}>
+                <ProtectedRouteInscricao>
                 <QuizzesPage/> 
-              </ProtectedRoute>  
+                </ProtectedRouteInscricao>
+              </ProtectedRouteLogin>  
             }
           
           
@@ -94,9 +99,11 @@ function App() {
           <Route
             path="/ranking/:idPalestra"
             element={
-              <ProtectedRoute>
+              <ProtectedRouteLogin>
+                <ProtectedRouteInscricao>
                 <Ranking_View />
-              </ProtectedRoute>
+                </ProtectedRouteInscricao>
+              </ProtectedRouteLogin>
             }
           />
          

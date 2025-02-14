@@ -55,6 +55,8 @@ function Home() {
 
       if (!idPalestra) throw new Error("ID da Palestra não encontrado!");
 
+      // Salva a palestra no localStorage
+      localStorage.setItem("palestraAtual", idPalestra);
       
       // Se a palestra existir, redireciona
       navigate(`/palestra/${idPalestra}`);
@@ -140,7 +142,12 @@ function Home() {
               Cadastre-se, acesse suas palestras e quizzes de forma prática.
             </p>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {const palestraSalva = localStorage.getItem("palestraAtual");
+                if (palestraSalva) {
+                  navigate(`/palestra/${palestraSalva}`);
+                } else {
+                  setIsModalOpen(true);
+                }}}
               className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
             >
               Acessar Palestra

@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
-const ProtectedRoute = ({ children, role }) => {
+const ProtectedRouteLogin = ({ children, role }) => {
   const { user, isLoading } = useAuth();
 
   // Fallback para dados do localStorage se isLoading for false
@@ -27,4 +27,4 @@ const ProtectedRoute = ({ children, role }) => {
   return children;
 };
 
-export default ProtectedRoute;
+export default ProtectedRouteLogin;

@@ -4,8 +4,13 @@ import React, { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { Loader, AlertCircle, Medal, Trophy, Users, HelpCircle } from "lucide-react";
 import { WebSocketContext } from "../../context/WebSocketContext";
+import { useNavigate } from "react-router-dom";
+
 
 const Ranking = ({idPalestra}) => {
+
+  const navigate = useNavigate();
+  
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,7 +89,7 @@ const Ranking = ({idPalestra}) => {
   };
 
   return (
-    <div className="relative flex justify-center items-center min-h-screen p-6">
+    <div className="relative flex flex-col justify-center items-center min-h-screen p-6">
       {/* Círculos de fundo */}
       <div className="absolute w-72 h-72 bg-blue-400/30 rounded-full blur-3xl top-10 left-10"></div>
       <div className="absolute w-72 h-72 bg-purple-400/30 rounded-full blur-3xl bottom-10 right-10"></div>
@@ -147,6 +152,14 @@ const Ranking = ({idPalestra}) => {
           </motion.div>
         )}
       </div>
+
+      <button
+                    onClick={() => navigate(`/palestra/${idPalestra}`)}
+                    className="mt-8 bg-white rounded text-black p-2 hover:bg-gray-700 hover:text-white"
+                >
+                    Voltar à Palestra
+                </button>
+
     </div>
   );
 };

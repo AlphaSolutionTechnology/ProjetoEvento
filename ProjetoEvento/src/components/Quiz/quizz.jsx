@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
+import { useParams } from "react-router-dom";
 
 const Quiz = () => {
+  const { idPalestra } = useParams();
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answerIdx, setAnswerIdx] = useState(null);
@@ -18,11 +20,13 @@ const Quiz = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/questoes");
+        console.log("id da palestra:", idPalestra)
+        const response = await fetch(`http://localhost:8080/api/questoes/${idPalestra}`);
         if (!response.ok) {
           throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
         }
         const data = await response.json();
+        console.log("perguntas recebidas:", data)
         setQuestions(data);
         setQuizStartTime(Date.now()); 
       } catch (error) {
@@ -99,7 +103,7 @@ const Quiz = () => {
     return <p>Carregando...</p>;
   }
 
-  const { question, choices } = questions[currentQuestion];
+  const { enunciado, choices } = questions[currentQuestion];
 
   return (
     <div className="result text-center mt-6 p-4 bg-gray-300 dark:bg-gray-800 rounded-lg shadow-md max-w-md mx-auto">
@@ -112,7 +116,7 @@ const Quiz = () => {
             <span className="total-question">/{questions.length}</span>
           </div>
 
-          <h2 className="text-2xl md:text-3xl font-bold mt-2">{question}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mt-2">{enunciado}</h2>
 
           <ul className="mt-4 space-y-4">
             {choices.map((choice, index) => (
@@ -155,7 +159,7 @@ const Quiz = () => {
           <p className="text-md font-bold">{getTotalTimeTaken()}</p>
 
           <button
-            onClick={() => (window.location.href = "/home")}
+            onClick={() => (window.location.href = `/ranking/${idPalestra}`)}
             className="exit-button mt-6 py-2 px-4 bg-red-500 text-white rounded-lg transition-all hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Sair
