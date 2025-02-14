@@ -1,12 +1,12 @@
 // src/components/Quiz/createquestoes.jsx
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import FormQuestion from "./FormQuestion";
 import FeedbackMessage from "./FeedbackMessage";
-import { useLocation, useNavigate } from "react-router-dom";
 import ChatComponent from "../AI/Groq.jsx";
 
 function CreateQuestoes() {
-  // Estado para armazenar um array de questões
+  // Estado para armazenar as questões; cada questão deve ter questionText, choices e correctAnswer
   const [questions, setQuestions] = useState([
     { questionText: "", choices: ["", "", "", ""], correctAnswer: "" }
   ]);
@@ -15,14 +15,13 @@ function CreateQuestoes() {
   const location = useLocation();
   const idPalestra = location.state?.idPalestra;
 
-  // Verifica se o idPalestra foi passado via state
   useEffect(() => {
     if (!idPalestra) {
       setMessage("ID da palestra não encontrado. Verifique o fluxo de navegação.");
     }
   }, [idPalestra]);
 
-  // Função para enviar todas as questões individualmente (pois o backend aceita 1 questão por requisição)
+  // Função para enviar as questões para a API
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -41,7 +40,6 @@ function CreateQuestoes() {
         idPalestra: idPalestra,
       };
 
-      // Exibe no console o payload que será enviado para o backend
       console.log(`Payload para a questão ${i + 1}:`, payload);
 
       try {
@@ -63,35 +61,31 @@ function CreateQuestoes() {
 
     if (allSuccessful) {
       setMessage("Todas as questões foram enviadas com sucesso!");
-      // Reinicia o formulário com uma única questão vazia
       setQuestions([{ questionText: "", choices: ["", "", "", ""], correctAnswer: "" }]);
     } else {
       setMessage("Algumas questões não puderam ser enviadas.");
     }
   };
 
-  // Atualiza o enunciado de uma questão específica
+  // Funções para atualizar o estado do formulário
   const handleQuestionTextChange = (index, value) => {
     const updated = [...questions];
     updated[index].questionText = value;
     setQuestions(updated);
   };
 
-  // Atualiza uma alternativa específica
   const handleChoiceChange = (questionIndex, choiceIndex, value) => {
     const updated = [...questions];
     updated[questionIndex].choices[choiceIndex] = value;
     setQuestions(updated);
   };
 
-  // Atualiza a resposta correta de uma questão específica
   const handleCorrectAnswerChange = (index, value) => {
     const updated = [...questions];
     updated[index].correctAnswer = value;
     setQuestions(updated);
   };
 
-  // Adiciona uma nova questão
   const addQuestion = () => {
     setQuestions([
       ...questions,
@@ -99,16 +93,25 @@ function CreateQuestoes() {
     ]);
   };
 
-  // Remove uma questão (se houver mais de uma)
   const removeQuestion = (index) => {
     if (questions.length > 1) {
       setQuestions(questions.filter((_, i) => i !== index));
     }
   };
 
+  const handleReceiveQuestion = (newQuestion) => {
+    const formattedQuestion = {
+      questionText: newQuestion.question || "",
+      choices: newQuestion.choices || ["", "", "", ""],
+      correctAnswer: newQuestion.correctAnswer || ""
+    };
+  
+    console.log("Adicionando questão ao estado:", formattedQuestion);
+    setQuestions((prev) => [...prev, formattedQuestion]);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen dark:bg-gray-800 bg-gray-100 p-4">
-      {/* Centraliza o formulário com largura limitada */}
       <form onSubmit={handleSubmit} className="w-full max-w-lg">
         {questions.map((question, index) => (
           <div key={index} className="mb-6 relative">
@@ -151,7 +154,8 @@ function CreateQuestoes() {
         </div>
       </form>
       <FeedbackMessage message={message} />
-      <ChatComponent />
+      {/* Envia a callback para o ChatComponent */}
+      <ChatComponent onReceiveQuestion={handleReceiveQuestion} />
     </div>
   );
 }
