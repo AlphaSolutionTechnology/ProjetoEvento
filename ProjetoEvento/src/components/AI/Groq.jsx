@@ -52,8 +52,7 @@ export default function ChatComponent({ onReceiveQuestion }) {
   
   return (
     <div className="mt-4">
-      <h2>Resposta da IA:</h2>
-      {loading ? <p>Carregando...</p> : <p>{response}</p>}
+      <h2>Criar com IA</h2>
       <button onClick={fetchChatCompletion}>Obter Resposta</button>
     </div>
   );
