@@ -135,7 +135,7 @@ function Home() {
           </motion.div> 
         )}
 
-        {/* Modal para entrada de código */}
+      {/* Modal para entrada de código */}
       <BasicModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className="p-6">
           <h2 className="text-xl font-bold mb-4">Digite o código da palestra</h2>
