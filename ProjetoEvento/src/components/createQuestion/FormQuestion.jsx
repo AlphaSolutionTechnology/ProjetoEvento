@@ -23,7 +23,7 @@ function FormQuestion({
         <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
           Enunciado da Pergunta
         </label>
-        <textarea
+        <input
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
           className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
