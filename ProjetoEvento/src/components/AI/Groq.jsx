@@ -1,6 +1,7 @@
+// src/components/AI/Groq.jsx
 import { useState } from "react";
 
-export default function ChatComponent() {
+export default function ChatComponent({ onReceiveQuestion }) {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -13,7 +14,9 @@ export default function ChatComponent() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: "Você é uma IA para criar questões. você vai receber um tema e vai retornar um JSON assim {id:/question:/choices:/correctAnswer:} o tema é comidas tipicas do NE, OBS: só me retorne UMA por chamada"  }),
+        body: JSON.stringify({ 
+          message: "Você é uma Ia que criar questões.Retorne somente um objeto JSON válido, sem usar blocos de código, no seguinte formato: { 'id': number, 'question': string, 'choices': string[], 'correctAnswer': string }."
+        }),
       });
   
       if (!res.ok) {
@@ -23,7 +26,22 @@ export default function ChatComponent() {
       }
   
       const data = await res.json();
-      setResponse(data.choices[0]?.message?.content || "Sem resposta");
+      const content = data.choices[0]?.message?.content || "Sem resposta";
+      setResponse(content);
+      
+      // Tenta interpretar o conteúdo como JSON
+      let questionData = null;
+      try {
+        questionData = JSON.parse(content);
+      } catch (error) {
+        console.error("Erro ao parsear JSON:", error);
+      }
+
+      // Se obteve uma questão válida e a callback foi informada, passa os dados para o componente pai
+      if (questionData && onReceiveQuestion) {
+        console.log("Questão recebida do Groq.jsx:", questionData);
+        onReceiveQuestion(questionData);
+      }
     } catch (error) {
       console.error("Erro ao chamar o backend:", error);
       setResponse("Erro ao obter resposta.");
@@ -33,9 +51,8 @@ export default function ChatComponent() {
   }
   
   return (
-    <div>
-      <h2>Resposta da IA:</h2>
-      {loading ? <p>Carregando...</p> : <p>{response}</p>}
+    <div className="mt-4">
+      <h2>Criar com IA</h2>
       <button onClick={fetchChatCompletion}>Obter Resposta</button>
     </div>
   );
