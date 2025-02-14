@@ -1,4 +1,3 @@
-// src/components/Quiz/CreateQuestoes.jsx
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import FeedbackMessage from "./FeedbackMessage";

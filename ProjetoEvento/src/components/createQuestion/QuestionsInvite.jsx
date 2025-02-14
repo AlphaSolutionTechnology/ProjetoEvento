@@ -1,4 +1,3 @@
-// src/components/Quiz/QuestionsForm.jsx
 import QuestionItem from "./QuestionItem";
 
 function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {

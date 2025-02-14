@@ -1,4 +1,3 @@
-// src/components/Quiz/QuestionItem.jsx
 import FormQuestion from "./FormQuestion";
 
 function QuestionItem({ question, index, questions, setQuestions }) {

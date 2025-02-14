@@ -1,5 +1,3 @@
-// path: src/components/FeedbackMessage.jsx
-
 import React from "react";
 
 function FeedbackMessage({ message }) {
