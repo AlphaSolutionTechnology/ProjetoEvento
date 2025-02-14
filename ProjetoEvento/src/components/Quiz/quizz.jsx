@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
 import { useParams } from "react-router-dom";
+import Loading from "../loading/loading";
 
 const Quiz = () => {
   const { idPalestra } = useParams();
@@ -15,6 +16,7 @@ const Quiz = () => {
     wrongAnswers: 0,
   });
   const [showResult, setShowResult] = useState(false);
+  
 
   // Buscar perguntas do backend
   useEffect(() => {
@@ -31,11 +33,11 @@ const Quiz = () => {
         setQuizStartTime(Date.now()); 
       } catch (error) {
         console.error(error.message);
-      }
+      } 
     };
 
     fetchQuestions();
-  }, []);
+  }, [idPalestra]);
 
   const onAnswerClick = (selectedAnswer, index) => {
     setAnswerIdx(index);
@@ -99,8 +101,14 @@ const Quiz = () => {
     }
   }, [showResult]);
 
+
+
   if (questions.length === 0) {
-    return <p>Carregando...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+          Nenhuma questão encontrada.
+      </div>
+      );
   }
 
   const { enunciado, choices } = questions[currentQuestion];

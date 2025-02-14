@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import Loading from "./loading/loading";
 
 const ProtectedRouteLogin = ({ children, role }) => {
   const { user, isLoading } = useAuth();
@@ -9,7 +10,11 @@ const ProtectedRouteLogin = ({ children, role }) => {
   const localUser = JSON.parse(localStorage.getItem("user_data"));
 
   if (isLoading) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+          <Loading/>
+      </div>
+      );
   }
 
   // Usa user ou localUser para evitar null

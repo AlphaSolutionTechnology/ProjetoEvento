@@ -6,8 +6,11 @@ const ProtectedRouteInscricao = ({ children, idPalestra }) => {
   const isInscrito = useInscricao(idPalestra);
 
   if (isInscrito === null) {
-    <Loading/>
-    return <div>Carregando...</div>;
+    return (
+    <div className="min-h-screen flex items-center justify-center">
+        <Loading/>
+    </div>
+    );
   }
 
   if (!isInscrito) {

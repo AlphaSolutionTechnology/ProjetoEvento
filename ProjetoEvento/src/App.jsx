@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
 import Questoes from "./pages/Questoes";
 import ThemeToggle from "./components/toggleDarkMode";
 import ConnectPage from "./pages/ConnectPage";
@@ -15,6 +15,7 @@ import Ranking_View from "./pages/Ranking_View"
 import { useNavigate } from "react-router-dom";
 import QuizzesPage from "./pages/QuizzesPage";
 import ProtectedRouteInscricao from "./components/ProtectedRouteInscricao";
+import RouteWrapper from "./components/RouteWrapper";
 
 function App() {
   const location = useLocation();
@@ -53,9 +54,7 @@ function App() {
             path="/quizz/:idPalestra"
             element={
               <ProtectedRouteLogin>
-                <ProtectedRouteInscricao>
-                <Questoes />
-                </ProtectedRouteInscricao>
+                <RouteWrapper component={Questoes}/>
               </ProtectedRouteLogin>
             }
           />
@@ -87,9 +86,7 @@ function App() {
             path='/palestra/:idPalestra'
             element={
               <ProtectedRouteLogin role={"Participante"}>
-                <ProtectedRouteInscricao>
-                <QuizzesPage/> 
-                </ProtectedRouteInscricao>
+                <RouteWrapper component={QuizzesPage}/>
               </ProtectedRouteLogin>  
             }
           
@@ -100,9 +97,7 @@ function App() {
             path="/ranking/:idPalestra"
             element={
               <ProtectedRouteLogin>
-                <ProtectedRouteInscricao>
-                <Ranking_View />
-                </ProtectedRouteInscricao>
+                <RouteWrapper component={Ranking_View}/>
               </ProtectedRouteLogin>
             }
           />
