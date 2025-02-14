@@ -13,6 +13,7 @@ import AccountMenu from "./components/AccountMenu";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Ranking_View from "./pages/Ranking_View"
 import { useNavigate } from "react-router-dom";
+import QuizzesPage from "./pages/QuizzesPage";
 
 function App() {
   const location = useLocation();
@@ -80,7 +81,18 @@ function App() {
             }
           />
           <Route
-            path="/ranking"
+            path='/palestra/:idPalestra'
+            element={
+              <ProtectedRoute role={"Participante"}>
+                <QuizzesPage/> 
+              </ProtectedRoute>  
+            }
+          
+          
+          />
+
+          <Route
+            path="/ranking/:idPalestra"
             element={
               <ProtectedRoute>
                 <Ranking_View />

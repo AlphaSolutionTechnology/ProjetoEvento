@@ -38,13 +38,26 @@ function Home() {
     );
   }
 
+  
+
   const validarPalestra = async (codigo) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8080/api/palestra/${codigo}`);
+      const response = await fetch(`http://localhost:8080/api/palestra/${codigo}`, {
+        method: "GET",
+        credentials:"include"
+      })
       if (!response.ok) throw new Error("Palestra não encontrada");
-  
+
+      const data = await response.json();
+
+      const idPalestra = data.idPalestra;
+      
+
+      if (!idPalestra) throw new Error("ID da Palestra não encontrado!");
+
+      
       // Se a palestra existir, redireciona
-      navigate(`/palestra/${codigo}`);
+      navigate(`/palestra/${idPalestra}`);
     } catch (error) {
       alert("Palestra inválida ou não encontrada. Verifique o código.");
     }

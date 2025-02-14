@@ -5,32 +5,56 @@ import { motion } from "framer-motion";
 import { Loader, AlertCircle, Medal, Trophy, Users, HelpCircle } from "lucide-react";
 import { WebSocketContext } from "../../context/WebSocketContext";
 
-const Ranking = () => {
+const Ranking = ({idPalestra}) => {
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { messages } = useContext(WebSocketContext);
 
   useEffect(() => {
+    if(!idPalestra){
+      setError("Código da palestra não informado.");
+      setLoading(false);
+      return;
+    }
+    fetchUpdatedRanking(idPalestra);
+  }, [idPalestra])
+
+
+  useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1]; 
+
+      console.log("mensagem websocket recebida:", lastMessage);
   
-      if (lastMessage?.type === "ranking_update") {
+      if (lastMessage?.type === "ranking_update" && lastMessage.idPalestra === idPalestra) {
         console.log("Sinal de atualização do ranking recebido. Buscando novos dados...");
-        fetchUpdatedRanking();
+        fetchUpdatedRanking(idPalestra);
       } else {
         console.log("Mensagem WebSocket ignorada. Não é uma atualização do ranking.");
       }
     }
-  }, [messages]);
+  }, [messages, idPalestra]);
   
   
-  const fetchUpdatedRanking = async () => {
+  const fetchUpdatedRanking = async (uniqueCode) => {
+
+    if(!uniqueCode){
+      setError("Código da palestra não informado.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch("http://localhost:8080/api/ranking/getupdatedranking");
+    setLoading(true);
+    console.log("Código da palestra recebido:", uniqueCode);
+    const response = await fetch(`http://localhost:8080/api/ranking/${uniqueCode}`, {
+      method:'GET',
+      credentials:"include",
+    });
   
       if (!response.ok) {
-        throw new Error(`Erro na requisição: ${response.statusText}`);
+        throw new Error(`Erro na requisição: ${response.status} - ${response.statusText} `);
       }
   
       const data = await response.json();
@@ -41,12 +65,6 @@ const Ranking = () => {
       setLoading(false);
     }
   };
-  
-  // Chama a API na montagem inicial da página
-  useEffect(() => {
-    fetchUpdatedRanking();
-  }, []);
-  
 
   // para medalhas de ouro, prata e bronze
   const getMedal = (position) => {

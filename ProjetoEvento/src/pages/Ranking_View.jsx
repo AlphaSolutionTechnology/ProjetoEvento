@@ -1,12 +1,17 @@
 import React from "react";
+import { useLocation, useParams } from "react-router-dom";
+import Ranking from "../components/Ranking_Component/Ranking";
 
-import Ranking from '../components/Ranking_Component/Ranking';
+function ShowRank() {
+  
+  const { idPalestra } = useParams();
 
 
-function ShowRank(){
-    return(
-        <Ranking/>
-    )
+  return(
+  <>
+  <Ranking idPalestra={idPalestra} />;
+  </>
+  )
 }
 
 export default ShowRank;
