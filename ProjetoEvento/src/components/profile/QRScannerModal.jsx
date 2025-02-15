@@ -2,7 +2,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import QRScanner from "../QRScanner";
 
-const QRScannerModal = ({ isScannerOpen, setIsScannerOpen, handleScan, darkMode }) => {
+const QRScannerModal = ({
+  isScannerOpen,
+  setIsScannerOpen,
+  handleScan,
+  darkMode,
+}) => {
   // Se isScannerOpen for false, não renderiza o modal
   if (!isScannerOpen) return null;
 

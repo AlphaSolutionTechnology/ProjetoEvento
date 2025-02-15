@@ -9,7 +9,9 @@ const ConnectionRequestDialog = ({
 }) => {
   return (
     <motion.div
-      className={`fixed inset-0 flex items-center justify-center ${isDialogOpen ? 'block' : 'hidden'}`}
+      className={`fixed inset-0 flex items-center justify-center ${
+        isDialogOpen ? "block" : "hidden"
+      }`}
       initial={{ opacity: 0 }}
       animate={{ opacity: isDialogOpen ? 1 : 0 }}
       transition={{ duration: 0.3 }}

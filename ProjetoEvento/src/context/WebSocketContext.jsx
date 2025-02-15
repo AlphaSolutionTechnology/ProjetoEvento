@@ -13,7 +13,7 @@ let stompClient = null;
 const initializeWebSocketConnection = (
   onMessage,
   onDisconnect,
-  setConnected,
+  setConnected
 ) => {
   if (!stompClient || !stompClient.connected) {
     const socket = new SockJS("http://localhost:8080/websocket");
@@ -24,12 +24,12 @@ const initializeWebSocketConnection = (
       () => {
         console.log("Conectado ao WebSocket!");
         setConnected(true);
-        
+
         // Inscrição em canais
         stompClient.subscribe("/topic/ranking", (message) => {
           try {
             const parsedMessage = JSON.parse(message.body);
-            console.log("Mensagem recebida de /topic/ranking:", parsedMessage); 
+            console.log("Mensagem recebida de /topic/ranking:", parsedMessage);
             onMessage(parsedMessage);
           } catch (error) {
             console.error("Erro ao processar mensagem global:", error);
@@ -39,9 +39,11 @@ const initializeWebSocketConnection = (
         stompClient.subscribe("/user/queue/notification", (message) => {
           try {
             const parsedMessage = JSON.parse(message.body);
-            const currentUserId = JSON.parse(localStorage.getItem("user_data"),).unique_code;
+            const currentUserId = JSON.parse(
+              localStorage.getItem("user_data")
+            ).unique_code;
 
-            console.log("Mensagem privada recebida:", parsedMessage); 
+            console.log("Mensagem privada recebida:", parsedMessage);
 
             if (parsedMessage.to === currentUserId) {
               console.log("Nova notificação recebida:", parsedMessage);
@@ -49,7 +51,7 @@ const initializeWebSocketConnection = (
             } else {
               console.log(
                 "Mensagem ignorada (não é do usuário atual):",
-                parsedMessage,
+                parsedMessage
               );
             }
           } catch (error) {
@@ -61,7 +63,7 @@ const initializeWebSocketConnection = (
         console.error("Erro ao conectar ao WebSocket:", error);
         setConnected(false);
         onDisconnect();
-      },
+      }
     );
 
     stompClient.onclose = () => {

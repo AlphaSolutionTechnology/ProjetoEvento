@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("user_data", JSON.stringify(data));
-        setUser(data); 
+        setUser(data);
       } else {
         logout();
       }

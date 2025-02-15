@@ -20,17 +20,17 @@ const QRScanner = ({ onScan }) => {
             highlightCodeOutline: true,
           }
         );
-  
+
         qrScanner.start().catch((err) => {
           console.error("Erro ao acessar a câmera:", err);
         });
-  
+
         return () => {
           qrScanner.destroy();
         };
       }, 300); // Pequeno atraso para garantir que o <video> existe
     }
-  }, []);// Empty dependency array ensures setup runs once
+  }, []); // Empty dependency array ensures setup runs once
 
   return (
     <div

@@ -117,7 +117,10 @@ const AuthPage = () => {
         <form onSubmit={isLogin ? handleLogin : handleRegister} className="space-y-4">
           {!isLogin && (
             <motion.div whileFocus={{ scale: 1.02 }} className="relative">
-              <UserPlus className="absolute left-3 top-3 text-gray-400" size={20} />
+              <UserPlus
+                className="absolute left-3 top-3 text-gray-400"
+                size={20}
+              />
               <input
                 type="text"
                 name="username"
@@ -198,7 +201,9 @@ const AuthPage = () => {
             }}
             className="text-blue-400 cursor-pointer hover:underline transition duration-300"
           >
-            {isLogin ? "Não tem uma conta? Registre-se" : "Já tem uma conta? Faça login"}
+            {isLogin
+              ? "Não tem uma conta? Registre-se"
+              : "Já tem uma conta? Faça login"}
           </span>
         </div>
 
@@ -208,7 +213,10 @@ const AuthPage = () => {
           <div className="flex-grow border-t border-gray-600"></div>
         </div>
 
-        <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col items-center">
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="flex flex-col items-center"
+        >
           <GoogleSignIn />
         </motion.div>
       </motion.div>

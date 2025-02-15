@@ -21,7 +21,7 @@ const QRCodeSection = ({ userData, textColor, paperColor }) => {
 
       <motion.div
         className="inline-block p-4 rounded-full"
-        style={{ backgroundColor: "white", borderRadius: "0"}}
+        style={{ backgroundColor: "white", borderRadius: "0" }}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.5 }}

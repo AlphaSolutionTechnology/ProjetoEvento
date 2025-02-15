@@ -1,5 +1,11 @@
 import React from "react";
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+  useParams,
+} from "react-router-dom";
 import Questoes from "./pages/Questoes";
 import ThemeToggle from "./components/toggleDarkMode";
 import ConnectPage from "./pages/ConnectPage";
@@ -10,9 +16,12 @@ import AdmQuizz from "./pages/admQuizz";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import NotificationButton from "./components/notification/NotificationButton";
 import AccountMenu from "./components/AccountMenu";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Ranking_View from "./pages/Ranking_View"
+import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
+import Ranking_View from "./pages/Ranking_View";
 import { useNavigate } from "react-router-dom";
+import QuizzesPage from "./pages/QuizzesPage";
+import ProtectedRouteInscricao from "./components/ProtectedRouteInscricao";
+import RouteWrapper from "./components/RouteWrapper";
 
 function App() {
   const location = useLocation();
@@ -20,14 +29,18 @@ function App() {
 
   const handleNavigateHome = () => {
     navigate("/home");
-  }
+  };
   return (
     <WebSocketProvider>
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {location.pathname !== "/login" && (
           <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
-            <h1 onClick={handleNavigateHome}
-            className="text-xl font-bold cursor-pointer">Home</h1>
+            <h1
+              onClick={handleNavigateHome}
+              className="text-2xl font-bold cursor-pointer"
+            >
+              Home
+            </h1>
             <div className=" w-48 flex justify-around items-center">
               <NotificationButton />
               <ThemeToggle />
@@ -35,61 +48,67 @@ function App() {
             </div>
           </header>
         )}
-        
+
         <Routes>
           <Route path="/" element={<Navigate to={"/login"} />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/home"
             element={
-              <ProtectedRoute>
+              <ProtectedRouteLogin>
                 <Home />
-              </ProtectedRoute>
+              </ProtectedRouteLogin>
             }
           />
           <Route
-            path="/quizz"
+            path="/quizz/:idPalestra"
             element={
-              <ProtectedRoute>
-                <Questoes />
-              </ProtectedRoute>
+              <ProtectedRouteLogin>
+                <RouteWrapper component={Questoes} />
+              </ProtectedRouteLogin>
             }
           />
           <Route
             path="/conectar"
             element={
-              <ProtectedRoute>
+              <ProtectedRouteLogin>
                 <ConnectPage />
-              </ProtectedRoute>
+              </ProtectedRouteLogin>
             }
           />
           <Route
             path="/palestras"
             element={
-              <ProtectedRoute role={"Administrador"}>
+              <ProtectedRouteLogin role={"Administrador"}>
                 <PalestrasList />
-              </ProtectedRoute>
+              </ProtectedRouteLogin>
             }
           />
           <Route
             path="/admQuizz"
             element={
-              <ProtectedRoute role={"Administrador"}>
+              <ProtectedRouteLogin role={"Administrador"}>
                 <AdmQuizz />
-              </ProtectedRoute>
+              </ProtectedRouteLogin>
             }
           />
           <Route
-            path="/ranking"
+            path="/palestra/:idPalestra"
             element={
-              <ProtectedRoute>
-                <Ranking_View />
-              </ProtectedRoute>
+              <ProtectedRouteLogin role={"Participante"}>
+                <RouteWrapper component={QuizzesPage} />
+              </ProtectedRouteLogin>
             }
           />
-         
 
-
+          <Route
+            path="/ranking/:idPalestra"
+            element={
+              <ProtectedRouteLogin>
+                <RouteWrapper component={Ranking_View} />
+              </ProtectedRouteLogin>
+            }
+          />
         </Routes>
       </div>
     </WebSocketProvider>

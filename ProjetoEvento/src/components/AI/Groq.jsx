@@ -7,28 +7,29 @@ export default function ChatComponent({ onReceiveQuestion }) {
 
   async function fetchChatCompletion() {
     setLoading(true);
-  
+
     try {
       const res = await fetch("http://localhost:8080/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          message: "Você é uma Ia que criar questões.Retorne somente um objeto JSON válido, sem usar blocos de código, no seguinte formato: { 'id': number, 'question': string, 'choices': string[], 'correctAnswer': string }."
+        body: JSON.stringify({
+          message:
+            "Você é uma Ia que criar questões.Retorne somente um objeto JSON válido, sem usar blocos de código, no seguinte formato: { 'id': number, 'question': string, 'choices': string[], 'correctAnswer': string }.",
         }),
       });
-  
+
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Erro no backend:", res.status, errorText);
         throw new Error(`Erro ${res.status}: ${errorText}`);
       }
-  
+
       const data = await res.json();
       const content = data.choices[0]?.message?.content || "Sem resposta";
       setResponse(content);
-      
+
       // Tenta interpretar o conteúdo como JSON
       let questionData = null;
       try {
@@ -46,14 +47,13 @@ export default function ChatComponent({ onReceiveQuestion }) {
       console.error("Erro ao chamar o backend:", error);
       setResponse("Erro ao obter resposta.");
     }
-    
+
     setLoading(false);
   }
-  
+
   return (
     <div className="mt-4">
-      <h2>Resposta da IA:</h2>
-      {loading ? <p>Carregando...</p> : <p>{response}</p>}
+      <h2>Criar com IA</h2>
       <button onClick={fetchChatCompletion}>Obter Resposta</button>
     </div>
   );

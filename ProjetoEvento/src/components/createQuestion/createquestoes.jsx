@@ -6,7 +6,7 @@ import QuestionsInvite from "./QuestionsInvite.jsx";
 
 function CreateQuestoes() {
   const [questions, setQuestions] = useState([
-    { questionText: "", choices: ["", "", "", ""], correctAnswer: "" }
+    { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
   ]);
   const [message, setMessage] = useState("");
   const location = useLocation();
@@ -14,7 +14,9 @@ function CreateQuestoes() {
 
   useEffect(() => {
     if (!idPalestra) {
-      setMessage("ID da palestra não encontrado. Verifique o fluxo de navegação.");
+      setMessage(
+        "ID da palestra não encontrado. Verifique o fluxo de navegação."
+      );
     }
   }, [idPalestra]);
 
@@ -23,10 +25,10 @@ function CreateQuestoes() {
     const formattedQuestion = {
       questionText: newQuestion.question || "",
       choices: newQuestion.choices || ["", "", "", ""],
-      correctAnswer: newQuestion.correctAnswer || ""
+      correctAnswer: newQuestion.correctAnswer || "",
     };
     console.log("Adicionando questão ao estado:", formattedQuestion);
-    setQuestions(prev => [...prev, formattedQuestion]);
+    setQuestions((prev) => [...prev, formattedQuestion]);
   };
 
   return (
