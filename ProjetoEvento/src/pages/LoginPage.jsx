@@ -3,12 +3,15 @@ import { motion } from "framer-motion";
 import { LogIn, UserPlus, Mail, Lock } from "lucide-react";
 import GoogleSignIn from "../components/GoogleSignIn";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import AuthContext from "../context/AuthContext";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ username: "", email: "", password: "", confirmPassword: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const {setUser} = useAuth();
   const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,7 +33,12 @@ const AuthPage = () => {
   
       if (response.ok) {
         setMessage({ type: "success", text: "Login realizado com sucesso!" });
-        localStorage.setItem("user_data", JSON.stringify(data));
+        await new Promise((resolve) => {
+          localStorage.setItem("user_data", JSON.stringify(data.data));
+          setUser(data.data);
+          resolve();
+        });
+        
         navigate("/home")
       } else {
         setMessage({ type: "error", text: data.message || "Erro ao fazer login" });

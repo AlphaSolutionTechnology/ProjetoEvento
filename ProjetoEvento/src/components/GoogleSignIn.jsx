@@ -91,7 +91,7 @@ const GoogleSignIn = () => {
       .then((data) => {
         console.log("Dados do usuário recebidos:", data);
         localStorage.setItem("user_data", JSON.stringify(data));
-        setUser(data); // 🔥 Atualiza o estado global imediatamente
+        setUser(data); 
         navigate("/home");
       })
       .catch((error) => {
