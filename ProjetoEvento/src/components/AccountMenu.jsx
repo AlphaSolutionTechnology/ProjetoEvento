@@ -84,17 +84,17 @@ export default function AccountMenu() {
               <hr className="my-1 border-gray-500 dark:border-gray-600" />
             </li>
             <li>
-              <button
-                onClick={() => {
-                  logout();
-                  navigate("/login");
-                }}
-                className="flex items-center px-4 py-2 w-full text-left text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
-                aria-label="Sair"
-              >
-                <LogOut size={20} className="mr-2" />
-                Sair
-              </button>
+            <button
+              onClick={async () => {
+                await logout(); 
+                navigate("/login");
+              }}
+              className="flex items-center px-4 py-2 w-full text-left text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
+              aria-label="Sair"
+            >
+              <LogOut size={20} className="mr-2" />
+              Sair
+            </button>
             </li>
           </ul>
         </motion.div>
