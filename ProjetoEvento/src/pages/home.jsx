@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import useTheme from "../hooks/useTheme";
-import useAuth from '../hooks/useAuth';
+import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { UserIcon, ChartBar } from "lucide-react";
-import BasicModal from "../components/BasicModal";
+import BasicModal from "../components/codigoPalestra/BasicModal";
 import QRScanner from "../components/QRScanner";
 
 function Home() {
@@ -19,10 +19,10 @@ function Home() {
   const retrieveName = (fullname) => {
     if (!fullname) return ""; // Verifica se o nome existe antes de processar
     const splittedName = fullname.split(" ");
-    return splittedName.length > 1 ? `${splittedName[0]} ${splittedName[1]}` : splittedName[0];
+    return splittedName.length > 1
+      ? `${splittedName[0]} ${splittedName[1]}`
+      : splittedName[0];
   };
-
-
 
   useEffect(() => {
     if (!isLoading) {
@@ -38,26 +38,26 @@ function Home() {
     );
   }
 
-  
-
   const validarPalestra = async (codigo) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/palestra/${codigo}`, {
-        method: "GET",
-        credentials:"include"
-      })
+      const response = await fetch(
+        `http://localhost:8080/api/palestra/${codigo}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
       if (!response.ok) throw new Error("Palestra não encontrada");
 
       const data = await response.json();
 
       const idPalestra = data.idPalestra;
-      
 
       if (!idPalestra) throw new Error("ID da Palestra não encontrado!");
 
       // Salva a palestra no localStorage
       localStorage.setItem("palestraAtual", idPalestra);
-      
+
       // Se a palestra existir, redireciona
       navigate(`/palestra/${idPalestra}`);
     } catch (error) {
@@ -65,24 +65,23 @@ function Home() {
     }
   };
 
-
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
       {/* Círculos decorativos com blur */}
-     
-      <motion.div 
+
+      <motion.div
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
         className="absolute top-10 left-10 w-40 h-40 bg-blue-400 dark:bg-blue-500 opacity-30 blur-3xl rounded-full"
       ></motion.div>
 
-      <motion.div 
+      <motion.div
         animate={{ scale: [1, 1.3, 1] }}
         transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
         className="absolute bottom-10 right-20 w-52 h-52 bg-green-300 dark:bg-green-800 opacity-30 blur-3xl rounded-full"
       ></motion.div>
 
-      <motion.div 
+      <motion.div
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
         className="absolute bottom-20 left-32 w-36 h-36 bg-pink-300 dark:bg-pink-500 opacity-30 blur-3xl rounded-full"
@@ -125,9 +124,8 @@ function Home() {
               Acessar Palestras
             </button>
           </motion.div>
-        ):
-        (
-        <motion.div
+        ) : (
+          <motion.div
             className={`p-6 rounded-2xl shadow-xl ${
               darkMode
                 ? "bg-gray-800 bg-opacity-70 backdrop-blur-lg border-gray-700"
@@ -142,56 +140,61 @@ function Home() {
               Cadastre-se, acesse suas palestras e quizzes de forma prática.
             </p>
             <button
-              onClick={() => {const palestraSalva = localStorage.getItem("palestraAtual");
+              onClick={() => {
+                const palestraSalva = localStorage.getItem("palestraAtual");
                 if (palestraSalva) {
                   navigate(`/palestra/${palestraSalva}`);
                 } else {
                   setIsModalOpen(true);
-                }}}
+                }
+              }}
               className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
             >
               Acessar Palestra
             </button>
-          </motion.div> 
+          </motion.div>
         )}
 
-      {/* Modal para entrada de código */}
-      <BasicModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="p-6">
-          <h2 className="text-xl font-bold mb-4">Digite o código da palestra</h2>
-          <input
-            type="text"
-            value={codigoPalestra}
-            onChange={(e) => setCodigoPalestra(e.target.value)}
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Código da palestra"
-          />
-          <div className="flex justify-between mt-4">
-            <button
-              onClick={ () => validarPalestra(codigoPalestra)}
-              disabled={!codigoPalestra}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
-            >
-              Confirmar
-            </button>
-            <button
-              onClick={() => setIsScanning(true)}
-              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-            >
-              Escanear QR Code
-            </button>
+        {/* Modal para entrada de código */}
+        <BasicModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <div className="p-6">
+            <h2 className="text-xl font-bold mb-4">
+              Digite o código da palestra
+            </h2>
+            <input
+              type="text"
+              value={codigoPalestra}
+              onChange={(e) => setCodigoPalestra(e.target.value)}
+              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              placeholder="Código da palestra"
+            />
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => validarPalestra(codigoPalestra)}
+                disabled={!codigoPalestra}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
+              >
+                Confirmar
+              </button>
+              <button
+                onClick={() => setIsScanning(true)}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              >
+                Escanear QR Code
+              </button>
+            </div>
           </div>
-        </div>
-      </BasicModal>
+        </BasicModal>
 
-         {/* Modal de Scanner de QR Code */}
-      <BasicModal open={isScanning} onClose={() => setIsScanning(false)}>
-        <QRScanner onScan={ async (data) => {
-          setIsScanning(false);
-          await validarPalestra(data);
-        }} />
-      </BasicModal>
-
+        {/* Modal de Scanner de QR Code */}
+        <BasicModal open={isScanning} onClose={() => setIsScanning(false)}>
+          <QRScanner
+            onScan={async (data) => {
+              setIsScanning(false);
+              await validarPalestra(data);
+            }}
+          />
+        </BasicModal>
 
         {/* Card de Conexões (Disponível para todos os usuários) */}
         <motion.div
@@ -216,10 +219,6 @@ function Home() {
           </button>
         </motion.div>
       </div>
-
-        
-      
-
     </div>
   );
 }

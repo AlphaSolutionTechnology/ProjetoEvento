@@ -1,7 +1,7 @@
 // path src/pages/ConnectPage.jsx
 
-import React from "react"
-import ProfileComponent2 from "../components/profile/ProfileComponent_b"
+import React from "react";
+import ProfileComponent2 from "../components/profile/ProfileComponent_b";
 
 function ConnectPage() {
   return (

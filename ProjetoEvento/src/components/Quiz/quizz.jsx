@@ -16,24 +16,25 @@ const Quiz = () => {
     wrongAnswers: 0,
   });
   const [showResult, setShowResult] = useState(false);
-  
 
   // Buscar perguntas do backend
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        console.log("id da palestra:", idPalestra)
-        const response = await fetch(`http://localhost:8080/api/questoes/${idPalestra}`);
+        console.log("id da palestra:", idPalestra);
+        const response = await fetch(
+          `http://localhost:8080/api/questoes/${idPalestra}`
+        );
         if (!response.ok) {
           throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log("perguntas recebidas:", data)
+        console.log("perguntas recebidas:", data);
         setQuestions(data);
-        setQuizStartTime(Date.now()); 
+        setQuizStartTime(Date.now());
       } catch (error) {
         console.error(error.message);
-      } 
+      }
     };
 
     fetchQuestions();
@@ -69,46 +70,47 @@ const Quiz = () => {
     const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
 
     const resultData = {
-        correctAnswerCount: result.correctAnswers,
-        wrongAnswerCount: result.wrongAnswers,
-        score: result.correctAnswers * 5, 
-        totalTime: parseFloat(totalTime),
+      correctAnswerCount: result.correctAnswers,
+      wrongAnswerCount: result.wrongAnswers,
+      score: result.correctAnswers * 5,
+      totalTime: parseFloat(totalTime),
     };
 
     try {
-        const response = await fetch("http://localhost:8080/api/questoes/registerresult", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(resultData),
-        });
-
-        if (response.ok) {
-            console.log("Resultado enviado com sucesso!");
-        } else {
-            console.error("Erro ao enviar resultado:", response.statusText);
+      const response = await fetch(
+        "http://localhost:8080/api/questoes/registerresult",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(resultData),
         }
+      );
+
+      if (response.ok) {
+        console.log("Resultado enviado com sucesso!");
+      } else {
+        console.error("Erro ao enviar resultado:", response.statusText);
+      }
     } catch (error) {
-        console.error("Erro ao conectar com o servidor:", error);
+      console.error("Erro ao conectar com o servidor:", error);
     }
   };
 
   useEffect(() => {
     if (showResult) {
-        enviarResultado();
+      enviarResultado();
     }
   }, [showResult]);
-
-
 
   if (questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-          Nenhuma questão encontrada.
+        Nenhuma questão encontrada.
       </div>
-      );
+    );
   }
 
   const { enunciado, choices } = questions[currentQuestion];
@@ -132,7 +134,11 @@ const Quiz = () => {
                 onClick={() => onAnswerClick(choice, index)}
                 key={choice}
                 className={`cursor-pointer p-3 rounded-lg transition-colors duration-300 ease-in-out 
-                  ${answerIdx === index ? "bg-blue-500 text-white" : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"} 
+                  ${
+                    answerIdx === index
+                      ? "bg-blue-500 text-white"
+                      : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                  } 
                    dark:hover:bg-blue-700 hover:bg-blue-200`}
                 role="button"
                 aria-pressed={answerIdx === index ? "true" : "false"}
@@ -149,7 +155,9 @@ const Quiz = () => {
               className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg transition-all hover:bg-blue-600 disabled:bg-gray-400"
               aria-label="Próxima pergunta ou finalizar"
             >
-              {currentQuestion === questions.length - 1 ? "Finalizar" : "Próximo"}
+              {currentQuestion === questions.length - 1
+                ? "Finalizar"
+                : "Próximo"}
             </button>
           </div>
         </>
@@ -157,10 +165,12 @@ const Quiz = () => {
         <div className="result text-center mt-6">
           <h3 className="text-2xl font-semibold mb-4">Resultado</h3>
           <p className="text-lg">
-            Total de Acertos: <span className="font-bold">{result.correctAnswers}</span>
+            Total de Acertos:{" "}
+            <span className="font-bold">{result.correctAnswers}</span>
           </p>
           <p className="text-lg">
-            Total de Erros: <span className="font-bold">{result.wrongAnswers}</span>
+            Total de Erros:{" "}
+            <span className="font-bold">{result.wrongAnswers}</span>
           </p>
 
           <h4 className="text-lg font-semibold mt-4">Tempo total do Quiz:</h4>

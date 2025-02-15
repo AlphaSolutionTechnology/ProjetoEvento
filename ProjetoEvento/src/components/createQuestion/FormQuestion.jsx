@@ -9,7 +9,7 @@ function FormQuestion({
   correctAnswer,
   setCorrectAnswer,
   handleSubmit, // usado somente no modo "único"
-  multiMode,     // nova prop: se true, renderiza sem form e sem botão de submit
+  multiMode, // nova prop: se true, renderiza sem form e sem botão de submit
 }) {
   // Conteúdo dos campos (mantém o mesmo visual)
   const content = (

@@ -7,9 +7,9 @@ const ProtectedRouteInscricao = ({ children, idPalestra }) => {
 
   if (isInscrito === null) {
     return (
-    <div className="min-h-screen flex items-center justify-center">
-        <Loading/>
-    </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loading />
+      </div>
     );
   }
 
@@ -20,6 +20,5 @@ const ProtectedRouteInscricao = ({ children, idPalestra }) => {
 
   return children;
 };
-
 
 export default ProtectedRouteInscricao;

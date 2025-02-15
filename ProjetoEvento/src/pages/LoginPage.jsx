@@ -9,19 +9,19 @@ const AuthPage = () => {
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-900 overflow-hidden">
       {/* Círculos decorativos com blur */}
-      <motion.div 
+      <motion.div
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
         className="absolute top-10 left-10 w-40 h-40 bg-blue-500 opacity-30 blur-3xl rounded-full"
       ></motion.div>
-      
-      <motion.div 
+
+      <motion.div
         animate={{ scale: [1, 1.3, 1] }}
         transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
         className="absolute bottom-10 right-20 w-52 h-52 bg-green-800 opacity-30 blur-3xl rounded-full"
       ></motion.div>
 
-      <motion.div 
+      <motion.div
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
         className="absolute bottom-20 left-32 w-36 h-36 bg-pink-500 opacity-30 blur-3xl rounded-full"
@@ -29,22 +29,21 @@ const AuthPage = () => {
 
       {/* Título animado */}
       <motion.h1
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="text-center text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-8 relative z-10"
-    >
-      <span className="block">Seja bem-vindo ao</span>
-      <motion.span 
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 0.3 }}
-        className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-center text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-8 relative z-10"
       >
-        Eventfy
-      </motion.span>
-    </motion.h1>
-
+        <span className="block">Seja bem-vindo ao</span>
+        <motion.span
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text"
+        >
+          Eventfy
+        </motion.span>
+      </motion.h1>
 
       {/* Card Glassmorphism */}
       <motion.div
@@ -56,7 +55,10 @@ const AuthPage = () => {
         <form className="space-y-4">
           {!isLogin && (
             <motion.div whileFocus={{ scale: 1.02 }} className="relative">
-              <UserPlus className="absolute left-3 top-3 text-gray-400" size={20} />
+              <UserPlus
+                className="absolute left-3 top-3 text-gray-400"
+                size={20}
+              />
               <input
                 type="text"
                 className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -99,7 +101,9 @@ const AuthPage = () => {
             onClick={() => setIsLogin(!isLogin)}
             className="text-blue-400 cursor-pointer hover:underline transition duration-300"
           >
-            {isLogin ? "Não tem uma conta? Registre-se" : "Já tem uma conta? Faça login"}
+            {isLogin
+              ? "Não tem uma conta? Registre-se"
+              : "Já tem uma conta? Faça login"}
           </span>
         </div>
 
@@ -109,7 +113,10 @@ const AuthPage = () => {
           <div className="flex-grow border-t border-gray-600"></div>
         </div>
 
-        <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col items-center">
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="flex flex-col items-center"
+        >
           <GoogleSignIn />
         </motion.div>
       </motion.div>

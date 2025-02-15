@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { QrCode } from "lucide-react"; 
+import { QrCode } from "lucide-react";
 import { Send } from "lucide-react";
 
 const ConnectionForm = ({
@@ -21,7 +21,6 @@ const ConnectionForm = ({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-
       {/* Título */}
       <motion.p
         className={`text-center mb-4 ${textColor}`}
@@ -47,7 +46,11 @@ const ConnectionForm = ({
       <motion.input
         type="text"
         className={`w-full py-2 px-4 mb-4 rounded-lg 
-          ${darkMode ? "bg-gray-800 text-white placeholder-gray-400" : "bg-white text-gray-800 placeholder-gray-600 border border-gray-300 focus:outline-none focus:border-blue-500"}`}
+          ${
+            darkMode
+              ? "bg-gray-800 text-white placeholder-gray-400"
+              : "bg-white text-gray-800 placeholder-gray-600 border border-gray-300 focus:outline-none focus:border-blue-500"
+          }`}
         value={inputCode}
         onChange={(e) => setInputCode(e.target.value)}
         placeholder="Inserir Código"
@@ -59,9 +62,21 @@ const ConnectionForm = ({
       {/* Botão de Conectar */}
       <motion.button
         className={`flex flex-row space-x-2 justify-center w-full py-2 px-4 rounded-lg 
-          ${inputCode ? (darkMode ? "bg-purple-600 text-white" : "bg-blue-600 text-white") : buttonBgColor} 
-          ${darkMode ? "hover:bg-purple-700 disabled:bg-gray-600" : "hover:bg-blue-700 disabled:bg-gray-300"} 
-          disabled:opacity-50 focus:outline-none focus:ring-2 ${darkMode ? "focus:ring-purple-500" : "focus:ring-blue-500"}`}
+          ${
+            inputCode
+              ? darkMode
+                ? "bg-purple-600 text-white"
+                : "bg-blue-600 text-white"
+              : buttonBgColor
+          } 
+          ${
+            darkMode
+              ? "hover:bg-purple-700 disabled:bg-gray-600"
+              : "hover:bg-blue-700 disabled:bg-gray-300"
+          } 
+          disabled:opacity-50 focus:outline-none focus:ring-2 ${
+            darkMode ? "focus:ring-purple-500" : "focus:ring-blue-500"
+          }`}
         onClick={() => handleSendConnection(inputCode)}
         disabled={!inputCode} // Desabilita o botão se inputCode estiver vazio
         whileHover={{ scale: 1.05 }}
@@ -70,11 +85,6 @@ const ConnectionForm = ({
         <Send className="mr-2" />
         Conectar
       </motion.button>
-
-
-
-
-
     </motion.div>
   );
 };

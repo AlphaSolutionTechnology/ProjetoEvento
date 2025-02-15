@@ -3,7 +3,6 @@ import CreateQuestoes from "../components/createQuestion/createquestoes";
 import { useLocation } from "react-router-dom";
 import QrCode from "react-qr-code";
 
-
 function AdmQuizz() {
   const [questoes, setQuestoes] = useState([]);
   const [palestraId, setPalestraId] = useState(null);
@@ -14,15 +13,12 @@ function AdmQuizz() {
   const location = useLocation();
 
   useEffect(() => {
-
     const id = location.state?.idPalestra;
     setPalestraId(id || "");
 
     const codigo = location.state?.codigoPalestra;
     setCodigoPalestra(codigo || "");
-
   }, [location.search]);
-
 
   const searchQuestoes = async () => {
     try {
@@ -59,7 +55,7 @@ function AdmQuizz() {
           credentials: "include", // Garante que cookies sejam enviados
         }
       );
-  
+
       if (response.ok) {
         setQuestoes(questoes.filter((questao) => questao.id !== idQuestao));
       } else {
@@ -69,8 +65,7 @@ function AdmQuizz() {
       console.error("Erro:", error);
     }
   };
-  
-  
+
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % questoes.length);
   };
@@ -84,7 +79,6 @@ function AdmQuizz() {
       <h1 className="text-3xl font-bold mb-8 text-center">
         Gerenciar Quizzes da Palestra
       </h1>
-
       <div className="mb-8 flex gap-4">
         {!showQuestoes ? (
           <button
@@ -102,7 +96,6 @@ function AdmQuizz() {
           </button>
         )}
       </div>
-
       {showQuestoes ? (
         <div className="w-full max-w-4xl">
           {questoes.length === 0 ? (
@@ -136,7 +129,10 @@ function AdmQuizz() {
                     ))}
                   </div>
                   <p className="text-sm text-blue-300 mt-4">
-                    Resposta: <strong className="text-white">{questoes[currentSlide].correctAnswer}</strong>
+                    Resposta:{" "}
+                    <strong className="text-white">
+                      {questoes[currentSlide].correctAnswer}
+                    </strong>
                   </p>
                   <button
                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -160,13 +156,12 @@ function AdmQuizz() {
           <CreateQuestoes />
         </div>
       )}
-
-
       <h1 className="mt-40 mb-28">QR CODE DA PALESTRA</h1>
       <h3 className="mb-11">Código: {codigoPalestra}</h3>
-      {palestraId &&(<QrCode value={codigoPalestra} size={255} className="mb-10" />)} {/*Espera o valor de palestraId antes de renderizar o qrcode*/}
-
-
+      {palestraId && (
+        <QrCode value={codigoPalestra} size={255} className="mb-10" />
+      )}{" "}
+      {/*Espera o valor de palestraId antes de renderizar o qrcode*/}
     </div>
   );
 }

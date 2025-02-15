@@ -12,9 +12,9 @@ const ProtectedRouteLogin = ({ children, role }) => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-          <Loading/>
+        <Loading />
       </div>
-      );
+    );
   }
 
   // Usa user ou localUser para evitar null
@@ -23,9 +23,9 @@ const ProtectedRouteLogin = ({ children, role }) => {
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
-  console.log(user)
+  console.log(user);
   if (role && currentUser.role !== role) {
-    alert("Você não tem permissão para acessar essa pagina!")
+    alert("Você não tem permissão para acessar essa pagina!");
     return <Navigate to="/home" replace />;
   }
 

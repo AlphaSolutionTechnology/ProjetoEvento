@@ -69,7 +69,7 @@ const GoogleSignIn = () => {
         height: "50px",
         text: "continue_with",
         locale: "pt-BR",
-      },
+      }
     );
   };
 

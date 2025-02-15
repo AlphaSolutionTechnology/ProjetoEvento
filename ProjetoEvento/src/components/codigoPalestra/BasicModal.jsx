@@ -1,8 +1,16 @@
 import React from "react";
-import { X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { X } from "lucide-react";
+import { motion } from "framer-motion";
 
-const BasicModal = ({ open, title, text, onClose, children, closeButtonText = 'Fechar', width = 400 }) => {
+const BasicModal = ({
+  open,
+  title,
+  text,
+  onClose,
+  children,
+  closeButtonText = "Fechar",
+  width = 400,
+}) => {
   if (!open) return null;
 
   return (
@@ -33,14 +41,10 @@ const BasicModal = ({ open, title, text, onClose, children, closeButtonText = 'F
         )}
 
         {text && (
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
-            {text}
-          </p>
+          <p className="text-gray-700 dark:text-gray-300 mb-4">{text}</p>
         )}
 
         {children}
-
-
       </motion.div>
     </div>
   );

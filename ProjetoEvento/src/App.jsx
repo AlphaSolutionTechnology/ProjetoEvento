@@ -1,5 +1,11 @@
 import React from "react";
-import { Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+  useParams,
+} from "react-router-dom";
 import Questoes from "./pages/Questoes";
 import ThemeToggle from "./components/toggleDarkMode";
 import ConnectPage from "./pages/ConnectPage";
@@ -11,7 +17,7 @@ import { WebSocketProvider } from "./context/WebSocketContext";
 import NotificationButton from "./components/notification/NotificationButton";
 import AccountMenu from "./components/AccountMenu";
 import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
-import Ranking_View from "./pages/Ranking_View"
+import Ranking_View from "./pages/Ranking_View";
 import { useNavigate } from "react-router-dom";
 import QuizzesPage from "./pages/QuizzesPage";
 import ProtectedRouteInscricao from "./components/ProtectedRouteInscricao";
@@ -23,14 +29,18 @@ function App() {
 
   const handleNavigateHome = () => {
     navigate("/home");
-  }
+  };
   return (
     <WebSocketProvider>
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {location.pathname !== "/login" && (
           <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
-            <h1 onClick={handleNavigateHome}
-            className="text-xl font-bold cursor-pointer">Home</h1>
+            <h1
+              onClick={handleNavigateHome}
+              className="text-xl font-bold cursor-pointer"
+            >
+              Home
+            </h1>
             <div className=" w-48 flex justify-around items-center">
               <NotificationButton />
               <ThemeToggle />
@@ -38,7 +48,7 @@ function App() {
             </div>
           </header>
         )}
-        
+
         <Routes>
           <Route path="/" element={<Navigate to={"/login"} />} />
           <Route path="/login" element={<LoginPage />} />
@@ -54,7 +64,7 @@ function App() {
             path="/quizz/:idPalestra"
             element={
               <ProtectedRouteLogin>
-                <RouteWrapper component={Questoes}/>
+                <RouteWrapper component={Questoes} />
               </ProtectedRouteLogin>
             }
           />
@@ -83,27 +93,22 @@ function App() {
             }
           />
           <Route
-            path='/palestra/:idPalestra'
+            path="/palestra/:idPalestra"
             element={
               <ProtectedRouteLogin role={"Participante"}>
-                <RouteWrapper component={QuizzesPage}/>
-              </ProtectedRouteLogin>  
+                <RouteWrapper component={QuizzesPage} />
+              </ProtectedRouteLogin>
             }
-          
-          
           />
 
           <Route
             path="/ranking/:idPalestra"
             element={
               <ProtectedRouteLogin>
-                <RouteWrapper component={Ranking_View}/>
+                <RouteWrapper component={Ranking_View} />
               </ProtectedRouteLogin>
             }
           />
-         
-
-
         </Routes>
       </div>
     </WebSocketProvider>

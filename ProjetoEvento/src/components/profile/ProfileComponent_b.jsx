@@ -106,7 +106,7 @@ const ProfileComponent = () => {
 
     try {
       await sendMessage("/app/sendrequest", { to: code });
-  
+
       setAlert({
         open: true,
         message: "Solicitação de conexão enviada com sucesso!",
@@ -143,7 +143,6 @@ const ProfileComponent = () => {
     console.log("User Data:", userData);
 
     if (messages.length > 0 && userData) {
-
       setIsLoading(false);
 
       const lastMessage = messages[messages.length - 1];

@@ -6,7 +6,9 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
     e.preventDefault();
 
     if (!idPalestra) {
-      setMessage("ID da palestra não encontrado. Não é possível enviar as questões.");
+      setMessage(
+        "ID da palestra não encontrado. Não é possível enviar as questões."
+      );
       return;
     }
 
@@ -31,7 +33,10 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
 
         if (!response.ok) {
           allSuccessful = false;
-          console.error(`Erro ao enviar a questão ${i + 1}:`, response.statusText);
+          console.error(
+            `Erro ao enviar a questão ${i + 1}:`,
+            response.statusText
+          );
         }
       } catch (error) {
         allSuccessful = false;
@@ -41,7 +46,9 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
 
     if (allSuccessful) {
       setMessage("Todas as questões foram enviadas com sucesso!");
-      setQuestions([{ questionText: "", choices: ["", "", "", ""], correctAnswer: "" }]);
+      setQuestions([
+        { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
+      ]);
     } else {
       setMessage("Algumas questões não puderam ser enviadas.");
     }
@@ -49,7 +56,10 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
 
   // Adiciona uma nova questão vazia
   const addQuestion = () => {
-    setQuestions([...questions, { questionText: "", choices: ["", "", "", ""], correctAnswer: "" }]);
+    setQuestions([
+      ...questions,
+      { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
+    ]);
   };
 
   return (

@@ -3,7 +3,7 @@ import ProtectedRouteInscricao from "./ProtectedRouteInscricao";
 
 const RouteWrapper = ({ component: Component }) => {
   const { idPalestra } = useParams();
-  
+
   return (
     <ProtectedRouteInscricao idPalestra={idPalestra}>
       <Component />

@@ -23,7 +23,7 @@ import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import { useNavigate } from "react-router-dom";
 import useTheme from "../hooks/useTheme";
 import CircularProgress from "@mui/material/CircularProgress";
-import { WebSocketContext } from "../context/WebSocketContext"; 
+import { WebSocketContext } from "../context/WebSocketContext";
 import QRScanner from "./QRScanner";
 import AlertToast from "./alert/AlertToast";
 
@@ -49,8 +49,7 @@ const ProfileComponent = () => {
   const paperColor = darkMode ? "#1e1e1e" : "#ffffff";
   const textColor = darkMode ? "#ffffff" : "#333333";
   const buttonColor = darkMode ? "#bb86fc" : "#3f51b5";
-  const [ alert, setAlert ] = useState({ open: false, message: "", type: "" });
-  
+  const [alert, setAlert] = useState({ open: false, message: "", type: "" });
 
   // Função que é chamada quando o QRScanner lê um QR Code
   const handleScan = (data) => {
@@ -60,24 +59,36 @@ const ProfileComponent = () => {
     console.log("QR Code Lido:", data);
   };
 
-// Função para enviar solicitação de conexão
+  // Função para enviar solicitação de conexão
 
   const handleSendConnection = async (code) => {
     setInputCode("");
 
     if (!code) {
-      setAlert({ open: true, message: "Por favor, insira um código.", type: "error" });
+      setAlert({
+        open: true,
+        message: "Por favor, insira um código.",
+        type: "error",
+      });
       return;
     }
 
     if (typeof code !== "string" || code.trim().length !== 6) {
-      setAlert({ open: true, message: "O código deve ter exatamente 6 caracteres.", type: "error" });
+      setAlert({
+        open: true,
+        message: "O código deve ter exatamente 6 caracteres.",
+        type: "error",
+      });
       return;
     }
 
     if (code === userData.unique_code) {
       setUnautorized(true);
-      setAlert({ open: true, message: "Você não pode se conectar consigo mesmo!", type: "error" });
+      setAlert({
+        open: true,
+        message: "Você não pode se conectar consigo mesmo!",
+        type: "error",
+      });
       return;
     }
 
@@ -87,20 +98,31 @@ const ProfileComponent = () => {
       const userExists = await checkAuthentication(code);
 
       if (!userExists) {
-        setAlert({ open: true, message: "Código inválido ou usuário não encontrado.", type: "error" });
+        setAlert({
+          open: true,
+          message: "Código inválido ou usuário não encontrado.",
+          type: "error",
+        });
         return;
       }
 
       await sendMessage("/app/sendrequest", { to: code });
 
-      setAlert({ open: true, message: "Solicitação de conexão enviada com sucesso!", type: "success" });
+      setAlert({
+        open: true,
+        message: "Solicitação de conexão enviada com sucesso!",
+        type: "success",
+      });
     } catch (error) {
-      setAlert({ open: true, message: "Erro ao enviar solicitação. Tente novamente.", type: "error" });
+      setAlert({
+        open: true,
+        message: "Erro ao enviar solicitação. Tente novamente.",
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
   };
-
 
   // Função para verificar se o usuário existe
 
@@ -203,7 +225,7 @@ const ProfileComponent = () => {
             from: dialogData.fromUserCode, // Quem fez o pedido
             status: "ACCEPTED",
           }),
-        },
+        }
       );
 
       setIsDialogOpen(false);
@@ -229,7 +251,7 @@ const ProfileComponent = () => {
             from: dialogData.fromUserCode,
             status: "DECLINED",
           }),
-        },
+        }
       );
 
       setIsDialogOpen(false);

@@ -12,17 +12,28 @@ export default function NotificationButton() {
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleAccept = async (userId) => {
-    const userUniqueCode = JSON.parse(localStorage.getItem("user_data"))?.unique_code;
+    const userUniqueCode = JSON.parse(
+      localStorage.getItem("user_data")
+    )?.unique_code;
     try {
-      const response = await fetch("http://localhost:8080/api/connection/answerconnectionrequest", {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: userUniqueCode, from: userId, status: "ACCEPTED" }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/connection/answerconnectionrequest",
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: userUniqueCode,
+            from: userId,
+            status: "ACCEPTED",
+          }),
+        }
+      );
 
       if (response.ok) {
-        setNotifications((prev) => prev.filter((notification) => notification.userId !== userId));
+        setNotifications((prev) =>
+          prev.filter((notification) => notification.userId !== userId)
+        );
       } else {
         console.error("Erro ao aceitar conexão:", await response.text());
       }
@@ -32,17 +43,28 @@ export default function NotificationButton() {
   };
 
   const handleDeny = async (userId) => {
-    const userUniqueCode = JSON.parse(localStorage.getItem("user_data"))?.unique_code;
+    const userUniqueCode = JSON.parse(
+      localStorage.getItem("user_data")
+    )?.unique_code;
     try {
-      const response = await fetch("http://localhost:8080/api/connection/answerconnectionrequest", {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: userUniqueCode, from: userId, status: "DECLINED" }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/connection/answerconnectionrequest",
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: userUniqueCode,
+            from: userId,
+            status: "DECLINED",
+          }),
+        }
+      );
 
       if (response.ok) {
-        setNotifications((prev) => prev.filter((notification) => notification.userId !== userId));
+        setNotifications((prev) =>
+          prev.filter((notification) => notification.userId !== userId)
+        );
       } else {
         console.error("Erro ao recusar conexão:", await response.text());
       }
@@ -91,7 +113,9 @@ export default function NotificationButton() {
                 />
               ))
             ) : (
-              <div className="p-4 text-gray-500 dark:text-gray-400 text-center">Nenhuma notificação</div>
+              <div className="p-4 text-gray-500 dark:text-gray-400 text-center">
+                Nenhuma notificação
+              </div>
             )}
           </motion.div>
         )}
