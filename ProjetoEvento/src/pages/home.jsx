@@ -22,8 +22,6 @@ function Home() {
     return splittedName.length > 1 ? `${splittedName[0]} ${splittedName[1]}` : splittedName[0];
   };
 
-
-
   useEffect(() => {
     if (!isLoading) {
       setIsPageLoading(false);
