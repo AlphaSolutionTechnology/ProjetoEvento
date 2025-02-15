@@ -1,6 +1,13 @@
 import QuestionItem from "./QuestionItem";
+import ChatComponent from "../AI/Groq.jsx";
 
-function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
+function QuestionsInvite({
+  questions,
+  setQuestions,
+  idPalestra,
+  setMessage,
+  onReceiveQuestion,
+}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -9,7 +16,6 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
       return;
     }
 
-    // Envia todas as questões em paralelo
     const results = await Promise.all(
       questions.map(async (question, index) => {
         const payload = {
@@ -18,8 +24,6 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
           correctAnswer: question.correctAnswer,
           idPalestra: idPalestra,
         };
-
-        console.log(`Payload para a questão ${index + 1}:`, payload);
 
         try {
           const response = await fetch("http://localhost:8080/api/questoes", {
@@ -46,17 +50,25 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
 
     if (allSuccessful) {
       setMessage("Todas as questões foram enviadas com sucesso!");
+      // Reseta para uma questão vazia
       setQuestions([{ questionText: "", choices: ["", "", "", ""], correctAnswer: "" }]);
     } else {
       setMessage("Algumas questões não puderam ser enviadas.");
     }
   };
 
+  // Adiciona uma nova questão
   const addQuestion = () => {
     setQuestions((prev) => [
       ...prev,
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
     ]);
+  };
+
+  // Limpa completamente o formulário (deixa apenas uma questão vazia)
+  const clearForm = () => {
+    setQuestions([{ questionText: "", choices: ["", "", "", ""], correctAnswer: "" }]);
+    setMessage("");
   };
 
   return (
@@ -70,19 +82,38 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
           setQuestions={setQuestions}
         />
       ))}
-      <div className="flex justify-between">
+
+      
+      <div className="flex flex-wrap justify-center gap-4 mt-4">
+      
         <button
           type="button"
           onClick={addQuestion}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+          className="flex-1 min-w-[130px] h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded"
         >
           Adicionar Questão
         </button>
+
+       
+        <div className="flex-1 min-w-[130px] h-12 flex items-stretch">
+          <ChatComponent onReceiveQuestion={onReceiveQuestion} />
+        </div>
+
+       
         <button
           type="submit"
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
+          className="flex-1 min-w-[130px] h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded"
         >
           Enviar Todas as Questões
+        </button>
+
+       
+        <button
+          type="button"
+          onClick={clearForm}
+          className="flex-1 min-w-[130px] h-12 bg-red-500 hover:bg-red-600 text-white font-semibold rounded"
+        >
+          Limpar Form
         </button>
       </div>
     </form>

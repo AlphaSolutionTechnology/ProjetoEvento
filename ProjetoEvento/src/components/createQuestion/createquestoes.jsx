@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import FeedbackMessage from "./FeedbackMessage";
-import ChatComponent from "../AI/Groq.jsx";
 import QuestionsInvite from "./QuestionsInvite.jsx";
 
 function CreateQuestoes() {
@@ -18,16 +17,16 @@ function CreateQuestoes() {
     }
   }, [idPalestra]);
 
-  // Atualiza o formulário com a questão gerada pela IA.
+  // Callback para receber a questão gerada pela IA
   const handleReceiveQuestion = useCallback((newQuestion) => {
     const formattedQuestion = {
       questionText: newQuestion.question || "",
       choices: newQuestion.choices || ["", "", "", ""],
       correctAnswer: newQuestion.correctAnswer || "",
     };
-    console.log("Questão recebida da IA:", formattedQuestion);
+
     setQuestions((prevQuestions) => {
-      // Se o primeiro item estiver vazio, atualiza-o; caso contrário, adiciona a nova questão.
+      // Se só existe uma questão vazia, substitui; senão, adiciona
       if (prevQuestions.length === 1 && !prevQuestions[0].questionText) {
         return [formattedQuestion];
       }
@@ -42,9 +41,9 @@ function CreateQuestoes() {
         setQuestions={setQuestions}
         idPalestra={idPalestra}
         setMessage={setMessage}
+        onReceiveQuestion={handleReceiveQuestion}
       />
       <FeedbackMessage message={message} />
-      <ChatComponent onReceiveQuestion={handleReceiveQuestion} />
     </div>
   );
 }

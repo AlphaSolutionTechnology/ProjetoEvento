@@ -47,7 +47,7 @@ export default function ChatComponent({ onReceiveQuestion }) {
     <button
       onClick={handleFetchChatCompletion}
       disabled={loading}
-      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+      className="w-full h-full bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 disabled:opacity-50"
     >
       {loading ? "Carregando..." : "Criar com IA"}
     </button>
