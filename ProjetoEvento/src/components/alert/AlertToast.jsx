@@ -1,7 +1,18 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, AlertTriangle } from "lucide-react";
+import { useEffect } from "react"; // Importamos o useEffect para controlar o temporizador
 
 const AlertToast = ({ open, message, type, onClose }) => {
+  // Fecha o toast automaticamente após 3 segundos
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => {
+        onClose(); 
+      }, 3000); // 3 segundos
+      return () => clearTimeout(timer); // Limpa o timer se o componente for desmontado
+    }
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const icons = {
@@ -36,7 +47,7 @@ const AlertToast = ({ open, message, type, onClose }) => {
           `}
         >
           {icons[type]}
-          <span className="text-sm">{message}</span>
+          <span className="text-sm text-gray-800">{message}</span> 
           <button onClick={onClose}>
             <X className="w-4 h-4 text-gray-500 hover:text-black" />
           </button>

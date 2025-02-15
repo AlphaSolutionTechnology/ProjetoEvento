@@ -37,7 +37,7 @@ function App() {
           <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
             <h1
               onClick={handleNavigateHome}
-              className="text-xl font-bold cursor-pointer"
+              className="text-2xl font-bold cursor-pointer"
             >
               Home
             </h1>

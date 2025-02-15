@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { UserIcon, ChartBar } from "lucide-react";
 import BasicModal from "../components/codigoPalestra/BasicModal";
 import QRScanner from "../components/QRScanner";
+import AlertToast from "../components/alert/AlertToast"; // Alertas
 
 function Home() {
   const { darkMode } = useTheme();
@@ -16,8 +17,13 @@ function Home() {
   const [isScanning, setIsScanning] = useState(false);
   const [codigoPalestra, setCodigoPalestra] = useState("");
 
+  // Estados para controlar o AlertToast
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastType, setToastType] = useState("success");
+  const [toastMessage, setToastMessage] = useState("");
+
   const retrieveName = (fullname) => {
-    if (!fullname) return ""; // Verifica se o nome existe antes de processar
+    if (!fullname) return "";
     const splittedName = fullname.split(" ");
     return splittedName.length > 1
       ? `${splittedName[0]} ${splittedName[1]}`
@@ -50,25 +56,34 @@ function Home() {
       if (!response.ok) throw new Error("Palestra não encontrada");
 
       const data = await response.json();
-
       const idPalestra = data.idPalestra;
 
       if (!idPalestra) throw new Error("ID da Palestra não encontrado!");
 
-      // Salva a palestra no localStorage
       localStorage.setItem("palestraAtual", idPalestra);
 
-      // Se a palestra existir, redireciona
-      navigate(`/palestra/${idPalestra}`);
+      // Exibe toast de sucesso
+      setToastType("success");
+      setToastMessage("Palestra encontrada com sucesso!");
+      setToastOpen(true);
+
+      // Redireciona após 2 segundos
+      setTimeout(() => {
+        navigate(`/palestra/${idPalestra}`);
+      }, 2000);
     } catch (error) {
-      alert("Palestra inválida ou não encontrada. Verifique o código.");
+      // Exibe toast de erro
+      setToastType("error");
+      setToastMessage(
+        "Palestra inválida ou não encontrada. Verifique o código."
+      );
+      setToastOpen(true);
     }
   };
 
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
       {/* Círculos decorativos com blur */}
-
       <motion.div
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
@@ -219,6 +234,14 @@ function Home() {
           </button>
         </motion.div>
       </div>
+
+      {/* AlertToast */}
+      <AlertToast
+        open={toastOpen}
+        type={toastType}
+        message={toastMessage}
+        onClose={() => setToastOpen(false)}
+      />
     </div>
   );
 }

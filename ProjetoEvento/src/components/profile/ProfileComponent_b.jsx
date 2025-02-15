@@ -1,5 +1,3 @@
-// path: src/components/profile/ProfileComponent.jsx
-
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { WebSocketContext } from "../../context/WebSocketContext";
@@ -10,6 +8,7 @@ import QRCodeSection from "./QRCodeSection";
 import ConnectionForm from "./ConnectionForm"; // Já está importado corretamente
 import QRScannerModal from "./QRScannerModal";
 import ConnectionRequestDialog from "./ConnectionRequestDialog";
+import AlertToast from "../alert/AlertToast"; // Importe o AlertToast
 
 const ProfileComponent = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -39,7 +38,7 @@ const ProfileComponent = () => {
         setAlert((prevState) => ({ ...prevState, open: false }));
       }, 3000);
 
-      // limpeza do timer quando o componente é desmontado
+      // Limpeza do timer quando o componente é desmontado
       return () => clearTimeout(timer);
     }
   }, [alert]);
@@ -105,24 +104,38 @@ const ProfileComponent = () => {
     setIsLoading(true);
 
     try {
+      // Verifica se o código existe antes de enviar a solicitação
+      const response = await fetch(`/api/checkUser/${code}`);
+      const data = await response.json();
+
+      if (!response.ok || !data.exists) {
+        setAlert({
+          open: true,
+          message: "Código de usuário não encontrado!",
+          type: "error",
+        });
+        return;
+      }
+
       await sendMessage("/app/sendrequest", { to: code });
-  
+
       setAlert({
         open: true,
         message: "Solicitação de conexão enviada com sucesso!",
         type: "success",
       });
     } catch (error) {
-      console.error("Erro ao enviar solicitação:", error); // Log no console
+      console.error("Erro ao enviar solicitação:", error);
       setAlert({
         open: true,
-        message: "Erro ao enviar solicitação. Tente novamente.",
+        message: "Usuário não encontrado. Tente novamente.",
         type: "error",
       });
     } finally {
       setIsLoading(false);
     }
-  };
+};
+
 
   const populateZone = () => {
     const storedUserData = localStorage.getItem("user_data");
@@ -143,7 +156,6 @@ const ProfileComponent = () => {
     console.log("User Data:", userData);
 
     if (messages.length > 0 && userData) {
-
       setIsLoading(false);
 
       const lastMessage = messages[messages.length - 1];
@@ -256,28 +268,13 @@ const ProfileComponent = () => {
         )}
       </motion.div>
 
-      {/* Alertas */}
-      {alert.open && (
-        <motion.div
-          className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 rounded-lg text-white 
-            ${
-              alert.type === "success"
-                ? "bg-green-500"
-                : alert.type === "error"
-                ? "bg-red-500"
-                : "bg-blue-500"
-            }`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{
-            opacity: { duration: 0.5, ease: "easeInOut" },
-            y: { duration: 0.3, ease: "easeOut" },
-          }}
-        >
-          {alert.message}
-        </motion.div>
-      )}
+      {/* AlertToast */}
+      <AlertToast
+        open={alert.open}
+        type={alert.type}
+        message={alert.message}
+        onClose={() => setAlert({ ...alert, open: false })}
+      />
     </div>
   );
 };
