@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const checkAuthentication = async () => {
+    
     try {
       const response = await fetch("http://localhost:8080/api/auth/validate", {
         method: "POST",

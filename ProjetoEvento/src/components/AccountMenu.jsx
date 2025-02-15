@@ -5,41 +5,36 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 export default function AccountMenu() {
-  const [isOpen, setIsOpen] = useState(false); // Estado que controla a visibilidade do menu
-  const menuRef = useRef(null); // Ref para o menu
-  const iconRef = useRef(null); // Ref para o ícone
+  const [isOpen, setIsOpen] = useState(false); 
+  const menuRef = useRef(null); 
+  const iconRef = useRef(null); 
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  // Função que alterna o estado do menu
   const handleClick = () => {
-    setIsOpen((prev) => !prev); // Alterna o estado ao clicar no ícone
+    setIsOpen((prev) => !prev); 
   };
 
-  // Função que fecha o menu
   const handleClose = () => {
     setIsOpen(false);
   };
 
-  // Função para ir para a página de "conectar"
   const goTo = () => {
     navigate("/conectar");
     handleClose();
   };
 
-  // Função que verifica se o clique foi fora do menu ou ícone
   const handleClickOutside = (event) => {
     if (
       menuRef.current &&
-      !menuRef.current.contains(event.target) && // Se clicou fora do menu
+      !menuRef.current.contains(event.target) && 
       iconRef.current &&
-      !iconRef.current.contains(event.target) // Se clicou fora do ícone
+      !iconRef.current.contains(event.target) 
     ) {
-      handleClose(); // Fecha o menu
+      handleClose(); 
     }
   };
 
-  // Adiciona o evento de clique fora quando o menu está aberto
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -49,10 +44,9 @@ export default function AccountMenu() {
 
   return (
     <div className="relative">
-      {/* Ícone de conta */}
       <motion.button
-        onClick={handleClick} // Alterna o estado ao clicar no ícone
-        ref={iconRef} // Ref para o ícone
+        onClick={handleClick} 
+        ref={iconRef} 
         aria-expanded={isOpen ? "true" : "false"}
         aria-controls="account-menu"
         aria-label="Abrir menu de conta"
@@ -63,11 +57,11 @@ export default function AccountMenu() {
         <User size={32} />
       </motion.button>
 
-      {/* Menu de conta */}
+
       {isOpen && (
         <motion.div
           id="account-menu"
-          ref={menuRef} // Ref para o menu
+          ref={menuRef} 
           className="absolute right-0 mt-2 w-48 rounded-lg bg-white bg-opacity-10 backdrop-blur-md shadow-lg dark:bg-gray-800 dark:bg-opacity-60 dark:text-gray-200 z-50"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
