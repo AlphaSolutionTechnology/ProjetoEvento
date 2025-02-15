@@ -9,7 +9,6 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
-
   const checkAuthentication = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/validate", {
@@ -30,7 +29,6 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
-
   const logout = async () => {
     try {
       await fetch("http://localhost:8080/api/auth/logout", {
@@ -41,8 +39,8 @@ export const AuthProvider = ({ children }) => {
       console.error("Erro ao fazer logout:", error);
     } finally {
       localStorage.removeItem("user_data");
-      setUser(null); // 🔥 Atualiza o estado global
-    }
+      setUser(null);
+    } 
   };
 
   useEffect(() => {
