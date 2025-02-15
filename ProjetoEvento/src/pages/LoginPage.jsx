@@ -2,18 +2,19 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { LogIn, UserPlus, Mail, Lock } from "lucide-react";
 import GoogleSignIn from "../components/GoogleSignIn";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ username: "", email: "", password: "", confirmPassword: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
-
+  const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
-
+  
     try {
       const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
@@ -24,13 +25,15 @@ const AuthPage = () => {
           password: formData.password,
         }),
       });
-
-      if (response.status === 200) {
+  
+      const data = await response.json();
+  
+      if (response.ok) {
         setMessage({ type: "success", text: "Login realizado com sucesso!" });
-        // Redirecionar para a página principal ou dashboard
+        localStorage.setItem("user_data", JSON.stringify(data));
+        navigate("/home")
       } else {
-        const errorMsg = await response.text();
-        setMessage({ type: "error", text: errorMsg || "Erro ao fazer login" });
+        setMessage({ type: "error", text: data.message || "Erro ao fazer login" });
       }
     } catch (error) {
       setMessage({ type: "error", text: "Erro de conexão com o servidor" });
@@ -38,6 +41,7 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
+  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
