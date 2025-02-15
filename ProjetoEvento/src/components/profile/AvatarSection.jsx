@@ -37,7 +37,7 @@ const AvatarSection = ({ userData }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        {userData?.name || "Usuário"}
+        {userData?.name ? userData.name.split(' ').slice(0, 2).join(' ') : "Usuário"}
       </motion.p>
     </div>
   );

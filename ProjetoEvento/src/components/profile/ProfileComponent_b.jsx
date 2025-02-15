@@ -189,7 +189,7 @@ const ProfileComponent = () => {
   }
 
   return (
-    <div className="p-4 h-screen">
+    <div className="p-4 h-screen bg-white bg-opacity-30 backdrop-blur-lg rounded-2xl border border-white border-opacity-20 shadow-2xl dark:bg-black dark:bg-opacity-30 dark:border-black dark:border-opacity-20">
       {/* Seção de Avatar e Nome */}
       <AvatarSection userData={userData} darkMode={darkMode} />
 
