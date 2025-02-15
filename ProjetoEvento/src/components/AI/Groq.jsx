@@ -34,7 +34,6 @@ export default function ChatComponent({ onReceiveQuestion }) {
       }
 
       if (questionData && typeof onReceiveQuestion === "function") {
-        console.log("Questão recebida do ChatComponent:", questionData);
         onReceiveQuestion(questionData);
       }
     } catch (error) {
@@ -45,16 +44,12 @@ export default function ChatComponent({ onReceiveQuestion }) {
   }, [onReceiveQuestion]);
 
   return (
-    <div className="mt-4">
-      <h2>Criar com IA</h2>
-      <button
-        onClick={handleFetchChatCompletion}
-        disabled={loading}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        {loading ? "Carregando..." : "Obter Resposta"}
-      </button>
-      {/* Nenhuma exibição do response aqui */}
-    </div>
+    <button
+      onClick={handleFetchChatCompletion}
+      disabled={loading}
+      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+    >
+      {loading ? "Carregando..." : "Criar com IA"}
+    </button>
   );
 }
