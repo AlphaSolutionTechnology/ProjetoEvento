@@ -1,63 +1,60 @@
 import QuestionItem from "./QuestionItem";
 
 function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
-  // Função para enviar as questões para a API
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!idPalestra) {
-      setMessage(
-        "ID da palestra não encontrado. Não é possível enviar as questões."
-      );
+      setMessage("ID da palestra não encontrado. Não é possível enviar as questões.");
       return;
     }
 
-    let allSuccessful = true;
-    for (let i = 0; i < questions.length; i++) {
-      const question = questions[i];
-      const payload = {
-        enunciado: question.questionText,
-        choices: question.choices,
-        correctAnswer: question.correctAnswer,
-        idPalestra: idPalestra,
-      };
+    // Envia todas as questões em paralelo
+    const results = await Promise.all(
+      questions.map(async (question, index) => {
+        const payload = {
+          enunciado: question.questionText,
+          choices: question.choices,
+          correctAnswer: question.correctAnswer,
+          idPalestra: idPalestra,
+        };
 
-      console.log(`Payload para a questão ${i + 1}:`, payload);
+        console.log(`Payload para a questão ${index + 1}:`, payload);
 
-      try {
-        const response = await fetch("http://localhost:8080/api/questoes", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          allSuccessful = false;
-          console.error(
-            `Erro ao enviar a questão ${i + 1}:`,
-            response.statusText
-          );
+        try {
+          const response = await fetch("http://localhost:8080/api/questoes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) {
+            console.error(
+              `Erro ao enviar a questão ${index + 1}:`,
+              response.statusText
+            );
+            return false;
+          }
+          return true;
+        } catch (error) {
+          console.error(`Erro ao enviar a questão ${index + 1}:`, error);
+          return false;
         }
-      } catch (error) {
-        allSuccessful = false;
-        console.error(`Erro ao enviar a questão ${i + 1}:`, error);
-      }
-    }
+      })
+    );
+
+    const allSuccessful = results.every((res) => res === true);
 
     if (allSuccessful) {
       setMessage("Todas as questões foram enviadas com sucesso!");
-      setQuestions([
-        { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
-      ]);
+      setQuestions([{ questionText: "", choices: ["", "", "", ""], correctAnswer: "" }]);
     } else {
       setMessage("Algumas questões não puderam ser enviadas.");
     }
   };
 
-  // Adiciona uma nova questão vazia
   const addQuestion = () => {
-    setQuestions([
-      ...questions,
+    setQuestions((prev) => [
+      ...prev,
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
     ]);
   };

@@ -2,21 +2,34 @@ import FormQuestion from "./FormQuestion";
 
 function QuestionItem({ question, index, questions, setQuestions }) {
   const handleQuestionTextChange = (value) => {
-    const updated = [...questions];
-    updated[index].questionText = value;
-    setQuestions(updated);
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((q, i) =>
+        i === index ? { ...q, questionText: value } : q
+      )
+    );
   };
 
   const handleChoiceChange = (choiceIndex, value) => {
-    const updated = [...questions];
-    updated[index].choices[choiceIndex] = value;
-    setQuestions(updated);
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((q, i) =>
+        i === index
+          ? {
+              ...q,
+              choices: q.choices.map((choice, ci) =>
+                ci === choiceIndex ? value : choice
+              ),
+            }
+          : q
+      )
+    );
   };
 
   const handleCorrectAnswerChange = (value) => {
-    const updated = [...questions];
-    updated[index].correctAnswer = value;
-    setQuestions(updated);
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((q, i) =>
+        i === index ? { ...q, correctAnswer: value } : q
+      )
+    );
   };
 
   const removeQuestion = () => {

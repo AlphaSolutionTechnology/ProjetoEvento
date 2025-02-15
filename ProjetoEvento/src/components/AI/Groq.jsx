@@ -1,13 +1,10 @@
-// src/components/AI/Groq.jsx
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export default function ChatComponent({ onReceiveQuestion }) {
-  const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function fetchChatCompletion() {
+  const handleFetchChatCompletion = useCallback(async () => {
     setLoading(true);
-
     try {
       const res = await fetch("http://localhost:8080/api/chat", {
         method: "POST",
@@ -16,7 +13,7 @@ export default function ChatComponent({ onReceiveQuestion }) {
         },
         body: JSON.stringify({
           message:
-            "Você é uma Ia que criar questões.Retorne somente um objeto JSON válido, sem usar blocos de código, no seguinte formato: { 'id': number, 'question': string, 'choices': string[], 'correctAnswer': string }.",
+            "Você é uma Ia que criar questões. Retorne somente um objeto JSON válido, sem usar blocos de código, no seguinte formato: { 'id': number, 'question': string, 'choices': string[], 'correctAnswer': string }.",
         }),
       });
 
@@ -27,10 +24,8 @@ export default function ChatComponent({ onReceiveQuestion }) {
       }
 
       const data = await res.json();
-      const content = data.choices[0]?.message?.content || "Sem resposta";
-      setResponse(content);
+      const content = data.choices?.[0]?.message?.content || "Sem resposta";
 
-      // Tenta interpretar o conteúdo como JSON
       let questionData = null;
       try {
         questionData = JSON.parse(content);
@@ -38,23 +33,28 @@ export default function ChatComponent({ onReceiveQuestion }) {
         console.error("Erro ao parsear JSON:", error);
       }
 
-      // Se obteve uma questão válida e a callback foi informada, passa os dados para o componente pai
-      if (questionData && onReceiveQuestion) {
-        console.log("Questão recebida do Groq.jsx:", questionData);
+      if (questionData && typeof onReceiveQuestion === "function") {
+        console.log("Questão recebida do ChatComponent:", questionData);
         onReceiveQuestion(questionData);
       }
     } catch (error) {
       console.error("Erro ao chamar o backend:", error);
-      setResponse("Erro ao obter resposta.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
-  }
+  }, [onReceiveQuestion]);
 
   return (
     <div className="mt-4">
       <h2>Criar com IA</h2>
-      <button onClick={fetchChatCompletion}>Obter Resposta</button>
+      <button
+        onClick={handleFetchChatCompletion}
+        disabled={loading}
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        {loading ? "Carregando..." : "Obter Resposta"}
+      </button>
+      {/* Nenhuma exibição do response aqui */}
     </div>
   );
 }
