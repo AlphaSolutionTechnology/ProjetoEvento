@@ -104,19 +104,6 @@ const ProfileComponent = () => {
     setIsLoading(true);
 
     try {
-      // Verifica se o código existe antes de enviar a solicitação
-      const response = await fetch(`/api/checkUser/${code}`);
-      const data = await response.json();
-
-      if (!response.ok || !data.exists) {
-        setAlert({
-          open: true,
-          message: "Código de usuário não encontrado!",
-          type: "error",
-        });
-        return;
-      }
-
       await sendMessage("/app/sendrequest", { to: code });
 
       setAlert({

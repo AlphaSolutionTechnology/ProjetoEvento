@@ -25,7 +25,7 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
       console.log(`Payload para a questão ${i + 1}:`, payload);
 
       try {
-        const response = await fetch("http://localhost:8080/api/questoes", {
+        const response = await fetch("http://localhost:8080/api/questoes/createquestion", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

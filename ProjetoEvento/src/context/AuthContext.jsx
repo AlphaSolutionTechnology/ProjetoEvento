@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }) => {
       console.error("Erro ao fazer logout:", error);
     } finally {
       localStorage.removeItem("user_data");
+      localStorage.removeItem("palestraAtual");
       setUser(null);
     } 
   };
