@@ -1,51 +1,56 @@
 import QuestionItem from "./QuestionItem";
+import ChatComponent from "../AI/Groq.jsx";
 
-function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
-  // Função para enviar as questões para a API
+function QuestionsInvite({
+  questions,
+  setQuestions,
+  idPalestra,
+  setMessage,
+  onReceiveQuestion,
+}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!idPalestra) {
-      setMessage(
-        "ID da palestra não encontrado. Não é possível enviar as questões."
-      );
+      setMessage("ID da palestra não encontrado. Não é possível enviar as questões.");
       return;
     }
 
-    let allSuccessful = true;
-    for (let i = 0; i < questions.length; i++) {
-      const question = questions[i];
-      const payload = {
-        enunciado: question.questionText,
-        choices: question.choices,
-        correctAnswer: question.correctAnswer,
-        idPalestra: idPalestra,
-      };
+    const results = await Promise.all(
+      questions.map(async (question, index) => {
+        const payload = {
+          enunciado: question.questionText,
+          choices: question.choices,
+          correctAnswer: question.correctAnswer,
+          idPalestra: idPalestra,
+        };
 
-      console.log(`Payload para a questão ${i + 1}:`, payload);
-
-      try {
-        const response = await fetch("http://localhost:8080/api/questoes/createquestion", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          allSuccessful = false;
-          console.error(
-            `Erro ao enviar a questão ${i + 1}:`,
-            response.statusText
-          );
+        try {
+          const response = await fetch("http://localhost:8080/api/questoes/createquestion", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) {
+            console.error(
+              `Erro ao enviar a questão ${index + 1}:`,
+              response.statusText
+            );
+            return false;
+          }
+          return true;
+        } catch (error) {
+          console.error(`Erro ao enviar a questão ${index + 1}:`, error);
+          return false;
         }
-      } catch (error) {
-        allSuccessful = false;
-        console.error(`Erro ao enviar a questão ${i + 1}:`, error);
-      }
-    }
+      })
+    );
+
+    const allSuccessful = results.every((res) => res === true);
 
     if (allSuccessful) {
       setMessage("Todas as questões foram enviadas com sucesso!");
+      // Reseta para uma questão vazia
       setQuestions([
         { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
       ]);
@@ -54,12 +59,18 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
     }
   };
 
-  // Adiciona uma nova questão vazia
   const addQuestion = () => {
-    setQuestions([
-      ...questions,
+    setQuestions((prev) => [
+      ...prev,
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
     ]);
+  };
+
+  const clearForm = () => {
+    setQuestions([
+      { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
+    ]);
+    setMessage("");
   };
 
   return (
@@ -73,19 +84,38 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
           setQuestions={setQuestions}
         />
       ))}
-      <div className="flex justify-between">
+
+      {/* Container de botões lado a lado */}
+      <div className="flex flex-wrap justify-center gap-4 mt-4">
+        {/* Adicionar Questão */}
         <button
           type="button"
           onClick={addQuestion}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+          className="flex-1 min-w-[130px] h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded"
         >
           Adicionar Questão
         </button>
+
+        {/* ChatComponent dentro de um div com tamanho fixo */}
+        <div className="flex-1 min-w-[130px] h-12">
+          <ChatComponent onReceiveQuestion={onReceiveQuestion} />
+        </div>
+
+        {/* Enviar Todas as Questões */}
         <button
           type="submit"
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
+          className="flex-1 min-w-[130px] h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded"
         >
           Enviar Todas as Questões
+        </button>
+
+        {/* Limpar Form */}
+        <button
+          type="button"
+          onClick={clearForm}
+          className="flex-1 min-w-[130px] h-12 bg-red-500 hover:bg-red-600 text-white font-semibold rounded"
+        >
+          Limpar Form
         </button>
       </div>
     </form>

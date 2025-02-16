@@ -9,9 +9,11 @@ function FormQuestion({
   correctAnswer,
   setCorrectAnswer,
   handleSubmit, // usado somente no modo "único"
-  multiMode, // nova prop: se true, renderiza sem form e sem botão de submit
+  multiMode, // se true, renderiza sem form e sem botão de submit
 }) {
-  // Conteúdo dos campos (mantém o mesmo visual)
+  const inputClass =
+    "w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all";
+
   const content = (
     <>
       <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
@@ -26,8 +28,7 @@ function FormQuestion({
         <input
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-          rows="3"
+          className={inputClass}
           placeholder="Digite o enunciado da questão..."
         />
       </div>
@@ -42,7 +43,7 @@ function FormQuestion({
             type="text"
             value={choice}
             onChange={(e) => handleChoiceChange(index, e.target.value)}
-            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            className={inputClass}
             placeholder={`Digite a alternativa ${index + 1}...`}
           />
         </div>
@@ -57,7 +58,7 @@ function FormQuestion({
           type="text"
           value={correctAnswer}
           onChange={(e) => setCorrectAnswer(e.target.value)}
-          className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          className={inputClass}
           placeholder="Digite a alternativa correta..."
         />
       </div>
@@ -78,7 +79,6 @@ function FormQuestion({
     </>
   );
 
-  // Se estiver em modo multi, não utiliza o elemento form
   if (multiMode) {
     return (
       <motion.div
@@ -91,21 +91,20 @@ function FormQuestion({
         {content}
       </motion.div>
     );
-  } else {
-    // Modo "único": envolve em um form e usa handleSubmit
-    return (
-      <motion.form
-        onSubmit={handleSubmit}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.4 }}
-        className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full max-w-lg mb-8 border border-gray-300 dark:border-gray-700"
-      >
-        {content}
-      </motion.form>
-    );
   }
+
+  return (
+    <motion.form
+      onSubmit={handleSubmit}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.4 }}
+      className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full max-w-lg mb-8 border border-gray-300 dark:border-gray-700"
+    >
+      {content}
+    </motion.form>
+  );
 }
 
 export default FormQuestion;
