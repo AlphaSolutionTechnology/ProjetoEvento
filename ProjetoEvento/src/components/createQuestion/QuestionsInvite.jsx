@@ -51,13 +51,14 @@ function QuestionsInvite({
     if (allSuccessful) {
       setMessage("Todas as questões foram enviadas com sucesso!");
       // Reseta para uma questão vazia
-      setQuestions([{ questionText: "", choices: ["", "", "", ""], correctAnswer: "" }]);
+      setQuestions([
+        { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
+      ]);
     } else {
       setMessage("Algumas questões não puderam ser enviadas.");
     }
   };
 
-  // Adiciona uma nova questão
   const addQuestion = () => {
     setQuestions((prev) => [
       ...prev,
@@ -65,9 +66,10 @@ function QuestionsInvite({
     ]);
   };
 
-  // Limpa completamente o formulário (deixa apenas uma questão vazia)
   const clearForm = () => {
-    setQuestions([{ questionText: "", choices: ["", "", "", ""], correctAnswer: "" }]);
+    setQuestions([
+      { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
+    ]);
     setMessage("");
   };
 
@@ -83,7 +85,9 @@ function QuestionsInvite({
         />
       ))}
 
+      {/* Container de botões lado a lado */}
       <div className="flex flex-wrap justify-center gap-4 mt-4">
+        {/* Adicionar Questão */}
         <button
           type="button"
           onClick={addQuestion}
@@ -92,10 +96,12 @@ function QuestionsInvite({
           Adicionar Questão
         </button>
 
-        <div className="flex-1 min-w-[130px] h-12 flex items-stretch">
+        {/* ChatComponent dentro de um div com tamanho fixo */}
+        <div className="flex-1 min-w-[130px] h-12">
           <ChatComponent onReceiveQuestion={onReceiveQuestion} />
         </div>
 
+        {/* Enviar Todas as Questões */}
         <button
           type="submit"
           className="flex-1 min-w-[130px] h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded"
@@ -103,6 +109,7 @@ function QuestionsInvite({
           Enviar Todas as Questões
         </button>
 
+        {/* Limpar Form */}
         <button
           type="button"
           onClick={clearForm}

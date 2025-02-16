@@ -20,13 +20,13 @@ function CreateQuestoes() {
   // Callback para receber a questão gerada pela IA
   const handleReceiveQuestion = useCallback((newQuestion) => {
     const formattedQuestion = {
-      questionText: newQuestion.question || "",
-      choices: newQuestion.choices || ["", "", "", ""],
-      correctAnswer: newQuestion.correctAnswer || "",
+      questionText: newQuestion.question || newQuestion.enunciado || "",
+      choices: newQuestion.choices || newQuestion.alternativas || ["", "", "", ""],
+      correctAnswer: newQuestion.correctAnswer || newQuestion.respostaCorreta || "",
     };
 
     setQuestions((prevQuestions) => {
-      // Se só existe uma questão vazia, substitui; senão, adiciona
+      // Se existe apenas uma questão vazia, substitui-a; caso contrário, adiciona
       if (prevQuestions.length === 1 && !prevQuestions[0].questionText) {
         return [formattedQuestion];
       }
