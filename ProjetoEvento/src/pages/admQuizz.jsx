@@ -20,11 +20,10 @@ function AdmQuizz() {
     setCodigoPalestra(codigo || "");
   }, [location.search]);
 
+  // Atualizado para usar o endpoint /api/questoes/{idPalestra}
   const searchQuestoes = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/questoes/palestraQuizz?idPalestra=${palestraId}`
-      );
+      const response = await fetch(`http://localhost:8080/api/questoes/${palestraId}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -160,8 +159,7 @@ function AdmQuizz() {
       <h3 className="mb-11">Código: {codigoPalestra}</h3>
       {palestraId && (
         <QrCode value={codigoPalestra} size={255} className="mb-10" />
-      )}{" "}
-      {/*Espera o valor de palestraId antes de renderizar o qrcode*/}
+      )}
     </div>
   );
 }

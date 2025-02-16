@@ -26,7 +26,7 @@ function QuestionsInvite({
         };
 
         try {
-          const response = await fetch("http://localhost:8080/api/questoes", {
+          const response = await fetch("http://localhost:8080/api/questoes/createquestion", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -83,9 +83,7 @@ function QuestionsInvite({
         />
       ))}
 
-      
       <div className="flex flex-wrap justify-center gap-4 mt-4">
-      
         <button
           type="button"
           onClick={addQuestion}
@@ -94,12 +92,10 @@ function QuestionsInvite({
           Adicionar Questão
         </button>
 
-       
         <div className="flex-1 min-w-[130px] h-12 flex items-stretch">
           <ChatComponent onReceiveQuestion={onReceiveQuestion} />
         </div>
 
-       
         <button
           type="submit"
           className="flex-1 min-w-[130px] h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded"
@@ -107,7 +103,6 @@ function QuestionsInvite({
           Enviar Todas as Questões
         </button>
 
-       
         <button
           type="button"
           onClick={clearForm}
