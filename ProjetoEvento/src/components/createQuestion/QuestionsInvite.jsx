@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import QuestionItem from "./QuestionItem";
 import pdfToText from "react-pdftotext";
+import AlertToast from "../alert/AlertToast";
 
 function QuestionsInvite({
   questions,
@@ -13,6 +14,11 @@ function QuestionsInvite({
   const [questionCount, setQuestionCount] = useState("2");
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
+  const [alert, setAlert] = useState({ open: false, message: "", type: "success" });
+
+  const showAlert = (message, type = "message") => {
+    setAlert({ open: true, message, type });
+  };
 
   // Extrai texto do PDF
   const handleExtractText = async (file) => {
@@ -22,6 +28,7 @@ function QuestionsInvite({
     } catch (error) {
       console.error("Erro ao extrair texto do PDF:", error);
       setPdfText("");
+      showAlert("Erro ao extrair texto do PDF.", "error");
     }
   };
 
@@ -32,14 +39,14 @@ function QuestionsInvite({
       setPdfFile(file);
       handleExtractText(file);
     } else {
-      alert("Por favor, selecione um arquivo PDF válido.");
+      showAlert("Por favor, selecione um arquivo PDF válido.", "error");
     }
   };
 
   // Geração de questões via IA
   const handleFetchChatCompletion = useCallback(async () => {
     if (!pdfText.trim() && questions.length === 0) {
-      alert("Erro: Nenhum texto extraído do PDF e nenhuma questão existente.");
+      showAlert("Erro: Nenhum texto extraído do PDF e nenhuma questão existente.", "error");
       return;
     }
   
@@ -71,11 +78,13 @@ function QuestionsInvite({
         }));
   
         setQuestions((prevQuestions) => [...prevQuestions, ...formattedQuestions]);
+        showAlert("Questões geradas com sucesso!", "success");
       } else {
         console.warn("A resposta da API não está no formato esperado:", data);
       }
     } catch (error) {
       console.error("Erro ao gerar questões:", error);
+      showAlert("Erro ao gerar questões.", "error");
     } finally {
       setLoading(false);
       setShowPrompt(false);
@@ -90,7 +99,7 @@ function QuestionsInvite({
     e.preventDefault();
 
     if (!idPalestra) {
-      setMessage("ID da palestra não encontrado. Não é possível enviar as questões.");
+      showAlert("ID da palestra não encontrado. Não é possível enviar as questões.", "error");
       return;
     }
 
@@ -128,13 +137,13 @@ function QuestionsInvite({
     const allSuccessful = results.every((res) => res === true);
 
     if (allSuccessful) {
-      setMessage("Todas as questões foram enviadas com sucesso!");
+      showAlert("Todas as questões foram enviadas com sucesso!", "success");
       // Reseta para uma questão vazia
       setQuestions([
         { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
       ]);
     } else {
-      setMessage("Algumas questões não puderam ser enviadas.");
+      showAlert("Algumas questões não puderam ser enviadas.", "error");
     }
   };
 
@@ -154,6 +163,14 @@ function QuestionsInvite({
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-lg">
+      {/* Alerta */}
+      <AlertToast 
+      open={alert.open} 
+      message={alert.message} 
+      type={alert.type} 
+      onClose={() => setAlert({ open: false, message: "", type: "success" })} 
+      />
+      {/* Questões */}
       {questions.map((question, index) => (
         <QuestionItem
           key={index}
