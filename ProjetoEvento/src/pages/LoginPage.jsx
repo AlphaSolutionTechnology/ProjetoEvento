@@ -4,20 +4,21 @@ import { LogIn, UserPlus, Mail, Lock } from "lucide-react";
 import GoogleSignIn from "../components/GoogleSignIn";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import AuthContext from "../context/AuthContext";
+import AlertToast from "../components/alert/AlertToast";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ username: "", email: "", password: "", confirmPassword: "" });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-  const {setUser} = useAuth();
+  const [toastMessage, setToastMessage] = useState(null);  // Usando diretamente o estado do toast
+  const { setUser } = useAuth();
   const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
-  
+    setToastMessage(null);  // Resetando a mensagem de toast
+
     try {
       const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
@@ -28,28 +29,26 @@ const AuthPage = () => {
           password: formData.password,
         }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
-        setMessage({ type: "success", text: "Login realizado com sucesso!" });
+        setToastMessage({ type: "success", text: "Login realizado com sucesso!" });
         await new Promise((resolve) => {
           localStorage.setItem("user_data", JSON.stringify(data.data));
           setUser(data.data);
           resolve();
         });
-        
-        navigate("/home")
+        navigate("/home");
       } else {
-        setMessage({ type: "error", text: data.message || "Erro ao fazer login" });
+        setToastMessage({ type: "error", text: data.message || "Erro ao fazer login" });
       }
     } catch (error) {
-      setMessage({ type: "error", text: "Erro de conexão com o servidor" });
+      setToastMessage({ type: "error", text: "Erro de conexão com o servidor" });
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -58,17 +57,17 @@ const AuthPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
+    setToastMessage(null);  // Resetando a mensagem de toast
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage({ type: "error", text: "As senhas não coincidem" });
+      setToastMessage({ type: "error", text: "As senhas não coincidem" });
       setLoading(false);
       return;
     }
 
-    if (formData.password.length < 8){
-      setMessage("Crie uma senha com pelo menos 8 caracteres!");
-      setLoading(false)
+    if (formData.password.length < 8) {
+      setToastMessage({ type: "error", text: "Crie uma senha com pelo menos 8 caracteres!" });
+      setLoading(false);
       return;
     }
 
@@ -88,14 +87,14 @@ const AuthPage = () => {
       });
 
       if (response.status === 201) {
-        setMessage({ type: "success", text: "Usuário registrado com sucesso!" });
+        setToastMessage({ type: "success", text: "Usuário registrado com sucesso!" });
         setIsLogin(true);
       } else {
         const errorMsg = await response.text();
-        setMessage({ type: "error", text: errorMsg || "Erro ao registrar" });
+        setToastMessage({ type: "error", text: errorMsg || "Erro ao registrar" });
       }
     } catch (error) {
-      setMessage({ type: "error", text: "Erro de conexão com o servidor" });
+      setToastMessage({ type: "error", text: "Erro de conexão com o servidor" });
     } finally {
       setLoading(false);
     }
@@ -129,10 +128,7 @@ const AuthPage = () => {
         <form onSubmit={isLogin ? handleLogin : handleRegister} className="space-y-4">
           {!isLogin && (
             <motion.div whileFocus={{ scale: 1.02 }} className="relative">
-              <UserPlus
-                className="absolute left-3 top-3 text-gray-400"
-                size={20}
-              />
+              <UserPlus className="absolute left-3 top-3 text-gray-400" size={20} />
               <input
                 type="text"
                 name="username"
@@ -199,17 +195,11 @@ const AuthPage = () => {
           </motion.button>
         </form>
 
-        {message && (
-          <p className={`mt-4 text-center ${message.type === "error" ? "text-red-500" : "text-green-400"}`}>
-            {message.text}
-          </p>
-        )}
-
         <div className="text-center mt-4">
           <span
             onClick={() => {
               setIsLogin(!isLogin);
-              setMessage(null);
+              setToastMessage(null);  // Resetando ao alternar entre login e registro
             }}
             className="text-blue-400 cursor-pointer hover:underline transition duration-300"
           >
@@ -232,6 +222,16 @@ const AuthPage = () => {
           <GoogleSignIn />
         </motion.div>
       </motion.div>
+
+      {/* Integração do AlertToast */}
+      {toastMessage && (
+        <AlertToast
+          open={!!toastMessage}
+          message={toastMessage.text}
+          type={toastMessage.type}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
     </div>
   );
 };
