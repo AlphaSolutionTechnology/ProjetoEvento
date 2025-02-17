@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CreateQuestoes from "../components/createQuestion/createquestoes";
 import { useLocation } from "react-router-dom";
 import QrCode from "react-qr-code";
+import AlertToast from "../components/AlertToast"; // Importa o AlertToast
 
 function AdmQuizz() {
   const [questoes, setQuestoes] = useState([]);
@@ -10,6 +11,11 @@ function AdmQuizz() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [codigoPalestra, setCodigoPalestra] = useState("");
   const [loadingQuestoes, setLoadingQuestoes] = useState(false);
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    type: "success",
+  });
 
   const location = useLocation();
 
@@ -21,22 +27,34 @@ function AdmQuizz() {
     setCodigoPalestra(codigo || "");
   }, [location]);
 
+  const showToast = (message, type) => {
+    setToast({ open: true, message, type });
+    setTimeout(
+      () => setToast({ open: false, message: "", type: "success" }),
+      3000
+    );
+  };
+
   const searchQuestoes = async () => {
     if (!palestraId) return;
 
     setLoadingQuestoes(true);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/questoes/${palestraId}`);
+      const response = await fetch(
+        `http://localhost:8080/api/questoes/${palestraId}`
+      );
 
       if (response.ok) {
         const data = await response.json();
         setQuestoes(data);
+        showToast("Questões carregadas com sucesso!", "success");
       } else {
         throw new Error("Erro ao buscar as questões.");
       }
     } catch (error) {
       console.error("Erro:", error);
+      showToast("Falha ao carregar questões.", "error");
     } finally {
       setLoadingQuestoes(false);
     }
@@ -54,23 +72,24 @@ function AdmQuizz() {
           credentials: "include",
         }
       );
-  
+
       if (response.ok) {
         setQuestoes((prevQuestoes) => {
-          const updatedQuestoes = prevQuestoes.filter((questao) => questao.id !== idQuestao);
-  
+          const updatedQuestoes = prevQuestoes.filter(
+            (questao) => questao.id !== idQuestao
+          );
           setCurrentSlide((prev) => Math.min(prev, updatedQuestoes.length - 1));
-  
           return updatedQuestoes;
         });
+        showToast("Questão excluída com sucesso!", "success");
       } else {
         throw new Error("Erro ao excluir a questão.");
       }
     } catch (error) {
       console.error("Erro:", error);
+      showToast("Falha ao excluir questão.", "error");
     }
   };
-  
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % questoes.length);
@@ -85,6 +104,7 @@ function AdmQuizz() {
       <h1 className="text-3xl font-bold mb-8 text-center">
         Gerenciar Quizzes da Palestra
       </h1>
+
       <div className="mb-8 flex gap-4">
         {!showQuestoes ? (
           <button
@@ -176,6 +196,14 @@ function AdmQuizz() {
       {palestraId && (
         <QrCode value={codigoPalestra} size={255} className="mb-10" />
       )}
+
+      {/* AlertToast */}
+      <AlertToast
+        open={toast.open}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ open: false, message: "", type: "success" })}
+      />
     </div>
   );
 }
