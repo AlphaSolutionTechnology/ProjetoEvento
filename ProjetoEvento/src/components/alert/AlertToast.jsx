@@ -29,7 +29,7 @@ const AlertToast = ({ open, message, type, onClose }) => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.3 }}
-          className={`fixed bottom-4 right-4 flex items-center gap-3 p-4 rounded-xl shadow-lg 
+          className={`fixed bottom-4 right-4 flex items-center gap-3 p-4 rounded-xl shadow-lg z-50 
             ${
               type === "success"
                 ? "bg-green-50"
