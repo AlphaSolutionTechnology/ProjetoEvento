@@ -2,11 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import FeedbackMessage from "./FeedbackMessage";
 import QuestionsInvite from "./QuestionsInvite.jsx";
+import ChatComponent from "../AI/Groq.jsx"; // Importa o componente de geração de questões
 
 function CreateQuestoes() {
-  const [questions, setQuestions] = useState([
-    { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
-  ]);
+  const [questions, setQuestions] = useState([]);
   const [message, setMessage] = useState("");
   const location = useLocation();
   const idPalestra = location.state?.idPalestra;
@@ -19,30 +18,27 @@ function CreateQuestoes() {
 
   // Callback para receber a questão gerada pela IA
   const handleReceiveQuestion = useCallback((newQuestion) => {
+    if (!newQuestion || !newQuestion.question) return;
+
     const formattedQuestion = {
-      questionText: newQuestion.question || newQuestion.enunciado || "",
-      choices: newQuestion.choices || newQuestion.alternativas || ["", "", "", ""],
-      correctAnswer: newQuestion.correctAnswer || newQuestion.respostaCorreta || "",
+      questionText: newQuestion.question || "",
+      choices: newQuestion.choices || ["", "", "", ""],
+      correctAnswer: newQuestion.correctAnswer || "",
     };
 
-    setQuestions((prevQuestions) => {
-      // Se existe apenas uma questão vazia, substitui-a; caso contrário, adiciona
-      if (prevQuestions.length === 1 && !prevQuestions[0].questionText) {
-        return [formattedQuestion];
-      }
-      return [...prevQuestions, formattedQuestion];
-    });
+    setQuestions((prevQuestions) => [...prevQuestions, formattedQuestion]);
   }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen dark:bg-gray-800 bg-gray-100 p-4">
+
       <QuestionsInvite
         questions={questions}
         setQuestions={setQuestions}
         idPalestra={idPalestra}
         setMessage={setMessage}
-        onReceiveQuestion={handleReceiveQuestion}
       />
+
       <FeedbackMessage message={message} />
     </div>
   );

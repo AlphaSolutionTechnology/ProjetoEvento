@@ -46,6 +46,7 @@ export default function NotificationButton() {
     const userUniqueCode = JSON.parse(
       localStorage.getItem("user_data")
     )?.unique_code;
+
     try {
       const response = await fetch(
         "http://localhost:8080/api/connection/answerconnectionrequest",
@@ -60,7 +61,6 @@ export default function NotificationButton() {
           }),
         }
       );
-
       if (response.ok) {
         setNotifications((prev) =>
           prev.filter((notification) => notification.userId !== userId)

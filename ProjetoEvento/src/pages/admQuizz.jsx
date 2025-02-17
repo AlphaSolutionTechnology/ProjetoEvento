@@ -9,6 +9,7 @@ function AdmQuizz() {
   const [showQuestoes, setShowQuestoes] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [codigoPalestra, setCodigoPalestra] = useState("");
+  const [loadingQuestoes, setLoadingQuestoes] = useState(false);
 
   const location = useLocation();
 
@@ -18,10 +19,13 @@ function AdmQuizz() {
 
     const codigo = location.state?.codigoPalestra;
     setCodigoPalestra(codigo || "");
-  }, [location.search]);
+  }, [location]);
 
-  // Atualizado para usar o endpoint /api/questoes/{idPalestra}
   const searchQuestoes = async () => {
+    if (!palestraId) return;
+
+    setLoadingQuestoes(true);
+
     try {
       const response = await fetch(`http://localhost:8080/api/questoes/${palestraId}`);
 
@@ -33,14 +37,10 @@ function AdmQuizz() {
       }
     } catch (error) {
       console.error("Erro:", error);
+    } finally {
+      setLoadingQuestoes(false);
     }
   };
-
-  useEffect(() => {
-    if (palestraId) {
-      searchQuestoes();
-    }
-  }, [palestraId]);
 
   const deleteQuestao = async (idQuestao) => {
     try {
@@ -51,12 +51,18 @@ function AdmQuizz() {
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include", // Garante que cookies sejam enviados
+          credentials: "include",
         }
       );
-
+  
       if (response.ok) {
-        setQuestoes(questoes.filter((questao) => questao.id !== idQuestao));
+        setQuestoes((prevQuestoes) => {
+          const updatedQuestoes = prevQuestoes.filter((questao) => questao.id !== idQuestao);
+  
+          setCurrentSlide((prev) => Math.min(prev, updatedQuestoes.length - 1));
+  
+          return updatedQuestoes;
+        });
       } else {
         throw new Error("Erro ao excluir a questão.");
       }
@@ -64,6 +70,7 @@ function AdmQuizz() {
       console.error("Erro:", error);
     }
   };
+  
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % questoes.length);
@@ -82,7 +89,10 @@ function AdmQuizz() {
         {!showQuestoes ? (
           <button
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={() => setShowQuestoes(true)}
+            onClick={() => {
+              setShowQuestoes(true);
+              searchQuestoes();
+            }}
           >
             Ver Questões
           </button>
@@ -95,9 +105,14 @@ function AdmQuizz() {
           </button>
         )}
       </div>
+
       {showQuestoes ? (
         <div className="w-full max-w-4xl">
-          {questoes.length === 0 ? (
+          {loadingQuestoes ? (
+            <p className="text-lg text-gray-500 dark:text-gray-400 text-center">
+              Carregando questões...
+            </p>
+          ) : questoes.length === 0 ? (
             <p className="text-lg text-gray-500 dark:text-gray-400 text-center">
               Nenhuma questão encontrada.
             </p>
@@ -155,6 +170,7 @@ function AdmQuizz() {
           <CreateQuestoes />
         </div>
       )}
+
       <h1 className="mt-40 mb-28">QR CODE DA PALESTRA</h1>
       <h3 className="mb-11">Código: {codigoPalestra}</h3>
       {palestraId && (
