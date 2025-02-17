@@ -77,7 +77,7 @@ export default function NotificationButton() {
     <div className="relative">
       {/* Botão do sino com Badge */}
       <motion.button
-        className="relative flex items-center justify-center p-2 rounded-full transition duration-200 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 z-50"
+        className="relative flex items-center justify-center p-2 rounded-full transition duration-200 bg-transparent hover:bg-gray-300 dark:hover:bg-gray-700"
         onClick={toggleDropdown}
         whileTap={{ scale: 0.9 }}
       >
