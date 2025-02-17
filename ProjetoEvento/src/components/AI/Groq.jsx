@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import pdfToText from "react-pdftotext";
+import AlertToast from "../alert/AlertToast";
 
 export default function ChatComponent({ onReceiveQuestion }) {
   const [loading, setLoading] = useState(false);
@@ -7,6 +8,7 @@ export default function ChatComponent({ onReceiveQuestion }) {
   const [questionCount, setQuestionCount] = useState("2");
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
+  const [alert, setAlert] = useState({ open: false, message: "", type: "success" });
 
   const handleExtractText = async (file) => {
     try {
@@ -15,6 +17,7 @@ export default function ChatComponent({ onReceiveQuestion }) {
     } catch (error) {
       console.error("Erro ao extrair texto do PDF:", error);
       setPdfText("");
+      setAlert({ open: true, message: "Erro ao extrair texto do PDF.", type: "error" });
     }
   };
 
@@ -24,13 +27,13 @@ export default function ChatComponent({ onReceiveQuestion }) {
       setPdfFile(file);
       handleExtractText(file);
     } else {
-      alert("Por favor, selecione um arquivo PDF válido.");
+      setAlert("Por favor, selecione um arquivo PDF válido.", "error");
     }
   };
 
   const handleFetchChatCompletion = useCallback(async () => {
     if (!pdfText.trim()) {
-      alert("Erro: Nenhum texto extraído do PDF.");
+      setAlert("Erro: Nenhum texto extraído do PDF.", "error");
       return;
     }
 
@@ -55,11 +58,13 @@ export default function ChatComponent({ onReceiveQuestion }) {
 
       if (Array.isArray(data)) {
         data.forEach(onReceiveQuestion); // Passa as questões corretamente para `CreateQuestoes`
+        setAlert({ open: true, message: "Questões geradas com sucesso.", type: "success" });
       } else {
         console.warn("A resposta da API não está no formato esperado:", data);
       }
     } catch (error) {
       console.error("Erro ao gerar questões:", error);
+      setAlert({ open: true, message: "Erro ao gerar questões.", type: "error" });
     } finally {
       setLoading(false);
       setShowPrompt(false);
@@ -125,6 +130,13 @@ export default function ChatComponent({ onReceiveQuestion }) {
           </div>
         </div>
       )}
+      {/* Componente de alerta */}
+      <AlertToast
+        open={alert.open}
+        message={alert.message}
+        type={alert.type}
+        onClose={() => setAlert({ open: false, message: "", type: "success" })}
+      />
     </div>
   );
 }

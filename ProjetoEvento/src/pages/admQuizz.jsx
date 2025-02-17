@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CreateQuestoes from "../components/createQuestion/createquestoes";
 import { useLocation } from "react-router-dom";
 import QrCode from "react-qr-code";
-import AlertToast from "../components/AlertToast"; // Importa o AlertToast
+import AlertToast from "../components/alert/AlertToast"; // Importa o AlertToast
 
 function AdmQuizz() {
   const [questoes, setQuestoes] = useState([]);
