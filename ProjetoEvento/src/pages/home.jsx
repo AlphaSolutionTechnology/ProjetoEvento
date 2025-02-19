@@ -132,7 +132,7 @@ function Home() {
             transition={{ duration: 0.3 }}
           >
             <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Entrar em palestra</h2>
+            <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">Entrar em palestra</h2>
             <p className="text-gray-400 mb-4">
               Cadastre-se, acesse suas palestras e quizzes de forma prática.
             </p>
