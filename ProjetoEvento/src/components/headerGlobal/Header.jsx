@@ -40,10 +40,10 @@ const Header = () => {
   }, [windowWidth]);
 
   return (
-    <header className="p-6 flex justify-between items-center bg-white/30 dark:bg-gray-800/30 backdrop-blur-lg rounded-lg shadow-lg relative z-50">
+    <header className="p-6 flex justify-between items-center bg-white dark:bg-gray-800 backdrop-blur-lg rounded-lg shadow-lg relative z-50">
       <h1
         onClick={handleNavigateHome}
-        className="text-2xl font-bold cursor-pointer"
+        className="text-2xl font-bold cursor-pointer text-gray-900 dark:text-white hover:text-blue-500 transition-colors duration-300"
       >
         Home
       </h1>
@@ -56,13 +56,17 @@ const Header = () => {
       </nav>
 
       {/* Menu Hamburguer para telas pequenas */}
-      <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-        {menuOpen ? <X size={28} /> : <Menu size={28} />}
+      <button 
+        className="md:hidden p-2 rounded-full border-2 border-gray-400 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle Menu"
+      >
+        {menuOpen ? <X size={28} className="text-gray-900 dark:text-white" /> : <Menu size={28} className="text-gray-900 dark:text-white" />}
       </button>
 
       {/* Menu suspenso quando o hamburguer está aberto */}
       {menuOpen && (
-        <nav className="absolute top-full right-4 mt-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg flex flex-row items-center gap-4">
+        <nav className="absolute top-full right-4 mt-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg flex flex-col items-center gap-4">
           <NotificationButton />
           <ThemeToggle />
           <AccountMenu />

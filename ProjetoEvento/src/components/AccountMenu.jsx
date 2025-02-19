@@ -50,13 +50,12 @@ export default function AccountMenu() {
         aria-expanded={isOpen ? "true" : "false"}
         aria-controls="account-menu"
         aria-label="Abrir menu de conta"
-        className="p-2 rounded-full bg-transparent border-2 border-gray-400 dark:border-gray-600 focus:outline-none"
+        className="p-2 rounded-full bg-transparent border-gray-400 dark:border-gray-600 focus:outline-none"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
-        <User size={32} />
+        <User size={32} className="text-gray-900 dark:text-white" />
       </motion.button>
-
 
       {isOpen && (
         <motion.div
@@ -75,8 +74,8 @@ export default function AccountMenu() {
                 className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
                 aria-label="Ir para o perfil"
               >
-                <User size={20} className="mr-2" />
-                Perfil
+                <User size={20} className="mr-2 text-gray-900 dark:text-white" />
+                <span className="text-gray-900 dark:text-white">Perfil</span>
               </button>
             </li>
             <li>
@@ -85,25 +84,25 @@ export default function AccountMenu() {
                 className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
                 aria-label="Minhas conexões"
               >
-                <Users size={20} className="mr-2" />
-                Minhas Conexões
+                <Users size={20} className="mr-2 text-gray-900 dark:text-white" />
+                <span className="text-gray-900 dark:text-white">Minhas Conexões</span>
               </button>
             </li>
             <li>
               <hr className="my-1 border-gray-500 dark:border-gray-600" />
             </li>
             <li>
-            <button
-              onClick={async () => {
-                await logout(); 
-                navigate("/login");
-              }}
-              className="flex items-center px-4 py-2 w-full text-left text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
-              aria-label="Sair"
-            >
-              <LogOut size={20} className="mr-2" />
-              Sair
-            </button>
+              <button
+                onClick={async () => {
+                  await logout(); 
+                  navigate("/login");
+                }}
+                className="flex items-center px-4 py-2 w-full text-left text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
+                aria-label="Sair"
+              >
+                <LogOut size={20} className="mr-2 text-gray-900 dark:text-white" />
+                <span className="text-gray-900 dark:text-white">Sair</span>
+              </button>
             </li>
           </ul>
         </motion.div>
