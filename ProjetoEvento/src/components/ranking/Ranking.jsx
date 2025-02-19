@@ -13,7 +13,7 @@ import {
 import { WebSocketContext } from "../../context/WebSocketContext";
 import { useNavigate } from "react-router-dom";
 
-const Ranking = ({ idPalestra }) => {
+const Ranking = () => {
   const navigate = useNavigate();
 
   const [rankingData, setRankingData] = useState([]);
@@ -22,13 +22,8 @@ const Ranking = ({ idPalestra }) => {
   const { messages } = useContext(WebSocketContext);
 
   useEffect(() => {
-    if (!idPalestra) {
-      setError("Código da palestra não informado.");
-      setLoading(false);
-      return;
-    }
-    fetchUpdatedRanking(idPalestra);
-  }, [idPalestra]);
+    fetchUpdatedRanking();
+  }, []);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -37,31 +32,24 @@ const Ranking = ({ idPalestra }) => {
       console.log("mensagem websocket recebida:", lastMessage);
 
       if (
-        lastMessage?.type === "ranking_update" &&
-        lastMessage.idPalestra === idPalestra
+        lastMessage?.type === "ranking_update"
       ) {
         console.log(
           "Sinal de atualização do ranking recebido. Buscando novos dados..."
         );
-        fetchUpdatedRanking(idPalestra);
+        fetchUpdatedRanking();
       } else {
         console.log(
           "Mensagem WebSocket ignorada. Não é uma atualização do ranking."
         );
       }
     }
-  }, [messages, idPalestra]);
+  }, [messages]);
 
-  const fetchUpdatedRanking = async (uniqueCode) => {
-    if (!uniqueCode) {
-      setError("Código da palestra não informado.");
-      setLoading(false);
-      return;
-    }
+  const fetchUpdatedRanking = async () => {
 
     try {
       setLoading(true);
-      console.log("Código da palestra recebido:", uniqueCode);
       const response = await fetch(
         `http://localhost:8080/api/ranking/getupdatedranking`,
         {

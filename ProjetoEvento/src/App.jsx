@@ -102,10 +102,10 @@ function App() {
           />
 
           <Route
-            path="/ranking/:idPalestra"
+            path="/ranking"
             element={
               <ProtectedRouteLogin>
-                <RouteWrapper component={Ranking_View} />
+                  <Ranking_View/>
               </ProtectedRouteLogin>
             }
           />
