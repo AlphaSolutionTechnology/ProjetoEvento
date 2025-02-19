@@ -4,6 +4,7 @@ import NotificationButton from '../notification/NotificationButton';
 import ThemeToggle from '../ThemeToggle';
 import AccountMenu from '../AccountMenu';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion'; // Importando AnimatePresence
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -56,22 +57,38 @@ const Header = () => {
       </nav>
 
       {/* Menu Hamburguer para telas pequenas */}
-      <button 
-        className="md:hidden p-2 rounded-full border-2 border-gray-400 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
+      <motion.button 
+        className="md:hidden p-2 rounded-full  dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Toggle Menu"
+        initial={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }} // Animação ao passar o mouse sobre o botão
+        whileTap={{ scale: 0.95 }} // Animação ao clicar
+        transition={{ duration: 0.2 }}
       >
-        {menuOpen ? <X size={28} className="text-gray-900 dark:text-white" /> : <Menu size={28} className="text-gray-900 dark:text-white" />}
-      </button>
+        {menuOpen ? (
+          <X size={28} className="text-gray-900 dark:text-white" />
+        ) : (
+          <Menu size={28} className="text-gray-900 dark:text-white" />
+        )}
+      </motion.button>
 
       {/* Menu suspenso quando o hamburguer está aberto */}
-      {menuOpen && (
-        <nav className="absolute top-full right-4 mt-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg flex flex-col items-center gap-4">
-          <NotificationButton />
-          <ThemeToggle />
-          <AccountMenu />
-        </nav>
-      )}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            className="absolute top-full right-4 mt-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg flex flex-col items-center gap-4"
+            initial={{ opacity: 0, y: -20 }} // Inicia o menu invisível e acima
+            animate={{ opacity: 1, y: 0 }} // Animação de fade-in e slide-up
+            exit={{ opacity: 0, y: -20 }} // Animação de fade-out e slide-up
+            transition={{ duration: 0.3 }}
+          >
+            <NotificationButton />
+            <ThemeToggle />
+            <AccountMenu />
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

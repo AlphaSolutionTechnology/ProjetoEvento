@@ -110,7 +110,7 @@ function Home() {
             transition={{ duration: 0.3 }}
           >
             <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Gerencie suas Palestras</h2>
+            <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">Gerencie suas Palestras</h2>
             <p className="text-gray-400 mb-4">
               Acesse, edite e organize suas palestras de forma prática.
             </p>
@@ -218,7 +218,7 @@ function Home() {
           transition={{ duration: 0.3 }}
         >
           <UserIcon className="h-12 w-12 text-purple-500 mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Gerencie suas Conexões</h2>
+          <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">Gerencie suas Conexões</h2>
           <p className="text-gray-400 mb-4">
             Conecte-se facilmente com outros usuários da plataforma.
           </p>
