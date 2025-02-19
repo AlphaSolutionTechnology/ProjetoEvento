@@ -133,26 +133,6 @@ function PalestrasList() {
 
   return (
     <div className="min-h-screen p-6 text-white dark:bg-[#0d1117]">
-      {/* Círculos decorativos com animação de escala */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute top-10 left-10 w-40 h-40 bg-blue-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" // pointer-events: none para os círculos
-      ></motion.div>
-
-      {/* Outro círculo */}
-      <motion.div
-        animate={{ scale: [1, 1.3, 1] }}
-        transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute bottom-10 right-20 w-52 h-52 bg-green-800 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" // pointer-events: none para os círculos
-      ></motion.div>
-
-      {/* Um terceiro círculo */}
-      <motion.div
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute bottom-20 left-32 w-36 h-36 bg-pink-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" // pointer-events: none para os círculos
-      ></motion.div>
 
       {/* Título principal */}
       <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6 sm:text-3xl md:text-4xl lg:text-4xl">

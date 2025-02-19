@@ -104,9 +104,6 @@ const Ranking = ({ idPalestra }) => {
 
   return (
     <div className="relative flex flex-col justify-center items-center min-h-screen p-6">
-      {/* Círculos de fundo */}
-      <div className="absolute w-72 h-72 bg-blue-400/30 rounded-full blur-3xl top-10 left-10"></div>
-      <div className="absolute w-72 h-72 bg-purple-400/30 rounded-full blur-3xl bottom-10 right-10"></div>
 
       <div className="relative max-w-4xl w-full p-6 bg-white/40 dark:bg-gray-800/40 shadow-2xl rounded-2xl backdrop-blur-md border border-white/30 dark:border-gray-700">
         <motion.h2

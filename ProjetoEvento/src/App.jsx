@@ -11,14 +11,35 @@ import PalestrasList from './pages/PalestrasList';
 import RouteWrapper from './components/RouteWrapper';
 import Header from './components/headerGlobal/Header';
 import ProtectedRouteLogin from './components/ProtectedRouteLogin';
+import { motion } from 'framer-motion';
 
 function App() {
   const location = useLocation();
 
   return (
     <WebSocketProvider>
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        
+      <div className="min-h-screen p-6 text-white dark:bg-[#0d1117] relative">
+        {/* Círculos decorativos com animação de escala */}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute top-10 left-10 w-40 h-40 bg-blue-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" 
+        ></motion.div>
+
+        {/* Outro círculo */}
+        <motion.div
+          animate={{ scale: [1, 1.3, 1] }}
+          transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute bottom-10 right-20 w-52 h-52 bg-green-800 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" 
+        ></motion.div>
+
+        {/* Um terceiro círculo */}
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute bottom-20 left-32 w-36 h-36 bg-pink-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" 
+        ></motion.div>
+
         {/* Renderiza o Header em todas as páginas, menos na tela de Login */}
         {location.pathname !== '/login' && <Header />}
 

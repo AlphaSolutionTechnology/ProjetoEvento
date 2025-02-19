@@ -82,25 +82,7 @@ function Home() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
-      {/* Círculos decorativos com blur */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute top-10 left-10 w-40 h-40 bg-blue-400 dark:bg-blue-500 opacity-30 blur-3xl rounded-full"
-      ></motion.div>
-
-      <motion.div
-        animate={{ scale: [1, 1.3, 1] }}
-        transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute bottom-10 right-20 w-52 h-52 bg-green-300 dark:bg-green-800 opacity-30 blur-3xl rounded-full"
-      ></motion.div>
-
-      <motion.div
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute bottom-20 left-32 w-36 h-36 bg-pink-300 dark:bg-pink-500 opacity-30 blur-3xl rounded-full"
-      ></motion.div>
+    <main className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden transition-colors duration-300">
 
       {/* Título */}
       <motion.h1
@@ -115,7 +97,7 @@ function Home() {
         O que você gostaria de fazer hoje?
       </p>
 
-      <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl`}>
+      <section className={`grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl`}>
         {/* Se for administrador, mostrar "Gerencie suas Palestras" */}
         {user?.role === "Administrador" ? (
           <motion.div
@@ -173,33 +155,47 @@ function Home() {
         {/* Modal para entrada de código */}
         <BasicModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <div className="p-6">
-            <h2 className="text-xl font-bold mb-4">
-              Digite o código da palestra
-            </h2>
-            <input
-              type="text"
-              value={codigoPalestra}
-              onChange={(e) => setCodigoPalestra(e.target.value)}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-              placeholder="Código da palestra"
-            />
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={() => validarPalestra(codigoPalestra)}
-                disabled={!codigoPalestra}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
-              >
-                Confirmar
-              </button>
-              <button
-                onClick={() => setIsScanning(true)}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-              >
-                Escanear QR Code
-              </button>
-            </div>
+            <h2 className="text-xl font-bold mb-4">Digite o código da palestra</h2>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                validarPalestra(codigoPalestra);
+              }}
+            >
+              <label htmlFor="codigoPalestra" className="sr-only">
+                Código da palestra
+              </label>
+              <input
+                id="codigoPalestra"
+                type="text"
+                value={codigoPalestra}
+                onChange={(e) => setCodigoPalestra(e.target.value)}
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                placeholder="Código da palestra"
+              />
+
+              <div className="flex justify-between mt-4">
+                <button
+                  type="submit"
+                  disabled={!codigoPalestra}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
+                >
+                  Confirmar
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsScanning(true)}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                >
+                  Escanear QR Code
+                </button>
+              </div>
+            </form>
           </div>
         </BasicModal>
+
 
         {/* Modal de Scanner de QR Code */}
         <BasicModal open={isScanning} onClose={() => setIsScanning(false)}>
@@ -233,7 +229,7 @@ function Home() {
             Conectar-se a outro usuário
           </button>
         </motion.div>
-      </div>
+      </section>
 
       {/* AlertToast */}
       <AlertToast
@@ -242,7 +238,7 @@ function Home() {
         message={toastMessage}
         onClose={() => setToastOpen(false)}
       />
-    </div>
+    </main>
   );
 }
 
