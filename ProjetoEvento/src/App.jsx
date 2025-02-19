@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { WebSocketProvider } from './context/WebSocketContext';
-import Home from './pages/Home';
-import Questoes from './pages/Questoes';
+import { motion } from 'framer-motion';
+import Home from './pages/home';
 import AdmQuiz from './pages/admQuiz';
+import Questoes from './pages/Questoes';
 import LoginPage from './pages/LoginPage';
 import QuizzesPage from './pages/QuizzesPage';
 import ConnectPage from './pages/ConnectPage';
@@ -11,14 +12,14 @@ import PalestrasList from './pages/PalestrasList';
 import RouteWrapper from './components/RouteWrapper';
 import Header from './components/headerGlobal/Header';
 import ProtectedRouteLogin from './components/ProtectedRouteLogin';
-import { motion } from 'framer-motion';
+
 
 function App() {
   const location = useLocation();
 
   return (
     <WebSocketProvider>
-      <div className="min-h-screen p-6 text-white dark:bg-[#0d1117] relative">
+      <main className="min-h-screen text-white dark:bg-[#0d1117] relative">
         {/* Círculos decorativos com animação de escala */}
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
@@ -63,7 +64,7 @@ function App() {
           <Route path="/ranking/:idPalestra" element={<ProtectedRouteLogin><RouteWrapper component={RankingView} /></ProtectedRouteLogin>} />
           
         </Routes>
-      </div>
+      </main>
     </WebSocketProvider>
   );
 }

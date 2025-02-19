@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
 import { LogOut, User, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import useAuth from "../hooks/useAuth";
 
 export default function AccountMenu() {
@@ -43,7 +43,7 @@ export default function AccountMenu() {
   }, []);
 
   return (
-    <div className="relative">
+    <div className="relative z-999">
       <motion.button
         onClick={handleClick} 
         ref={iconRef} 

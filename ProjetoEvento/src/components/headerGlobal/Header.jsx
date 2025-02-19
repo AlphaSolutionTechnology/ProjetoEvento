@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import NotificationButton from '../notification/NotificationButton';
 import ThemeToggle from '../ThemeToggle';
@@ -10,11 +10,27 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleNavigateHome = () => {
-    navigate('/home');
+    if (window.location.pathname == "/home") {
+      window.location.reload(); // Atualiza a pagina se ja estiver na Home
+    } else {
+      navigate('/home')
+    }
   };
 
+  // Fecha o Menu ao redimensionar a tela
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <header className="p-4 flex justify-between items-center bg-white/30 dark:bg-gray-800/30 backdrop-blur-lg rounded-lg shadow-lg relative">
+    <header className="p-6 flex justify-between items-center bg-white/30 dark:bg-gray-800/30 backdrop-blur-lg rounded-lg shadow-lg relative z-50">
       <h1
         onClick={handleNavigateHome}
         className="text-2xl font-bold cursor-pointer"
