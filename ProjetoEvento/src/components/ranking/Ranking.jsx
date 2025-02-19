@@ -63,7 +63,7 @@ const Ranking = ({ idPalestra }) => {
       setLoading(true);
       console.log("Código da palestra recebido:", uniqueCode);
       const response = await fetch(
-        `http://localhost:8080/api/ranking/${uniqueCode}`,
+        `http://localhost:8080/api/ranking/getupdatedranking`,
         {
           method: "GET",
           credentials: "include",
