@@ -8,7 +8,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={() => setDarkMode(!darkMode)}
-      className="p-2 rounded-full bg-gray-200 dark:bg-gray-800 focus:outline-none"
+      className="p-2 rounded-full focus:outline-none hover:bg-gray-200 dark:hover:bg-gray-700"
     >
       <motion.div
         animate={{

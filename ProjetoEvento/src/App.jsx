@@ -1,105 +1,65 @@
-import React from "react";
-import {
-  Routes,
-  Route,
-  useLocation,
-  Navigate,
-  useParams,
-} from "react-router-dom";
-import Questoes from "./pages/Questoes";
-import ThemeToggle from "./components/toggleDarkMode";
-import ConnectPage from "./pages/ConnectPage";
-import Home from "./pages/home";
-import LoginPage from "./pages/LoginPage";
-import PalestrasList from "./pages/palestrasList";
-import AdmQuizz from "./pages/admQuizz";
-import { WebSocketProvider } from "./context/WebSocketContext";
-import NotificationButton from "./components/notification/NotificationButton";
-import AccountMenu from "./components/AccountMenu";
-import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
-import Ranking_View from "./pages/Ranking_View";
-import { useNavigate } from "react-router-dom";
-import QuizzesPage from "./pages/QuizzesPage";
-import ProtectedRouteInscricao from "./components/ProtectedRouteInscricao";
-import RouteWrapper from "./components/RouteWrapper";
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { WebSocketProvider } from './context/WebSocketContext';
+import { motion } from 'framer-motion';
+import Home from './pages/home';
+import AdmQuiz from './pages/admQuiz';
+import Questoes from './pages/Questoes';
+import LoginPage from './pages/LoginPage';
+import QuizzesPage from './pages/QuizzesPage';
+import ConnectPage from './pages/ConnectPage';
+import RankingView from './pages/RankingView';
+import PalestrasList from './pages/PalestrasList';
+import RouteWrapper from './components/RouteWrapper';
+import Header from './components/headerGlobal/Header';
+import ProtectedRouteLogin from './components/ProtectedRouteLogin';
+
 
 function App() {
   const location = useLocation();
-  const navigate = useNavigate();
 
-  const handleNavigateHome = () => {
-    navigate("/home");
-  };
   return (
     <WebSocketProvider>
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        {location.pathname !== "/login" && (
-          <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
-            <h1
-              onClick={handleNavigateHome}
-              className="text-2xl font-bold cursor-pointer"
-            >
-              Home
-            </h1>
-            <div className=" w-48 flex justify-around items-center">
-              <NotificationButton />
-              <ThemeToggle />
-              <AccountMenu />
-            </div>
-          </header>
-        )}
+      <main className="min-h-screen text-white dark:bg-[#0d1117] relative">
+        {/* Círculos decorativos com animação de escala */}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute top-10 left-10 w-40 h-40 bg-blue-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" 
+        ></motion.div>
+
+        {/* Outro círculo */}
+        <motion.div
+          animate={{ scale: [1, 1.3, 1] }}
+          transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute bottom-10 right-20 w-52 h-52 bg-green-800 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" 
+        ></motion.div>
+
+        {/* Um terceiro círculo */}
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute bottom-20 left-32 w-36 h-36 bg-pink-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none" 
+        ></motion.div>
+
+        {/* Renderiza o Header em todas as páginas, menos na tela de Login */}
+        {location.pathname !== '/login' && <Header />}
 
         <Routes>
-          <Route path="/" element={<Navigate to={"/login"} />} />
+          <Route path="/" element={<Navigate to="/login" />} />
+
           <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/home"
-            element={
-              <ProtectedRouteLogin>
-                <Home />
-              </ProtectedRouteLogin>
-            }
-          />
-          <Route
-            path="/quizz/:idPalestra"
-            element={
-              <ProtectedRouteLogin>
-                <RouteWrapper component={Questoes} />
-              </ProtectedRouteLogin>
-            }
-          />
-          <Route
-            path="/conectar"
-            element={
-              <ProtectedRouteLogin>
-                <ConnectPage />
-              </ProtectedRouteLogin>
-            }
-          />
-          <Route
-            path="/palestras"
-            element={
-              <ProtectedRouteLogin role={"Administrador"}>
-                <PalestrasList />
-              </ProtectedRouteLogin>
-            }
-          />
-          <Route
-            path="/admQuizz"
-            element={
-              <ProtectedRouteLogin role={"Administrador"}>
-                <AdmQuizz />
-              </ProtectedRouteLogin>
-            }
-          />
-          <Route
-            path="/palestra/:idPalestra"
-            element={
-              <ProtectedRouteLogin role={"Participante"}>
-                <RouteWrapper component={QuizzesPage} />
-              </ProtectedRouteLogin>
-            }
-          />
+
+          <Route path="/home" element={<ProtectedRouteLogin><Home /></ProtectedRouteLogin>} />
+
+          <Route path="/quizz/:idPalestra" element={<ProtectedRouteLogin><RouteWrapper component={Questoes} /></ProtectedRouteLogin>} />
+
+          <Route path="/conectar" element={<ProtectedRouteLogin><ConnectPage /></ProtectedRouteLogin>} />
+
+          <Route path="/palestras" element={<ProtectedRouteLogin role="Administrador"><PalestrasList /></ProtectedRouteLogin>} />
+
+          <Route path="/admQuiz" element={<ProtectedRouteLogin role="Administrador"><AdmQuiz /></ProtectedRouteLogin>} />
+
+          <Route path="/palestra/:idPalestra" element={<ProtectedRouteLogin role="Participante"><RouteWrapper component={QuizzesPage} /></ProtectedRouteLogin>} />
 
           <Route
             path="/ranking"
@@ -110,7 +70,7 @@ function App() {
             }
           />
         </Routes>
-      </div>
+      </main>
     </WebSocketProvider>
   );
 }
