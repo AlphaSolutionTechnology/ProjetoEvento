@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import NotificationButton from '../notification/NotificationButton';
 import ThemeToggle from '../ThemeToggle';
@@ -7,27 +7,37 @@ import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
 
-  const handleNavigateHome = () => {
-    if (window.location.pathname == "/home") {
-      window.location.reload(); // Atualiza a pagina se ja estiver na Home
+  // Otimização com useCallback
+  const handleNavigateHome = useCallback(() => {
+    if (window.location.pathname === "/home") {
+      window.location.reload(); // Atualiza a página se já estiver na Home
     } else {
-      navigate('/home')
+      navigate('/home');
     }
-  };
+  }, [navigate]);
 
-  // Fecha o Menu ao redimensionar a tela
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setMenuOpen(false);
-      }
-    }
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+  // Atualiza a largura da janela
+  const handleResize = useCallback(() => {
+    setWindowWidth(window.innerWidth);
   }, []);
+
+  useEffect(() => {
+    // Adiciona o ouvinte de redimensionamento
+    window.addEventListener("resize", handleResize);
+
+    // Limpa o ouvinte ao desmontar
+    return () => window.removeEventListener("resize", handleResize);
+  }, [handleResize]);
+
+  // Fecha o menu em telas grandes
+  useEffect(() => {
+    if (windowWidth >= 768) {
+      setMenuOpen(false);
+    }
+  }, [windowWidth]);
 
   return (
     <header className="p-6 flex justify-between items-center bg-white/30 dark:bg-gray-800/30 backdrop-blur-lg rounded-lg shadow-lg relative z-50">
@@ -39,26 +49,24 @@ const Header = () => {
       </h1>
 
       {/* Ícones em telas grandes */}
-      <div className="hidden md:flex items-center gap-4">
+      <nav className="hidden md:flex items-center gap-4">
         <NotificationButton />
         <ThemeToggle />
         <AccountMenu />
-      </div>
+      </nav>
 
       {/* Menu Hamburguer para telas pequenas */}
-      <div className="md:hidden">
-        <button onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
+      <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
+        {menuOpen ? <X size={28} /> : <Menu size={28} />}
+      </button>
 
-      {/* Menu suspenso quando hamburguer está aberto */}
+      {/* Menu suspenso quando o hamburguer está aberto */}
       {menuOpen && (
-        <div className="absolute top-full right-4 mt-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg flex flex-row items-center gap-4">
+        <nav className="absolute top-full right-4 mt-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg flex flex-row items-center gap-4">
           <NotificationButton />
           <ThemeToggle />
           <AccountMenu />
-        </div>
+        </nav>
       )}
     </header>
   );
