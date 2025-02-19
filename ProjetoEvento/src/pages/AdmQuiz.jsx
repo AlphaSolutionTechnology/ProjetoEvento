@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import QrCode from "react-qr-code";
 import AlertToast from "../components/alert/AlertToast"; // Importa o AlertToast
 
-function AdmQuiz() {
+function admQuiz() {
   const [questoes, setQuestoes] = useState([]);
   const [palestraId, setPalestraId] = useState(null);
   const [showQuestoes, setShowQuestoes] = useState(false);
@@ -208,4 +208,4 @@ function AdmQuiz() {
   );
 }
 
-export default AdmQuiz;
+export default admQuiz;

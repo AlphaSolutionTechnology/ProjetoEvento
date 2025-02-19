@@ -226,7 +226,7 @@ function PalestrasList() {
               whileHover={{ scale: 1.02 }} // Animação de hover nos cards
               className="flex justify-between items-center al dark:bg-gray-900 dark:text-white p-6 rounded-xl shadow-md relative cursor-pointer text-sm sm:text-base md:text-lg lg:text-base xl:text-lg max-w-xl w-full mx-auto"
               onClick={() =>
-                navigate("/admQuizz", {
+                navigate("/admQuiz", {
                   state: {
                     idPalestra: palestra.id,
                     codigoPalestra: palestra.uniqueCode,
