@@ -11,15 +11,19 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { WebSocketContext } from "../../context/WebSocketContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Ranking = () => {
   const navigate = useNavigate();
+ 
 
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { messages } = useContext(WebSocketContext);
+ 
+  
+  
 
   useEffect(() => {
     fetchUpdatedRanking();
@@ -166,10 +170,10 @@ const Ranking = () => {
       </div>
 
       <button
-        onClick={() => navigate(`/palestra/${idPalestra}`)}
+        onClick={() => navigate(previousPage)}
         className="mt-8 bg-white rounded text-black p-2 hover:bg-gray-700 hover:text-white"
       >
-        Voltar à Palestra
+        Voltar
       </button>
     </div>
   );

@@ -65,7 +65,7 @@ function App() {
             path="/ranking"
             element={
               <ProtectedRouteLogin>
-                  <Ranking_View/>
+                  <RankingView/>
               </ProtectedRouteLogin>
             }
           />
