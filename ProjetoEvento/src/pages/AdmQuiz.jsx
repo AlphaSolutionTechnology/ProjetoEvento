@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react";
-import CreateQuestoes from "../components/createQuestion/createquestoes";
 import { useLocation } from "react-router-dom";
+import { useQuestoes } from "../hooks/useQuestoes";
+import AlertToast from "../components/alert/AlertToast";
+import QuestoesList from "../components/questoes/QuestoesList";
+import CreateQuestoes from "../components/createQuestion/createquestoes";
 import QrCode from "react-qr-code";
-import AlertToast from "../components/alert/AlertToast"; // Importa o AlertToast
 
-function admQuiz() {
-  const [questoes, setQuestoes] = useState([]);
+function AdmQuiz() {
   const [palestraId, setPalestraId] = useState(null);
   const [showQuestoes, setShowQuestoes] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [codigoPalestra, setCodigoPalestra] = useState("");
-  const [loadingQuestoes, setLoadingQuestoes] = useState(false);
   const [toast, setToast] = useState({
     open: false,
     message: "",
     type: "success",
   });
+  const [showQrCodeModal, setShowQrCodeModal] = useState(false); // Estado para controlar o modal do QR Code
 
   const location = useLocation();
+  const { questoes, loadingQuestoes, searchQuestoes, deleteQuestao } = useQuestoes(palestraId);
 
   useEffect(() => {
     const id = location.state?.idPalestra;
@@ -35,59 +37,17 @@ function admQuiz() {
     );
   };
 
-  const searchQuestoes = async () => {
-    if (!palestraId) return;
-
-    setLoadingQuestoes(true);
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/questoes/${palestraId}`
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setQuestoes(data);
-        showToast("Questões carregadas com sucesso!", "success");
-      } else {
-        throw new Error("Erro ao buscar as questões.");
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-      showToast("Falha ao carregar questões.", "error");
-    } finally {
-      setLoadingQuestoes(false);
+  const handleSearchQuestoes = async () => {
+    const result = await searchQuestoes();
+    if (result) {
+      showToast(result.message, result.success ? "success" : "error");
     }
   };
 
-  const deleteQuestao = async (idQuestao) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/questoes/delete/${idQuestao}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        setQuestoes((prevQuestoes) => {
-          const updatedQuestoes = prevQuestoes.filter(
-            (questao) => questao.id !== idQuestao
-          );
-          setCurrentSlide((prev) => Math.min(prev, updatedQuestoes.length - 1));
-          return updatedQuestoes;
-        });
-        showToast("Questão excluída com sucesso!", "success");
-      } else {
-        throw new Error("Erro ao excluir a questão.");
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-      showToast("Falha ao excluir questão.", "error");
+  const handleDeleteQuestao = async (idQuestao) => {
+    const result = await deleteQuestao(idQuestao);
+    if (result) {
+      showToast(result.message, result.success ? "success" : "error");
     }
   };
 
@@ -108,17 +68,17 @@ function admQuiz() {
       <div className="mb-8 flex gap-4">
         {!showQuestoes ? (
           <button
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
             onClick={() => {
               setShowQuestoes(true);
-              searchQuestoes();
+              handleSearchQuestoes();
             }}
           >
             Ver Questões
           </button>
         ) : (
           <button
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
             onClick={() => setShowQuestoes(false)}
           >
             Voltar para Criar Questões
@@ -137,52 +97,13 @@ function admQuiz() {
               Nenhuma questão encontrada.
             </p>
           ) : (
-            <div className="relative">
-              <div className="flex justify-center items-center mb-4">
-                <button
-                  className="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
-                  onClick={prevSlide}
-                >
-                  {"<"}
-                </button>
-                <div
-                  className="p-6 rounded-md shadow-md bg-gray-100 dark:bg-gray-700 text-center w-full mx-4"
-                  key={questoes[currentSlide].id}
-                >
-                  <p className="text-lg font-medium text-white mb-4">
-                    {questoes[currentSlide].enunciado}
-                  </p>
-                  <div className="flex flex-col gap-2">
-                    {questoes[currentSlide].choices.map((choice, index) => (
-                      <div
-                        key={index}
-                        className="text-center border border-white text-white py-2 rounded-sm"
-                      >
-                        {choice}
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-sm text-blue-300 mt-4">
-                    Resposta:{" "}
-                    <strong className="text-white">
-                      {questoes[currentSlide].correctAnswer}
-                    </strong>
-                  </p>
-                  <button
-                    className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    onClick={() => deleteQuestao(questoes[currentSlide].id)}
-                  >
-                    Excluir Questão
-                  </button>
-                </div>
-                <button
-                  className="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
-                  onClick={nextSlide}
-                >
-                  {">"}
-                </button>
-              </div>
-            </div>
+            <QuestoesList
+              questoes={questoes}
+              currentSlide={currentSlide}
+              prevSlide={prevSlide}
+              nextSlide={nextSlide}
+              deleteQuestao={handleDeleteQuestao}
+            />
           )}
         </div>
       ) : (
@@ -191,10 +112,37 @@ function admQuiz() {
         </div>
       )}
 
-      <h1 className="mt-40 mb-28">QR CODE DA PALESTRA</h1>
-      <h3 className="mb-11">Código: {codigoPalestra}</h3>
-      {palestraId && (
-        <QrCode value={codigoPalestra} size={255} className="mb-10" />
+      {/* Botão para exibir o QR Code */}
+      <div className="mt-8">
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+          onClick={() => setShowQrCodeModal(true)}
+        >
+          Gerar QR Code da Palestra
+        </button>
+      </div>
+
+      {/* Modal do QR Code */}
+      {showQrCodeModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+            <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
+              QR Code da Palestra
+            </h2>
+            <div className="mb-4">
+              <QrCode value={codigoPalestra} size={200} />
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Código: <span className="font-bold">{codigoPalestra}</span>
+            </p>
+            <button
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
+              onClick={() => setShowQrCodeModal(false)}
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
       )}
 
       {/* AlertToast */}
@@ -208,4 +156,4 @@ function admQuiz() {
   );
 }
 
-export default admQuiz;
+export default AdmQuiz;
