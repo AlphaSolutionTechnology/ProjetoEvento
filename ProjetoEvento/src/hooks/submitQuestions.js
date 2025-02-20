@@ -13,6 +13,7 @@ export async function submitQuestions(questions, idPalestra) {
         try {
           const res = await fetch("http://localhost:8080/api/questoes/createquestion", {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
