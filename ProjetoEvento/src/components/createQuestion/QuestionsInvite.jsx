@@ -1,123 +1,53 @@
 import { useState, useCallback } from "react";
 import QuestionItem from "./QuestionItem";
-import pdfToText from "react-pdftotext";
 import AlertToast from "../alert/AlertToast";
 import { Loader2 } from "lucide-react";
+import { usePdfText } from "../../hooks/usePdfText.js";
+import { useGenerateQuestions } from "../../hooks/useGenerateQuestions";
+import { submitQuestions } from "../../hooks/submitQuestions";
 
 function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
-  const [loading, setLoading] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [questionCount, setQuestionCount] = useState("2");
   const [pdfFile, setPdfFile] = useState(null);
-  const [pdfText, setPdfText] = useState("");
   const [alert, setAlert] = useState({
     open: false,
     message: "",
     type: "success",
   });
 
+  const { pdfText, handleExtractText } = usePdfText();
+  const { loading, handleFetchChatCompletion } = useGenerateQuestions();
+
   const showAlert = (message, type = "message") => {
     setAlert({ open: true, message, type });
-  };
-
-  const handleExtractText = async (file) => {
-    try {
-      const text = await pdfToText(file);
-      setPdfText(text);
-    } catch (error) {
-      setPdfText("");
-      showAlert("Erro ao extrair texto do PDF.", "error");
-    }
   };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
       setPdfFile(file);
-      handleExtractText(file);
+      handleExtractText(file).catch((error) => showAlert(error.message, "error"));
     } else {
       showAlert("Por favor, selecione um arquivo PDF válido.", "error");
     }
   };
 
-  const handleFetchChatCompletion = useCallback(async () => {
-    if (!pdfText.trim() && questions.length === 0) {
-      showAlert(
-        "Nenhum texto extraído do PDF e nenhuma questão existente.",
-        "error"
-      );
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch("http://localhost:8080/api/AI/requestquestion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: pdfText,
-          questionCount,
-          existingQuestions: questions,
-        }),
-      });
-
-      if (!res.ok) throw new Error(`Erro ${res.status}`);
-
-      const data = await res.json();
-      const formattedQuestions = data.map((q) => ({
-        questionText: q.question || "",
-        choices: q.choices || ["", "", "", ""],
-        correctAnswer: q.correctAnswer || "",
-      }));
-
-      setQuestions((prev) => [...prev, ...formattedQuestions]);
-      showAlert("Questões geradas com sucesso!", "success");
-    } catch {
-      showAlert("Erro ao gerar questões.", "error");
-    } finally {
-      setLoading(false);
-      setShowPrompt(false);
-      setQuestionCount("2");
-      setPdfFile(null);
-      setPdfText("");
-    }
-  }, [questionCount, pdfText, questions, setQuestions]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!idPalestra)
-      return showAlert("ID da palestra não encontrado.", "error");
-
-    const results = await Promise.all(
-      questions.map(async (question) => {
-        const payload = {
-          enunciado: question.questionText,
-          choices: question.choices,
-          correctAnswer: question.correctAnswer,
-          idPalestra,
-        };
-        try {
-          const res = await fetch(
-            "http://localhost:8080/api/questoes/createquestion",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            }
-          );
-          return res.ok;
-        } catch {
-          return false;
-        }
-      })
-    );
-
-    results.every(Boolean)
-      ? showAlert("Questões enviadas com sucesso!", "success")
-      : showAlert("Algumas questões falharam.", "error");
-    setQuestions([
-      { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
-    ]);
+    try {
+      const success = await submitQuestions(questions, idPalestra);
+      if (success) {
+        showAlert("Questões enviadas com sucesso!", "success");
+        setQuestions([
+          { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
+        ]);
+      } else {
+        showAlert("Algumas questões falharam.", "error");
+      }
+    } catch (error) {
+      showAlert(error.message, "error");
+    }
   };
 
   const addQuestion = () =>
@@ -125,6 +55,7 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
       ...prev,
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
     ]);
+
   const clearForm = () => {
     setQuestions([
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
@@ -205,7 +136,14 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
                 Cancelar
               </button>
               <button
-                onClick={handleFetchChatCompletion}
+                onClick={() => handleFetchChatCompletion(pdfText, questionCount, questions, setQuestions)
+                  .then(() => {
+                    showAlert("Questões geradas com sucesso!", "success");
+                    setShowPrompt(false);
+                    setQuestionCount("2");
+                    setPdfFile(null);
+                  })
+                  .catch((error) => showAlert(error.message, "error"))}
                 className="bg-blue-500 px-4 py-2 text-white rounded-lg"
               >
                 Confirmar
