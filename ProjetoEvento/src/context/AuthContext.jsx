@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await fetch("http://localhost:8080/api/auth/logout", {
-        method: "POST",
+        method: "DELETE",
         credentials: "include",
       });
     } catch (error) {

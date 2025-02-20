@@ -8,7 +8,7 @@ function CreateQuestoes() {
   const [questions, setQuestions] = useState([]);
   const [message, setMessage] = useState("");
   const [alertType, setAlertType] = useState("warning");
-
+  const [openAlert,setOpenAlert] = useState(false);
   const location = useLocation();
   const idPalestra = location.state?.idPalestra;
 
