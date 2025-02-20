@@ -177,7 +177,7 @@ const Quiz = () => {
           <p className="text-md font-bold">{getTotalTimeTaken()}</p>
 
           <button
-            onClick={() => (window.location.href = `/ranking/${idPalestra}`)}
+            onClick={() => (window.location.href = `/ranking`)}
             className="exit-button mt-6 py-2 px-4 bg-red-500 text-white rounded-lg transition-all hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Sair

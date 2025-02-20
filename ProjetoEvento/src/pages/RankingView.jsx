@@ -7,7 +7,7 @@ function ShowRank() {
 
   return (
     <>
-      <Ranking idPalestra={idPalestra} />;
+      <Ranking />;
     </>
   );
 }

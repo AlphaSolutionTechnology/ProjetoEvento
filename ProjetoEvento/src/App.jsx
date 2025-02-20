@@ -61,8 +61,14 @@ function App() {
 
           <Route path="/palestra/:idPalestra" element={<ProtectedRouteLogin role="Participante"><RouteWrapper component={QuizzesPage} /></ProtectedRouteLogin>} />
 
-          <Route path="/ranking/:idPalestra" element={<ProtectedRouteLogin><RouteWrapper component={RankingView} /></ProtectedRouteLogin>} />
-          
+          <Route
+            path="/ranking"
+            element={
+              <ProtectedRouteLogin>
+                  <RankingView/>
+              </ProtectedRouteLogin>
+            }
+          />
         </Routes>
       </main>
     </WebSocketProvider>

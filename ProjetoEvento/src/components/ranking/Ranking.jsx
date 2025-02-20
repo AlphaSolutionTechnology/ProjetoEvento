@@ -11,24 +11,23 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { WebSocketContext } from "../../context/WebSocketContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const Ranking = ({ idPalestra }) => {
+const Ranking = () => {
   const navigate = useNavigate();
+ 
 
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { messages } = useContext(WebSocketContext);
+ 
+  
+  
 
   useEffect(() => {
-    if (!idPalestra) {
-      setError("Código da palestra não informado.");
-      setLoading(false);
-      return;
-    }
-    fetchUpdatedRanking(idPalestra);
-  }, [idPalestra]);
+    fetchUpdatedRanking();
+  }, []);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -37,33 +36,26 @@ const Ranking = ({ idPalestra }) => {
       console.log("mensagem websocket recebida:", lastMessage);
 
       if (
-        lastMessage?.type === "ranking_update" &&
-        lastMessage.idPalestra === idPalestra
+        lastMessage?.type === "ranking_update"
       ) {
         console.log(
           "Sinal de atualização do ranking recebido. Buscando novos dados..."
         );
-        fetchUpdatedRanking(idPalestra);
+        fetchUpdatedRanking();
       } else {
         console.log(
           "Mensagem WebSocket ignorada. Não é uma atualização do ranking."
         );
       }
     }
-  }, [messages, idPalestra]);
+  }, [messages]);
 
-  const fetchUpdatedRanking = async (uniqueCode) => {
-    if (!uniqueCode) {
-      setError("Código da palestra não informado.");
-      setLoading(false);
-      return;
-    }
+  const fetchUpdatedRanking = async () => {
 
     try {
       setLoading(true);
-      console.log("Código da palestra recebido:", uniqueCode);
       const response = await fetch(
-        `http://localhost:8080/api/ranking/${uniqueCode}`,
+        `http://localhost:8080/api/ranking/getupdatedranking`,
         {
           method: "GET",
           credentials: "include",
@@ -178,10 +170,10 @@ const Ranking = ({ idPalestra }) => {
       </div>
 
       <button
-        onClick={() => navigate(`/palestra/${idPalestra}`)}
+        onClick={() => navigate(previousPage)}
         className="mt-8 bg-white rounded text-black p-2 hover:bg-gray-700 hover:text-white"
       >
-        Voltar à Palestra
+        Voltar
       </button>
     </div>
   );
