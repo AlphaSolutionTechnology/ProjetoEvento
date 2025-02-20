@@ -8,13 +8,15 @@ function CreateQuestoes() {
   const [questions, setQuestions] = useState([]);
   const [message, setMessage] = useState("");
   const [alertType, setAlertType] = useState("warning");
-  const [openAlert,setOpenAlert] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
   const location = useLocation();
   const idPalestra = location.state?.idPalestra;
 
   useEffect(() => {
     if (!idPalestra) {
-      setMessage("ID da palestra não encontrado. Verifique o fluxo de navegação.");
+      setMessage(
+        "ID da palestra não encontrado. Verifique o fluxo de navegação."
+      );
       setAlertType("error");
       setOpenAlert(true);
     }
@@ -37,8 +39,7 @@ function CreateQuestoes() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen dark:bg-gray-800 bg-gray-100 p-4">
-
+    <div className="flex flex-col items-center justify-center min-h-screen ">
       <QuestionsInvite
         questions={questions}
         setQuestions={setQuestions}
@@ -53,7 +54,6 @@ function CreateQuestoes() {
         type={alertType}
         onClose={() => setOpenAlert(false)}
       />
-
     </div>
   );
 }

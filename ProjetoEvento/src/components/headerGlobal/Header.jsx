@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Menu, X } from 'lucide-react';
-import NotificationButton from '../notification/NotificationButton';
-import ThemeToggle from '../ThemeToggle';
-import AccountMenu from '../AccountMenu';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion'; // Importando AnimatePresence
+import { useState, useEffect, useCallback } from "react";
+import { Menu, X } from "lucide-react";
+import NotificationButton from "../notification/NotificationButton";
+import ThemeToggle from "../ThemeToggle";
+import AccountMenu from "../AccountMenu";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion"; // Importando AnimatePresence
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -16,7 +16,7 @@ const Header = () => {
     if (window.location.pathname === "/home") {
       window.location.reload(); // Atualiza a página se já estiver na Home
     } else {
-      navigate('/home');
+      navigate("/home");
     }
   }, [navigate]);
 
@@ -41,7 +41,7 @@ const Header = () => {
   }, [windowWidth]);
 
   return (
-    <header className="p-6 flex justify-between items-center bg-white dark:bg-gray-800 backdrop-blur-lg rounded-lg shadow-lg relative z-50">
+    <header className="p-6 flex justify-between items-center bg-transparent backdrop-blur-lg rounded-lg shadow-lg relative z-50">
       <h1
         onClick={handleNavigateHome}
         className="text-2xl font-bold cursor-pointer text-gray-900 dark:text-white hover:text-blue-500 transition-colors duration-300"
@@ -57,7 +57,7 @@ const Header = () => {
       </nav>
 
       {/* Menu Hamburguer para telas pequenas */}
-      <motion.button 
+      <motion.button
         className="md:hidden p-2 rounded-full  dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Toggle Menu"

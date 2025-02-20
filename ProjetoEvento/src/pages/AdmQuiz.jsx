@@ -19,7 +19,8 @@ function AdmQuiz() {
   const [showQrCodeModal, setShowQrCodeModal] = useState(false); // Estado para controlar o modal do QR Code
 
   const location = useLocation();
-  const { questoes, loadingQuestoes, searchQuestoes, deleteQuestao } = useQuestoes(palestraId);
+  const { questoes, loadingQuestoes, searchQuestoes, deleteQuestao } =
+    useQuestoes(palestraId);
 
   useEffect(() => {
     const id = location.state?.idPalestra;
@@ -60,8 +61,8 @@ function AdmQuiz() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-center">
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-3xl font-bold mb-8 text-center text-black dark:text-white">
         Gerenciar Quizzes da Palestra
       </h1>
 

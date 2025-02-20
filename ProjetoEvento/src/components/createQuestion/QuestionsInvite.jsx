@@ -2,37 +2,34 @@ import { useState, useCallback } from "react";
 import QuestionItem from "./QuestionItem";
 import pdfToText from "react-pdftotext";
 import AlertToast from "../alert/AlertToast";
+import { Loader2 } from "lucide-react";
 
-function QuestionsInvite({
-  questions,
-  setQuestions,
-  idPalestra,
-  setMessage,
-}) {
+function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
   const [loading, setLoading] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [questionCount, setQuestionCount] = useState("2");
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
-  const [alert, setAlert] = useState({ open: false, message: "", type: "success" });
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    type: "success",
+  });
 
   const showAlert = (message, type = "message") => {
     setAlert({ open: true, message, type });
   };
 
-  // Extrai texto do PDF
   const handleExtractText = async (file) => {
     try {
       const text = await pdfToText(file);
       setPdfText(text);
     } catch (error) {
-      console.error("Erro ao extrair texto do PDF:", error);
       setPdfText("");
       showAlert("Erro ao extrair texto do PDF.", "error");
     }
   };
 
-  // Seleção de arquivo PDF
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
@@ -43,47 +40,39 @@ function QuestionsInvite({
     }
   };
 
-  // Geração de questões via IA
   const handleFetchChatCompletion = useCallback(async () => {
     if (!pdfText.trim() && questions.length === 0) {
-      showAlert("Erro: Nenhum texto extraído do PDF e nenhuma questão existente.", "error");
+      showAlert(
+        "Nenhum texto extraído do PDF e nenhuma questão existente.",
+        "error"
+      );
       return;
     }
-  
+
     setLoading(true);
-  
     try {
       const res = await fetch("http://localhost:8080/api/AI/requestquestion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          text: pdfText, // Texto extraído do PDF
-          questionCount: questionCount || "2",
-          existingQuestions: questions // Enviando as questões existentes
+          text: pdfText,
+          questionCount,
+          existingQuestions: questions,
         }),
       });
-  
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Erro ${res.status}: ${errorText}`);
-      }
-  
+
+      if (!res.ok) throw new Error(`Erro ${res.status}`);
+
       const data = await res.json();
-  
-      if (Array.isArray(data)) {
-        const formattedQuestions = data.map((q) => ({
-          questionText: q.question || "",
-          choices: q.choices || ["", "", "", ""],
-          correctAnswer: q.correctAnswer || "",
-        }));
-  
-        setQuestions((prevQuestions) => [...prevQuestions, ...formattedQuestions]);
-        showAlert("Questões geradas com sucesso!", "success");
-      } else {
-        console.warn("A resposta da API não está no formato esperado:", data);
-      }
-    } catch (error) {
-      console.error("Erro ao gerar questões:", error);
+      const formattedQuestions = data.map((q) => ({
+        questionText: q.question || "",
+        choices: q.choices || ["", "", "", ""],
+        correctAnswer: q.correctAnswer || "",
+      }));
+
+      setQuestions((prev) => [...prev, ...formattedQuestions]);
+      showAlert("Questões geradas com sucesso!", "success");
+    } catch {
       showAlert("Erro ao gerar questões.", "error");
     } finally {
       setLoading(false);
@@ -93,67 +82,49 @@ function QuestionsInvite({
       setPdfText("");
     }
   }, [questionCount, pdfText, questions, setQuestions]);
-  
-  // Envio das questões para o backend
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!idPalestra) {
-      showAlert("ID da palestra não encontrado. Não é possível enviar as questões.", "error");
-      return;
-    }
+    if (!idPalestra)
+      return showAlert("ID da palestra não encontrado.", "error");
 
     const results = await Promise.all(
-      questions.map(async (question, index) => {
+      questions.map(async (question) => {
         const payload = {
           enunciado: question.questionText,
           choices: question.choices,
           correctAnswer: question.correctAnswer,
-          idPalestra: idPalestra,
+          idPalestra,
         };
-
         try {
-          const response = await fetch("http://localhost:8080/api/questoes/createquestion", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-
-          if (!response.ok) {
-            console.error(
-              `Erro ao enviar a questão ${index + 1}:`,
-              response.statusText
-            );
-            return false;
-          }
-          return true;
-        } catch (error) {
-          console.error(`Erro ao enviar a questão ${index + 1}:`, error);
+          const res = await fetch(
+            "http://localhost:8080/api/questoes/createquestion",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
+          return res.ok;
+        } catch {
           return false;
         }
       })
     );
 
-    const allSuccessful = results.every((res) => res === true);
-
-    if (allSuccessful) {
-      showAlert("Todas as questões foram enviadas com sucesso!", "success");
-      // Reseta para uma questão vazia
-      setQuestions([
-        { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
-      ]);
-    } else {
-      showAlert("Algumas questões não puderam ser enviadas.", "error");
-    }
-  };
-
-  const addQuestion = () => {
-    setQuestions((prev) => [
-      ...prev,
+    results.every(Boolean)
+      ? showAlert("Questões enviadas com sucesso!", "success")
+      : showAlert("Algumas questões falharam.", "error");
+    setQuestions([
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
     ]);
   };
 
+  const addQuestion = () =>
+    setQuestions((prev) => [
+      ...prev,
+      { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
+    ]);
   const clearForm = () => {
     setQuestions([
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
@@ -162,105 +133,82 @@ function QuestionsInvite({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-lg">
-      {/* Alerta */}
-      <AlertToast 
-      open={alert.open} 
-      message={alert.message} 
-      type={alert.type} 
-      onClose={() => setAlert({ open: false, message: "", type: "success" })} 
+    <form
+      onSubmit={handleSubmit}
+      className="w-full max-w-2xl p-4 backdrop-blur-lg bg-white/60 dark:bg-gray-900/70 rounded-2xl shadow-lg"
+    >
+      <AlertToast
+        {...alert}
+        onClose={() => setAlert({ open: false, message: "", type: "success" })}
       />
-      {/* Questões */}
       {questions.map((question, index) => (
         <QuestionItem
           key={index}
-          question={question}
-          index={index}
-          questions={questions}
-          setQuestions={setQuestions}
+          {...{ question, index, questions, setQuestions }}
         />
       ))}
 
-      {/* Botões */}
-      <div className="flex flex-wrap justify-center gap-4 mt-4">
-        {/* Adicionar Questão */}
+      <div className="flex flex-wrap gap-3 mt-4">
         <button
           type="button"
           onClick={addQuestion}
-          className="flex-1 min-w-[130px] h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded"
+          className="flex-1 bg-blue-500 hover:bg-blue-600 text-white rounded-xl p-3"
         >
           Adicionar Questão
         </button>
-
-        {/* Criar Questões com IA */}
         <button
           type="button"
           onClick={() => setShowPrompt(true)}
+          className="flex-1 bg-purple-500 hover:bg-purple-600 text-white rounded-xl p-3"
           disabled={loading}
-          className="flex-1 min-w-[130px] h-12 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? "Carregando..." : "Criar com IA"}
+          {loading ? <Loader2 className="animate-spin" /> : "Criar com IA"}
         </button>
-
-        {/* Enviar Todas as Questões */}
         <button
           type="submit"
-          className="flex-1 min-w-[130px] h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded"
+          className="flex-1 bg-green-500 hover:bg-green-600 text-white rounded-xl p-3"
         >
-          Enviar Todas as Questões
+          Enviar Questões
         </button>
-
-        {/* Limpar Form */}
         <button
           type="button"
           onClick={clearForm}
-          className="flex-1 min-w-[130px] h-12 bg-red-500 hover:bg-red-600 text-white font-semibold rounded"
+          className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-xl p-3"
         >
-          Limpar Form
+          Limpar Formulário
         </button>
       </div>
 
-      {/* Modal para entrada de IA */}
       {showPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-full max-w-md mx-4">
-            <h2 className="text-xl font-bold mb-4 text-gray-700 dark:text-gray-200">
-              Quantas questões você deseja?
-            </h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-sm">
+            <h2 className="text-lg font-bold mb-4">Configurar Questões</h2>
             <input
               type="number"
               min="1"
               value={questionCount}
               onChange={(e) => setQuestionCount(e.target.value)}
-              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
-              placeholder="Ex: 2"
+              className="w-full p-2 mb-3 rounded-lg bg-gray-100 dark:bg-gray-700"
+              placeholder="Quantidade"
             />
-
-            <h2 className="text-xl font-bold mb-4 text-gray-700 dark:text-gray-200">
-              Selecione um arquivo PDF:
-            </h2>
             <input
               type="file"
               accept="application/pdf"
               onChange={handleFileChange}
-              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              className="w-full p-2 mb-3 rounded-lg bg-gray-100 dark:bg-gray-700"
             />
-
             <div className="flex justify-end gap-2">
               <button
-                type="button"
                 onClick={() => setShowPrompt(false)}
-                className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400"
+                className="bg-gray-300 dark:bg-gray-600 px-4 py-2 rounded-lg"
               >
                 Cancelar
               </button>
               <button
-                type="button"
                 onClick={handleFetchChatCompletion}
-                disabled={loading || !questionCount || !pdfFile}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                className="bg-blue-500 px-4 py-2 text-white rounded-lg"
               >
-                {loading ? "Gerando..." : "Confirmar"}
+                Confirmar
               </button>
             </div>
           </div>
