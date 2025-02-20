@@ -60,7 +60,7 @@ function QuizzesPage() {
         </div>
 
         <button
-          onClick={() => navigate(`/ranking/${idPalestra}`)}
+          onClick={() => navigate(`/ranking`)}
           className="mt-8 bg-white rounded text-black p-2 hover:bg-gray-700 hover:text-white"
         >
           Ver Ranking

@@ -2,13 +2,13 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { WebSocketProvider } from './context/WebSocketContext';
 import { motion } from 'framer-motion';
 import Home from './pages/home';
-import AdmQuiz from './pages/admQuiz';
+import AdmQuiz from './pages/AdmQuiz';
 import Questoes from './pages/Questoes';
 import LoginPage from './pages/LoginPage';
 import QuizzesPage from './pages/QuizzesPage';
 import ConnectPage from './pages/ConnectPage';
 import RankingView from './pages/RankingView';
-import PalestrasList from './pages/PalestrasList';
+import PalestrasList from './pages/palestrasList';
 import RouteWrapper from './components/RouteWrapper';
 import Header from './components/headerGlobal/Header';
 import ProtectedRouteLogin from './components/ProtectedRouteLogin';
@@ -61,8 +61,14 @@ function App() {
 
           <Route path="/palestra/:idPalestra" element={<ProtectedRouteLogin role="Participante"><RouteWrapper component={QuizzesPage} /></ProtectedRouteLogin>} />
 
-          <Route path="/ranking/:idPalestra" element={<ProtectedRouteLogin><RouteWrapper component={RankingView} /></ProtectedRouteLogin>} />
-          
+          <Route
+            path="/ranking"
+            element={
+              <ProtectedRouteLogin>
+                  <RankingView/>
+              </ProtectedRouteLogin>
+            }
+          />
         </Routes>
       </main>
     </WebSocketProvider>
