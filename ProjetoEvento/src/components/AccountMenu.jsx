@@ -20,9 +20,14 @@ export default function AccountMenu() {
   };
 
   const goTo = () => {
-    navigate("/conectar");
+    navigate("/perfil");
     handleClose();
   };
+
+  const navTo = () => {
+    navigate("/conectar");
+    handleClose();
+  }
 
   const handleClickOutside = (event) => {
     if (
@@ -86,12 +91,12 @@ export default function AccountMenu() {
             {/* Opção de conexões */}
             <li>
               <button
-                onClick={handleClose}
+                onClick={navTo}
                 className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-300 ease-in-out"
                 aria-label="Minhas conexões"
               >
                 <Users size={20} className="mr-2 text-gray-900 dark:text-white" />
-                <span className="text-gray-900 dark:text-white">Minhas Conexões</span>
+                <span className="text-gray-900 dark:text-white">Fazer Conexão</span>
               </button>
             </li>
   
