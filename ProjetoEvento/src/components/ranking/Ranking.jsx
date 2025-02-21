@@ -170,7 +170,7 @@ const Ranking = () => {
       </div>
 
       <button
-        onClick={() => navigate(previousPage)}
+        onClick={() => navigate(-1)}
         className="mt-8 bg-white rounded text-black p-2 hover:bg-gray-700 hover:text-white"
       >
         Voltar

@@ -90,13 +90,14 @@ function PalestrasList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/palestra/excluir",
+          `http://localhost:8080/api/palestra/excluir`,
           {
             method: "DELETE",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ ids: [id] }), // Enviando o ID em um array
+            body: JSON.stringify({id})
           }
         );
 

@@ -47,9 +47,9 @@ function Home() {
   const validarPalestra = async (codigo) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/palestra/${codigo}`,
+        `http://localhost:8080/api/palestra/inscrever/${codigo}`,
         {
-          method: "GET",
+          method: "PATCH",
           credentials: "include",
         }
       );
