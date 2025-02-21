@@ -22,10 +22,6 @@ const ProfileComponent = () => {
   const { darkMode } = useTheme();
   const { sendMessage, messages } = useContext(WebSocketContext);
   const [alert, setAlert] = useState({ open: false, message: "", type: "" });
-  const [unautorized, setUnautorized] = useState(false);
-  const [waiting, setWaiting] = useState(false);
-  const [alreadyConnected, setAlreadyConnected] = useState(false);
-  const [notFound, setNotFound] = useState(false);
   const [dialogData, setDialogData] = useState({
     fromUserName: "",
     fromUserCode: "",
