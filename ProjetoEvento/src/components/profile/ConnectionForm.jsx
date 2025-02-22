@@ -22,10 +22,10 @@ const ConnectionForm = ({ inputCode, setInputCode, handleSendConnection, setIsSc
 
       {/* Botão de Escanear QR Code */}
       <motion.button
-        className="w-full py-2 px-4 mb-4 flex items-center justify-center bg-blue-600 dark:bg-gray-700 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-gray-600 transition duration-300"
+        className="w-full py-2 px-4 mb-4 flex items-center justify-center bg-blue-500 text-white rounded-xl hover:bg-blue-700 dark:bg-blue-700 transition duration-300"
         onClick={() => setIsScannerOpen(true)}
         whileHover={{ scale: 1.05 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.3 }}
       >
         <QrCode className="mr-2" />
         Escanear QR Code
