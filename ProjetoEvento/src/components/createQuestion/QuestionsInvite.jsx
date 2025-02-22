@@ -113,20 +113,20 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
       {showPrompt && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-sm">
-            <h2 className="text-lg font-bold mb-4">Configurar Questões</h2>
+            <h2 className="text-lg text-black dark:text-white font-bold mb-4">Configurar Questões</h2>
             <input
               type="number"
               min="1"
               value={questionCount}
               onChange={(e) => setQuestionCount(e.target.value)}
-              className="w-full p-2 mb-3 rounded-lg bg-gray-100 dark:bg-gray-700"
+              className="w-full p-2 mb-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
               placeholder="Quantidade"
             />
             <input
               type="file"
               accept="application/pdf"
               onChange={handleFileChange}
-              className="w-full p-2 mb-3 rounded-lg bg-gray-100 dark:bg-gray-700"
+              className="w-full text-black dark:text-white p-2 mb-3 rounded-lg bg-gray-100 dark:bg-gray-700"
             />
             <div className="flex justify-end gap-2">
               <button

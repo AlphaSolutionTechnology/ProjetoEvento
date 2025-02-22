@@ -15,18 +15,17 @@ const ProfileComponent = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [successAlert, setSuccessAlert] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [inputCode, setInputCode] = useState("");
   const navigate = useNavigate();
   const { darkMode } = useTheme();
   const { sendMessage, messages } = useContext(WebSocketContext);
   const [alert, setAlert] = useState({ open: false, message: "", type: "" });
+
   const [dialogData, setDialogData] = useState({
     fromUserName: "",
     fromUserCode: "",
   });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     if (alert.open) {
@@ -70,6 +69,7 @@ const ProfileComponent = () => {
   const handleSendConnection = async (code) => {
     setInputCode(""); // Limpa o código
 
+    // Verificações de entrada
     if (!code) {
       setAlert({
         open: true,
@@ -101,25 +101,45 @@ const ProfileComponent = () => {
     setIsLoading(true);
 
     try {
-      await sendMessage("/app/sendrequest", { to: code });
+      const response = await sendMessage("/app/sendrequest", { to: code });
+      console.log("response:", response);
 
-      setAlert({
-        open: true,
-        message: "Solicitação de conexão enviada com sucesso!",
-        type: "success",
-      });
+      // Verifique se a resposta é válida
+      if (!response) {
+        setAlert({
+          open: true,
+          message: "Erro ao enviar solicitação: Usuario nao encontrado.",
+          type: "error",
+        });
+        return;
+      }
+
+      // Se a resposta for válida
+      if (response.success) {
+        setAlert({
+          open: true,
+          message: "Solicitação de conexão enviada com sucesso!",
+          type: "success",
+        });
+      } else {
+        setAlert({
+          open: true,
+          message:
+            response.message || "Erro desconhecido ao enviar solicitação.",
+          type: "error",
+        });
+      }
     } catch (error) {
       console.error("Erro ao enviar solicitação:", error);
       setAlert({
         open: true,
-        message: "Usuário não encontrado. Tente novamente.",
+        message: "Usuário não encontrado ou erro ao enviar solicitação.",
         type: "error",
       });
     } finally {
       setIsLoading(false);
     }
-};
-
+  };
 
   const populateZone = () => {
     const storedUserData = localStorage.getItem("user_data");
@@ -156,16 +176,18 @@ const ProfileComponent = () => {
           setIsDialogOpen(true);
         }
 
-        // 2) Usuário não encontrado
+        // 2) Usuário não encontrado (não precisa mais de setAlert aqui, pois já é tratado no handleSendConnection)
         else if (lastMessage.message.includes("código")) {
-          setNotFound(true);
+          console.log("Usuário não encontrado. Tente novamente.");
+        }
 
-          // 3) Sucesso no envio
-        } else if (lastMessage.message.includes("Sucesso!")) {
-          setSuccessAlert(true);
+        // 3) Sucesso no envio
+        else if (lastMessage.message.includes("Sucesso!")) {
+          console.log("Solicitação de conexão enviada com sucesso!");
+        }
 
-          // 4) Aguardando resposta
-        } else if (lastMessage.message.includes("resposta!")) {
+        // 4) Aguardando resposta
+        else if (lastMessage.message.includes("resposta!")) {
           setWaiting(true);
 
           // 5) Já conectados
@@ -190,28 +212,36 @@ const ProfileComponent = () => {
       <AvatarSection userData={userData} darkMode={darkMode} />
 
       {/* Seção de Tabs */}
-      <div className="flex justify-center mb-4">
-        <button
-          onClick={() => setActiveTab(0)}
-          className={`px-4 py-2 mx-2 ${
-            activeTab === 0
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
-          } rounded-md`}
-        >
-          Meu QR Code
-        </button>
-        <button
-          onClick={() => setActiveTab(1)}
-          className={`px-4 py-2 mx-2 ${
-            activeTab === 1
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
-          } rounded-md`}
-        >
-          Conectar
-        </button>
-      </div>
+      <section className="flex justify-center mb-4">
+        <nav>
+          <ul className="flex space-x-4">
+            <li>
+              <button
+                onClick={() => setActiveTab(0)}
+                className={`relative px-6 py-3 rounded-md transition-all duration-300 ${
+                  activeTab === 0
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 border-b-2 border-transparent hover:border-blue-600"
+                }`}
+              >
+                Meu QR Code
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveTab(1)}
+                className={`relative px-6 py-3 rounded-md transition-all duration-300 ${
+                  activeTab === 1
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 border-b-2 border-transparent hover:border-blue-600"
+                }`}
+              >
+                Conectar
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </section>
 
       {/* Conteúdo das abas */}
       {activeTab === 0 && (
