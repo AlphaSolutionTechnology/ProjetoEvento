@@ -15,18 +15,17 @@ const ProfileComponent = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [successAlert, setSuccessAlert] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [inputCode, setInputCode] = useState("");
   const navigate = useNavigate();
   const { darkMode } = useTheme();
   const { sendMessage, messages } = useContext(WebSocketContext);
   const [alert, setAlert] = useState({ open: false, message: "", type: "" });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState({
     fromUserName: "",
     fromUserCode: "",
   });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     if (alert.open) {
