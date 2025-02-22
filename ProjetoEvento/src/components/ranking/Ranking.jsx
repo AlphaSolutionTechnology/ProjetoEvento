@@ -55,7 +55,8 @@ const Ranking = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:8080/api/ranking/getupdatedranking`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/ranking/getupdatedranking`,
         {
           method: "GET",
           credentials: "include",

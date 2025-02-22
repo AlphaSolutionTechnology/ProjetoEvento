@@ -11,7 +11,8 @@ export function useGenerateQuestions() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/api/AI/requestquestion", {
+      const res = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
+/api/AI/requestquestion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

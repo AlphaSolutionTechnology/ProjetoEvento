@@ -41,7 +41,8 @@ const ProfileComponent = () => {
 
   const checkAuthentication = async (code) => {
     try {
-      const response = await fetch("http://localhost:8080/api/auth/validate", {
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
+/api/auth/validate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

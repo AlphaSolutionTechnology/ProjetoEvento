@@ -40,7 +40,8 @@ export default function ChatComponent({ onReceiveQuestion }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/AI/requestquestion", {
+      const res = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
+/api/AI/requestquestion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,7 +61,7 @@ export default function ChatComponent({ onReceiveQuestion }) {
         data.forEach(onReceiveQuestion); // Passa as questões corretamente para `CreateQuestoes`
         setAlert({ open: true, message: "Questões geradas com sucesso.", type: "success" });
       } else {
-        console.warn("A resposta da API não está no formato esperado:", data);
+        console.warn("A resposta da /api não está no formato esperado:", data);
       }
     } catch (error) {
       console.error("Erro ao gerar questões:", error);

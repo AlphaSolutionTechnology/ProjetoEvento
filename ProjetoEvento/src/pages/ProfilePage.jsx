@@ -3,7 +3,7 @@ import useAuth from "../hooks/useAuth";
 import ChangeProfilePicture from "../components/userProfile/ChangeProfilePictureModal";
 import Badge from "../components/userProfile/Badge";
 import UserConnectionItem from "../components/userProfile/UserConnectionItem"; // Importe o componente
-import Loading from "../components/loading/Loading";
+import Loading from "../components/loading/loading";
 import { Trophy, Star, Users } from "lucide-react";
 
 function ProfilePage({ connections = [], badges = [] }) {

@@ -12,7 +12,8 @@ export const AuthProvider = ({ children }) => {
   const checkAuthentication = async () => {
     
     try {
-      const response = await fetch("http://localhost:8080/api/auth/validate", {
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
+/api/auth/validate`, {
         method: "POST",
         credentials: "include",
       });
@@ -32,7 +33,8 @@ export const AuthProvider = ({ children }) => {
   };
   const logout = async () => {
     try {
-      await fetch("http://localhost:8080/api/auth/logout", {
+      await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
+/api/auth/logout`, {
         method: "DELETE",
         credentials: "include",
       });

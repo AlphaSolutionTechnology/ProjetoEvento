@@ -23,7 +23,8 @@ function QuizzesPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/palestra/desinscrever/${idPalestra}`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/palestra/desinscrever/${idPalestra}`,
         {
           method: "DELETE",
           credentials: "include",

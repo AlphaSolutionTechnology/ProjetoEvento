@@ -23,7 +23,8 @@ const Quiz = () => {
       try {
         console.log("id da palestra:", idPalestra);
         const response = await fetch(
-          `http://localhost:8080/api/questoes/${idPalestra}`
+          `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/questoes/${idPalestra}`
         );
         if (!response.ok) {
           throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
@@ -78,7 +79,8 @@ const Quiz = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/questoes/registerresult",
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/questoes/registerresult`,
         {
           method: "POST",
           headers: {
