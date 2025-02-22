@@ -67,7 +67,7 @@ const ProfileComponent = () => {
 
   const handleSendConnection = async (code) => {
     setInputCode(""); // Limpa o código
-  
+
     // Verificações de entrada
     if (!code) {
       setAlert({
@@ -77,7 +77,7 @@ const ProfileComponent = () => {
       });
       return;
     }
-  
+
     if (typeof code !== "string" || code.trim().length !== 6) {
       setAlert({
         open: true,
@@ -86,7 +86,7 @@ const ProfileComponent = () => {
       });
       return;
     }
-  
+
     if (code === userData.unique_code) {
       setUnautorized(true);
       setAlert({
@@ -96,13 +96,13 @@ const ProfileComponent = () => {
       });
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
       const response = await sendMessage("/app/sendrequest", { to: code });
-      console.log("response:", response)
-  
+      console.log("response:", response);
+
       // Verifique se a resposta é válida
       if (!response) {
         setAlert({
@@ -112,7 +112,7 @@ const ProfileComponent = () => {
         });
         return;
       }
-  
+
       // Se a resposta for válida
       if (response.success) {
         setAlert({
@@ -123,7 +123,8 @@ const ProfileComponent = () => {
       } else {
         setAlert({
           open: true,
-          message: response.message || "Erro desconhecido ao enviar solicitação.",
+          message:
+            response.message || "Erro desconhecido ao enviar solicitação.",
           type: "error",
         });
       }
