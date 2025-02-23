@@ -40,15 +40,18 @@ const ProfileComponent = () => {
 
   const checkAuthentication = async (code) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/auth/validate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ code }),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}
+/api/auth/validate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code }),
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -179,7 +182,6 @@ const ProfileComponent = () => {
         // 2) Usuário não encontrado (não precisa mais de setAlert aqui, pois já é tratado no handleSendConnection)
         else if (lastMessage.message.includes("código")) {
           console.log("Usuário não encontrado. Tente novamente.");
-          
         }
 
         // 3) Sucesso no envio

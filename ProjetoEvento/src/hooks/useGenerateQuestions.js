@@ -4,23 +4,33 @@ import { useState } from "react";
 export function useGenerateQuestions() {
   const [loading, setLoading] = useState(false);
 
-  const handleFetchChatCompletion = async (pdfText, questionCount, questions, setQuestions) => {
+  const handleFetchChatCompletion = async (
+    pdfText,
+    questionCount,
+    questions,
+    setQuestions
+  ) => {
     if (!pdfText.trim() && questions.length === 0) {
-      throw new Error("Nenhum texto extraído do PDF e nenhuma questão existente.");
+      throw new Error(
+        "Nenhum texto extraído do PDF e nenhuma questão existente."
+      );
     }
 
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/AI/requestquestion`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: pdfText,
-          questionCount,
-          existingQuestions: questions,
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}
+/api/AI/requestquestion`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: pdfText,
+            questionCount,
+            existingQuestions: questions,
+          }),
+        }
+      );
 
       if (!res.ok) throw new Error(`Erro ${res.status}`);
 

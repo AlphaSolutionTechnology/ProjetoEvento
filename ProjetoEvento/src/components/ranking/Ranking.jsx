@@ -15,15 +15,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const Ranking = () => {
   const navigate = useNavigate();
- 
 
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { messages } = useContext(WebSocketContext);
- 
-  
-  
 
   useEffect(() => {
     fetchUpdatedRanking();
@@ -35,9 +31,7 @@ const Ranking = () => {
 
       console.log("mensagem websocket recebida:", lastMessage);
 
-      if (
-        lastMessage?.type === "ranking_update"
-      ) {
+      if (lastMessage?.type === "ranking_update") {
         console.log(
           "Sinal de atualização do ranking recebido. Buscando novos dados..."
         );
@@ -51,11 +45,10 @@ const Ranking = () => {
   }, [messages]);
 
   const fetchUpdatedRanking = async () => {
-
     try {
       setLoading(true);
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
+        `${import.meta.env.VITE_LOCAL_API_LINK}
 /api/ranking/getupdatedranking`,
         {
           method: "GET",
@@ -97,7 +90,6 @@ const Ranking = () => {
 
   return (
     <div className="relative flex flex-col justify-center items-center min-h-screen p-6">
-
       <div className="relative max-w-4xl w-full p-6 bg-white/40 dark:bg-gray-800/40 shadow-2xl rounded-2xl backdrop-blur-md border border-white/30 dark:border-gray-700">
         <motion.h2
           className="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-gray-100 flex items-center justify-center gap-3"
