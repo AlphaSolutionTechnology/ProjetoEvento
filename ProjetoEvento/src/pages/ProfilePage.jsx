@@ -3,7 +3,7 @@ import useAuth from "../hooks/useAuth";
 import UserProfileCard from "../components/userProfile/UserProfileCard";
 import Loading from "../components/loading/loading";
 
-function ProfilePage({ badges = [] }) {
+function ProfilePage({ connections = [], badges = [] }) {
   const { user, isLoading } = useAuth();
   const [profilePicture, setProfilePicture] = useState(user?.picture || "");
 
@@ -13,7 +13,7 @@ function ProfilePage({ badges = [] }) {
     }
   }, [user]);
 
-  if (isLoading || loadingConnections) {
+  if (isLoading) {
     return <Loading />;
   }
 
