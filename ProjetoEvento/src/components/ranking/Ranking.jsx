@@ -12,9 +12,11 @@ import {
 } from "lucide-react";
 import { WebSocketContext } from "../../context/WebSocketContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import useQuizz from "../../hooks/useQuizz";
 
 const Ranking = () => {
   const navigate = useNavigate();
+  
 
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);

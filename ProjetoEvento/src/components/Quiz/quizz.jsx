@@ -13,6 +13,7 @@ const Quiz = () => {
   const [result, setResult] = useState({
     correctAnswers: 0,
     wrongAnswers: 0,
+    idPalestra: idPalestra,
   });
   const [showResult, setShowResult] = useState(false);
 
@@ -78,8 +79,8 @@ const Quiz = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
-/api/questoes/registerresult`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/questoes/registerresult/${idPalestra}`,
         {
           method: "POST",
           headers: {
