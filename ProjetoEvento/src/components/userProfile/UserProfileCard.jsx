@@ -26,7 +26,6 @@ function UserProfileCard({
       <section className="relative w-24 h-24 mx-auto mb-6 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
         <img
           src={selectedImage}
-          alt={`Avatar de ${userName}`}
           className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-200 object-cover sm:w-32 sm:h-32 lg:w-40 lg:h-40"
         />
         <button
@@ -40,7 +39,10 @@ function UserProfileCard({
 
       {/* Nome do Usuário */}
       <h2 className="text-2xl font-semibold text-center sm:text-3xl lg:text-4xl">
-        {userName}
+        {userName
+          .split(" ") // Divide o nome completo em partes
+          .slice(0, 2) // Pega apenas as duas primeiras partes (nome e sobrenome)
+          .join(" ")}{" "}
       </h2>
 
       {/* Seção de Conquistas */}
