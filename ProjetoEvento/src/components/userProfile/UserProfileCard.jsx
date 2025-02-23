@@ -34,7 +34,6 @@ function UserProfileCard({
       <section className="relative w-24 h-24 mx-auto mb-6 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
         <img
           src={selectedImage}
-          alt={`Avatar de ${userName}`}
           className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-200 object-cover sm:w-32 sm:h-32 lg:w-40 lg:h-40"
         />
         <button
