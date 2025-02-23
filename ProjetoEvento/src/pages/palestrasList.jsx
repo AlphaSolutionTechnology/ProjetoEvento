@@ -33,15 +33,18 @@ function PalestrasList() {
     const createPalestra = { ...formData };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/palestra/criar`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(createPalestra),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}
+/api/palestra/criar`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(createPalestra),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -64,14 +67,17 @@ function PalestrasList() {
 
   const handlePalestrasList = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/palestra/lista`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}
+/api/palestra/lista`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         const list = await response.json();
@@ -92,7 +98,7 @@ function PalestrasList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/excluir`,
+          `${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/excluir`,
           {
             method: "DELETE",
             credentials: "include",

@@ -1,93 +1,97 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AlertToast from "../components/alert/AlertToast";
+import QuizListCard from "../components/quizList/QuizListCard"; // Importe o QuizListCard
+import QuizListActions from "../components/quizList/QuizListActions"; // Importe o QuizListAction
+import QuizListConfirmationModal from "../components/quizList/QuizListConfirmationModal"; // Importe o QuizListConfirmationModal
 
-function QuizzesPage() {
+export default function QuizzesPage() {
   const navigate = useNavigate();
-  const [quizzes, SetQuizzes] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
-
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [score, setScore] = useState(0);
   const { idPalestra } = useParams();
 
   const desinscreverUsuario = async () => {
-    // Confirmar se o usuário tem certeza de que deseja desinscrever
-    const isConfirmed = window.confirm(
-      "Você tem certeza de que deseja desinscrever da palestra?"
-    );
-    if (!isConfirmed) {
-      return;
-    }
-
     if (!idPalestra) {
-      alert("Erro: ID da palestra não encontrado.");
+      setToastMessage({ text: "Erro: ID da palestra não encontrado.", type: "error" });
       return;
     }
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
-/api/palestra/desinscrever/${idPalestra}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/desinscrever/${idPalestra}`,
+        { method: "DELETE", credentials: "include" }
       );
 
       if (!response.ok) {
         const errorMessage = await response.text();
-        alert(`Erro ao desinscrever: ${errorMessage}`);
+        setToastMessage({ text: `Erro ao desinscrever: ${errorMessage}`, type: "error" });
         return;
       }
 
       localStorage.removeItem("palestraAtual");
-
-      alert("Você foi desinscrito da palestra.");
-      navigate("/home");
+      setToastMessage({ text: "Você foi desinscrito da palestra.", type: "success" });
+      setTimeout(() => navigate("/home"), 2000);
     } catch (error) {
       console.error("Erro ao desinscrever:", error);
-      alert("Erro inesperado ao desinscrever.");
+      setToastMessage({ text: "Erro inesperado ao desinscrever.", type: "error" });
     }
   };
 
+  const handleParticiparQuizz = () => {
+    setQuizCompleted(true);
+    setProgress(100);
+    setScore(850);
+    navigate(`/quizz/${idPalestra}`);
+  };
+
   return (
-    <>
-      <div className="flex flex-col items-center justify-center min-h-screen ">
-        <div className="border rounded flex flex-col p-3 items-center bg-purple-950 gap-3 ">
-          <h1 className="text-center">Quizz</h1>
-          <button
-            className="bg-white text-purple-950 hover:bg-purple-400 hover:text-white rounded p-1"
-            onClick={() => navigate(`/quizz/${idPalestra}`)}
-          >
-            Participar
-          </button>
-        </div>
+    <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
+      {/* Usando o QuizListCard */}
+      <QuizListCard
+        title="Quizz"
+        description="Teste seus conhecimentos e veja como você se sai!"
+        progress={progress}
+        score={score}
+        badges={1}
+        onAction={handleParticiparQuizz}
+        actionLabel="Participar"
+      />
 
-        <button
-          onClick={() => navigate(`/ranking`)}
-          className="mt-8 bg-white rounded text-black p-2 hover:bg-gray-700 hover:text-white"
-        >
-          Ver Ranking
-        </button>
+      {/* Usando o QuizListAction */}
+      <QuizListActions
+        quizCompleted={quizCompleted}
+        onViewRanking={() => navigate("/ranking")}
+        onUnsubscribe={() => setIsConfirmationModalOpen(true)}
+      />
 
-        <button
-          onClick={desinscreverUsuario}
-          className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-        >
-          Desinscrever
-        </button>
+      {/* Usando o QuizListConfirmationModal */}
+      <QuizListConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+        onConfirm={() => {
+          setIsConfirmationModalOpen(false);
+          desinscreverUsuario();
+        }}
+        title="Desinscrever da Palestra"
+        message="Você tem certeza de que deseja desinscrever da palestra?"
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
+      />
 
-        {/* Integração do AlertToast */}
-        {toastMessage && (
-          <AlertToast
-            open={!!toastMessage}
-            message={toastMessage.text}
-            type={toastMessage.type}
-            onClose={() => setToastMessage(null)}
-          />
-        )}
-      </div>
-    </>
+      {/* Integração do AlertToast */}
+      {toastMessage && (
+        <AlertToast
+          open={!!toastMessage}
+          message={toastMessage.text}
+          type={toastMessage.type}
+          onClose={() => setToastMessage(null)}
+          aria-live="polite"
+        />
+      )}
+    </main>
   );
 }
-
-export default QuizzesPage;

@@ -48,15 +48,18 @@ export default function ChatComponent({ onReceiveQuestion }) {
     setLoading(true);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/AI/requestquestion`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: pdfText,
-          questionCount: questionCount || "2",
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}
+/api/AI/requestquestion`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: pdfText,
+            questionCount: questionCount || "2",
+          }),
+        }
+      );
 
       if (!res.ok) {
         const errorText = await res.text();

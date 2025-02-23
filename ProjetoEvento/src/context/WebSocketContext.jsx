@@ -7,11 +7,17 @@ export const WebSocketContext = createContext();
 
 let stompClient = null;
 
-const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) => {
+const initializeWebSocketConnection = (
+  onMessage,
+  onDisconnect,
+  setConnected
+) => {
   if (!stompClient || !stompClient.connected) {
     console.log("📡 Tentando conectar ao WebSocket...");
 
-    const socket = new SockJS(`${import.meta.env.VITE_NETWORK_API_LINK}/websocket`);
+    const socket = new SockJS(
+      `${import.meta.env.VITE_LOCAL_API_LINK}/websocket`
+    );
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
@@ -27,16 +33,26 @@ const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) =>
 
         stompClient.subscribe("/user/queue/notification", (message) => {
           const parsedMessage = JSON.parse(message.body);
-          const currentUserId = JSON.parse(localStorage.getItem("user_data"))?.unique_code;
+          const currentUserId = JSON.parse(
+            localStorage.getItem("user_data")
+          )?.unique_code;
 
           console.log("📩 Mensagem privada recebida:", parsedMessage);
-          console.log("🚀 Comparação de destinatário:", parsedMessage.to, "vs", currentUserId);
+          console.log(
+            "🚀 Comparação de destinatário:",
+            parsedMessage.to,
+            "vs",
+            currentUserId
+          );
 
           if (parsedMessage.to === currentUserId) {
             console.log("✅ Nova notificação recebida:", parsedMessage);
             onMessage(parsedMessage);
           } else {
-            console.warn("⚠️ Mensagem ignorada (não é do usuário atual):", parsedMessage);
+            console.warn(
+              "⚠️ Mensagem ignorada (não é do usuário atual):",
+              parsedMessage
+            );
           }
         });
 

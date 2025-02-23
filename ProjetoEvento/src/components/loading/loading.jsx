@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const Loading = () => {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex justify-center items-center min-h-screen">
       <motion.div
         className="flex flex-col items-center gap-3"
         initial={{ opacity: 0 }}

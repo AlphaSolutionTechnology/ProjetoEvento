@@ -17,7 +17,9 @@ export default function NotificationButton() {
     )?.unique_code;
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/answerconnectionrequest`,
+        `${
+          import.meta.env.VITE_LOCAL_API_LINK
+        }/api/connection/answerconnectionrequest`,
         {
           method: "PATCH",
           credentials: "include",
@@ -49,7 +51,9 @@ export default function NotificationButton() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/answerconnectionrequest`,
+        `${
+          import.meta.env.VITE_LOCAL_API_LINK
+        }/api/connection/answerconnectionrequest`,
         {
           method: "PATCH",
           credentials: "include",

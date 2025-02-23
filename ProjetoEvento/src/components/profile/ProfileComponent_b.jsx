@@ -45,7 +45,7 @@ const ProfileComponent = () => {
   const checkAuthentication = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/validate`,
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/validate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -73,18 +73,30 @@ const ProfileComponent = () => {
     setInputCode("");
 
     if (!code) {
-      setAlert({ open: true, message: "Por favor, insira um código.", type: "error" });
+      setAlert({
+        open: true,
+        message: "Por favor, insira um código.",
+        type: "error",
+      });
       return;
     }
 
     if (typeof code !== "string" || code.trim().length !== 6) {
-      setAlert({ open: true, message: "O código deve ter exatamente 6 caracteres.", type: "error" });
+      setAlert({
+        open: true,
+        message: "O código deve ter exatamente 6 caracteres.",
+        type: "error",
+      });
       return;
     }
 
     if (userData?.unique_code && code === userData.unique_code) {
       setUnauthorized(true);
-      setAlert({ open: true, message: "Você não pode se conectar consigo mesmo!", type: "error" });
+      setAlert({
+        open: true,
+        message: "Você não pode se conectar consigo mesmo!",
+        type: "error",
+      });
       return;
     }
 
@@ -93,17 +105,34 @@ const ProfileComponent = () => {
     try {
       const response = await sendMessage("/app/sendrequest", { to: code });
       if (!response) {
-        setAlert({ open: true, message: "Erro ao enviar solicitação: Usuário não encontrado.", type: "error" });
+        setAlert({
+          open: true,
+          message: "Erro ao enviar solicitação: Usuário não encontrado.",
+          type: "error",
+        });
         return;
       }
 
       if (response.success) {
-        setAlert({ open: true, message: "Solicitação de conexão enviada com sucesso!", type: "success" });
+        setAlert({
+          open: true,
+          message: "Solicitação de conexão enviada com sucesso!",
+          type: "success",
+        });
       } else {
-        setAlert({ open: true, message: response.message || "Erro desconhecido ao enviar solicitação.", type: "error" });
+        setAlert({
+          open: true,
+          message:
+            response.message || "Erro desconhecido ao enviar solicitação.",
+          type: "error",
+        });
       }
     } catch (error) {
-      setAlert({ open: true, message: "Usuário não encontrado ou erro ao enviar solicitação.", type: "error" });
+      setAlert({
+        open: true,
+        message: "Usuário não encontrado ou erro ao enviar solicitação.",
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -128,51 +157,81 @@ const ProfileComponent = () => {
       console.warn("⚠️ userData ainda não carregado corretamente!", userData);
       return;
     }
-  
+
     if (messages.length > 0) {
       setIsLoading(false);
       const lastMessage = messages[messages.length - 1];
-  
-      console.log("📩 Última mensagem recebida:", lastMessage);
-  
-      const messageTo = String(lastMessage.to || "").trim().toLowerCase();
-      const currentUserCode = String(userData.unique_code || "").trim().toLowerCase();
-  
-      if (messageTo === currentUserCode) {
 
-        switch ((lastMessage.message).trim()) {
-        
+      console.log("📩 Última mensagem recebida:", lastMessage);
+
+      const messageTo = String(lastMessage.to || "")
+        .trim()
+        .toLowerCase();
+      const currentUserCode = String(userData.unique_code || "")
+        .trim()
+        .toLowerCase();
+
+      if (messageTo === currentUserCode) {
+        switch (lastMessage.message.trim()) {
           case "Você não pode enviar solicitação para si!":
-            setAlert({ open: true, message: lastMessage.message, type: "error" });
+            setAlert({
+              open: true,
+              message: lastMessage.message,
+              type: "error",
+            });
             break;
-  
+
           case "Não foi encontrado nenhum usuário com esse código:":
-            setAlert({ open: true, message: lastMessage.message, type: "error" });
+            setAlert({
+              open: true,
+              message: lastMessage.message,
+              type: "error",
+            });
             break;
-  
+
           case "Usuarios já estão conectados":
             setAlreadyConnected(true);
-            setAlert({ open: true, message: "Vocês já estão conectados!", type: "info" });
+            setAlert({
+              open: true,
+              message: "Vocês já estão conectados!",
+              type: "info",
+            });
             break;
-  
+
           case "Aguardando resposta do outro usuário":
             setWaiting(true);
-            setAlert({ open: true, message: "Aguardando resposta do outro usuário...", type: "warning" });
+            setAlert({
+              open: true,
+              message: "Aguardando resposta do outro usuário...",
+              type: "warning",
+            });
             break;
-  
+
           case "Sucesso!":
-            setAlert({ open: true, message: "Solicitação enviada com sucesso!", type: "success" });
+            setAlert({
+              open: true,
+              message: "Solicitação enviada com sucesso!",
+              type: "success",
+            });
             break;
-  
+
           default:
-            console.warn("⚠️ Mensagem desconhecida recebida:", lastMessage.message);
+            console.warn(
+              "⚠️ Mensagem desconhecida recebida:",
+              lastMessage.message
+            );
         }
       } else {
-        console.warn("🚨 Mensagem recebida, mas não corresponde ao usuário!", lastMessage.to, "!==", userData.unique_code);
+        console.warn(
+          "🚨 Mensagem recebida, mas não corresponde ao usuário!",
+          lastMessage.to,
+          "!==",
+          userData.unique_code
+        );
       }
     }
   }, [messages, userData]);
-  
+
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -189,12 +248,26 @@ const ProfileComponent = () => {
         <nav>
           <ul className="flex space-x-4">
             <li>
-              <button onClick={() => setActiveTab(0)} className={`relative px-6 py-3 rounded-md transition-all duration-300 ${activeTab === 0 ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 border-b-2 border-transparent hover:border-blue-600"}`}>
+              <button
+                onClick={() => setActiveTab(0)}
+                className={`relative px-6 py-3 rounded-md transition-all duration-300 ${
+                  activeTab === 0
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 border-b-2 border-transparent hover:border-blue-600"
+                }`}
+              >
                 Meu QR Code
               </button>
             </li>
             <li>
-              <button onClick={() => setActiveTab(1)} className={`relative px-6 py-3 rounded-md transition-all duration-300 ${activeTab === 1 ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 border-b-2 border-transparent hover:border-blue-600"}`}>
+              <button
+                onClick={() => setActiveTab(1)}
+                className={`relative px-6 py-3 rounded-md transition-all duration-300 ${
+                  activeTab === 1
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 border-b-2 border-transparent hover:border-blue-600"
+                }`}
+              >
                 Conectar
               </button>
             </li>
@@ -202,14 +275,44 @@ const ProfileComponent = () => {
         </nav>
       </section>
 
-      {activeTab === 0 && <QRCodeSection userData={userData} darkMode={darkMode} />}
-      {activeTab === 1 && <ConnectionForm darkMode={darkMode} sendMessage={sendMessage} setIsScannerOpen={setIsScannerOpen} inputCode={inputCode} setInputCode={setInputCode} handleSendConnection={handleSendConnection} />}
+      {activeTab === 0 && (
+        <QRCodeSection userData={userData} darkMode={darkMode} />
+      )}
+      {activeTab === 1 && (
+        <ConnectionForm
+          darkMode={darkMode}
+          sendMessage={sendMessage}
+          setIsScannerOpen={setIsScannerOpen}
+          inputCode={inputCode}
+          setInputCode={setInputCode}
+          handleSendConnection={handleSendConnection}
+        />
+      )}
 
-      <QRScannerModal isScannerOpen={isScannerOpen} setIsScannerOpen={setIsScannerOpen} handleScan={(data) => { setIsScannerOpen(false); setInputCode(data); handleSendConnection(data); }} darkMode={darkMode} />
+      <QRScannerModal
+        isScannerOpen={isScannerOpen}
+        setIsScannerOpen={setIsScannerOpen}
+        handleScan={(data) => {
+          setIsScannerOpen(false);
+          setInputCode(data);
+          handleSendConnection(data);
+        }}
+        darkMode={darkMode}
+      />
 
-      <ConnectionRequestDialog fromUserName={dialogData.fromUserName} fromUserCode={dialogData.fromUserCode} isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+      <ConnectionRequestDialog
+        fromUserName={dialogData.fromUserName}
+        fromUserCode={dialogData.fromUserCode}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
 
-      <AlertToast open={alert.open} type={alert.type} message={alert.message} onClose={() => setAlert({ ...alert, open: false })} />
+      <AlertToast
+        open={alert.open}
+        type={alert.type}
+        message={alert.message}
+        onClose={() => setAlert({ ...alert, open: false })}
+      />
     </div>
   );
 };
