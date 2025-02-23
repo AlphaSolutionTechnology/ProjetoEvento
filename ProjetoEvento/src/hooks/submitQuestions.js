@@ -17,13 +17,14 @@ export async function submitQuestions(questions, idPalestra) {
             credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
-          });
-          return res.ok;
-        } catch {
-          return false;
-        }
-      })
-    );
-  
-    return results.every(Boolean);
-  }
+          }
+        );
+        return res.ok;
+      } catch {
+        return false;
+      }
+    })
+  );
+
+  return results.every(Boolean);
+}

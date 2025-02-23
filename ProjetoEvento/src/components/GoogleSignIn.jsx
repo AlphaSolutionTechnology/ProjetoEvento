@@ -29,11 +29,14 @@ const GoogleSignIn = () => {
 
   const checkAuthentication = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/auth/validate`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/auth/validate`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -75,15 +78,17 @@ const GoogleSignIn = () => {
   };
 
   const handleCredentialResponse = (response) => {
-    fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/auth/google`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ token: response.credential }),
-    })
+    fetch(
+      `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/google`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ token: response.credential }),
+      }
+    )
       .then((res) => {
         if (!res.ok) {
           throw new Error("Erro ao autenticar com o Google");
@@ -93,7 +98,7 @@ const GoogleSignIn = () => {
       .then((data) => {
         console.log("Dados do usuário recebidos:", data);
         localStorage.setItem("user_data", JSON.stringify(data));
-        setUser(data); 
+        setUser(data);
         navigate("/home");
       })
       .catch((error) => {

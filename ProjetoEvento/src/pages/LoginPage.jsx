@@ -8,16 +8,21 @@ import AlertToast from "../components/alert/AlertToast";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ username: "", email: "", password: "", confirmPassword: "" });
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [loading, setLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState(null);  // Usando diretamente o estado do toast
+  const [toastMessage, setToastMessage] = useState(null); // Usando diretamente o estado do toast
   const { setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setToastMessage(null);  // Resetando a mensagem de toast
+    setToastMessage(null); // Resetando a mensagem de toast
 
     try {
       const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
@@ -34,7 +39,10 @@ const AuthPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setToastMessage({ type: "success", text: "Login realizado com sucesso!" });
+        setToastMessage({
+          type: "success",
+          text: "Login realizado com sucesso!",
+        });
         await new Promise((resolve) => {
           localStorage.setItem("user_data", JSON.stringify(data.data));
           setUser(data.data);
@@ -42,10 +50,16 @@ const AuthPage = () => {
         });
         navigate("/home");
       } else {
-        setToastMessage({ type: "error", text: data.message || "Erro ao fazer login" });
+        setToastMessage({
+          type: "error",
+          text: data.message || "Erro ao fazer login",
+        });
       }
     } catch (error) {
-      setToastMessage({ type: "error", text: "Erro de conexão com o servidor" });
+      setToastMessage({
+        type: "error",
+        text: "Erro de conexão com o servidor",
+      });
     } finally {
       setLoading(false);
     }
@@ -58,7 +72,7 @@ const AuthPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setToastMessage(null);  // Resetando a mensagem de toast
+    setToastMessage(null); // Resetando a mensagem de toast
 
     if (formData.password !== formData.confirmPassword) {
       setToastMessage({ type: "error", text: "As senhas não coincidem" });
@@ -67,7 +81,10 @@ const AuthPage = () => {
     }
 
     if (formData.password.length < 8) {
-      setToastMessage({ type: "error", text: "Crie uma senha com pelo menos 8 caracteres!" });
+      setToastMessage({
+        type: "error",
+        text: "Crie uma senha com pelo menos 8 caracteres!",
+      });
       setLoading(false);
       return;
     }
@@ -89,14 +106,23 @@ const AuthPage = () => {
       });
 
       if (response.status === 201) {
-        setToastMessage({ type: "success", text: "Usuário registrado com sucesso!" });
+        setToastMessage({
+          type: "success",
+          text: "Usuário registrado com sucesso!",
+        });
         setIsLogin(true);
       } else {
         const errorMsg = await response.text();
-        setToastMessage({ type: "error", text: errorMsg || "Erro ao registrar" });
+        setToastMessage({
+          type: "error",
+          text: errorMsg || "Erro ao registrar",
+        });
       }
     } catch (error) {
-      setToastMessage({ type: "error", text: "Erro de conexão com o servidor" });
+      setToastMessage({
+        type: "error",
+        text: "Erro de conexão com o servidor",
+      });
     } finally {
       setLoading(false);
     }
@@ -127,10 +153,16 @@ const AuthPage = () => {
         transition={{ duration: 0.4 }}
         className="relative z-10 w-11/12 sm:w-3/4 lg:w-1/3 bg-white bg-opacity-10 backdrop-blur-lg rounded-lg p-6 shadow-2xl border border-white/10"
       >
-        <form onSubmit={isLogin ? handleLogin : handleRegister} className="space-y-4">
+        <form
+          onSubmit={isLogin ? handleLogin : handleRegister}
+          className="space-y-4"
+        >
           {!isLogin && (
             <motion.div whileFocus={{ scale: 1.02 }} className="relative">
-              <UserPlus className="absolute left-3 top-3 text-gray-400" size={20} />
+              <UserPlus
+                className="absolute left-3 top-3 text-gray-400"
+                size={20}
+              />
               <input
                 type="text"
                 name="username"
@@ -171,7 +203,10 @@ const AuthPage = () => {
           {!isLogin && (
             <>
               <motion.div whileFocus={{ scale: 1.02 }} className="relative">
-                <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+                <Lock
+                  className="absolute left-3 top-3 text-gray-400"
+                  size={20}
+                />
                 <input
                   type="password"
                   name="confirmPassword"
@@ -190,7 +225,9 @@ const AuthPage = () => {
             whileTap={{ scale: 0.95 }}
             type="submit"
             disabled={loading}
-            className={`w-full py-2 ${loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"} flex items-center justify-center gap-2 rounded-lg transition duration-300 font-semibold text-white`}
+            className={`w-full py-2 ${
+              loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"
+            } flex items-center justify-center gap-2 rounded-lg transition duration-300 font-semibold text-white`}
           >
             {isLogin ? <LogIn size={18} /> : <UserPlus size={18} />}
             {loading ? "Carregando..." : isLogin ? "Entrar" : "Registrar"}
@@ -201,7 +238,7 @@ const AuthPage = () => {
           <span
             onClick={() => {
               setIsLogin(!isLogin);
-              setToastMessage(null);  // Resetando ao alternar entre login e registro
+              setToastMessage(null); // Resetando ao alternar entre login e registro
             }}
             className="text-blue-400 cursor-pointer hover:underline transition duration-300"
           >
