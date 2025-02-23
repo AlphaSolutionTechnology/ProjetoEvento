@@ -149,7 +149,20 @@ function AdmQuiz() {
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               Código: <span className="font-bold">{codigoPalestra}</span>
             </p>
-            <a href={qrcodeLink} download={`qrcode.png`}>Baixar QrCode</a>
+            <button
+            className="m-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200"
+            onClick={() => {
+              const link = document.createElement("a");
+              link.href = qrcodeLink;
+              link.download = "qrcode.png";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            >
+              Baixar QR Code
+            </button>
+
             <button
               className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
               onClick={() => setShowQrCodeModal(false)}
