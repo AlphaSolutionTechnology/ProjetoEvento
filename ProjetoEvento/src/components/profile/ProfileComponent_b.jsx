@@ -179,6 +179,7 @@ const ProfileComponent = () => {
         // 2) Usuário não encontrado (não precisa mais de setAlert aqui, pois já é tratado no handleSendConnection)
         else if (lastMessage.message.includes("código")) {
           console.log("Usuário não encontrado. Tente novamente.");
+          
         }
 
         // 3) Sucesso no envio
