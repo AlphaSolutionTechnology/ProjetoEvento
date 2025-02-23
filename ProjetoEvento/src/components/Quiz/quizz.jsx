@@ -65,8 +65,7 @@ const Quiz = () => {
     const totalMinutes = Math.round((quizEndTime - quizStartTime) / 60000);
     return `${totalMinutes} minuto(s)`;
   };
-  
-  
+
   const enviarResultado = async () => {
     const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
 
@@ -122,7 +121,10 @@ const Quiz = () => {
       {!showResult ? (
         <>
           {/* Use durationInMinutes ao invés de duration em segundos */}
-          <AnswerTimer durationInMinutes={2} onTimeUp={() => onClickNext(false)} />
+          <AnswerTimer
+            durationInMinutes={2}
+            onTimeUp={() => onClickNext(false)}
+          />
 
           <div className="flex items-center gap-2 text-xl font-semibold mt-2">
             <span className="active-question-no">{currentQuestion + 1}</span>

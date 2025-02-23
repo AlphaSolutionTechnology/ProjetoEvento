@@ -40,15 +40,18 @@ const ProfileComponent = () => {
 
   const checkAuthentication = async (code) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}
-/api/auth/validate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ code }),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}
+/api/auth/validate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code }),
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

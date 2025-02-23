@@ -92,15 +92,14 @@ function PalestrasList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_LINK}
-/api/palestra/excluir`,
+          `${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/excluir`,
           {
             method: "DELETE",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({id})
+            body: JSON.stringify({ id }),
           }
         );
 
@@ -137,7 +136,6 @@ function PalestrasList() {
 
   return (
     <div className="min-h-screen p-6 text-white dark:bg-[#0d1117]">
-
       {/* Título principal */}
       <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6 sm:text-3xl md:text-4xl lg:text-4xl">
         Gerencie suas Palestras

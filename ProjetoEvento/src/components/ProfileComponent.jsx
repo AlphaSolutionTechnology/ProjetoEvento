@@ -112,14 +112,16 @@ const ProfileComponent = () => {
     }
   };
 
-
   const checkAuthentication = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}
-/api/auth/validate`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}
+/api/auth/validate`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

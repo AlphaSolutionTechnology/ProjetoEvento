@@ -84,7 +84,6 @@ function Home() {
 
   return (
     <main className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden transition-colors duration-300">
-
       {/* Título */}
       <motion.h1
         className="text-4xl sm:text-5xl lg:text-6xl mb-4 text-center font-extrabold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"
@@ -98,7 +97,9 @@ function Home() {
         O que você gostaria de fazer hoje?
       </p>
 
-      <section className={`grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl`}>
+      <section
+        className={`grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl`}
+      >
         {/* Se for administrador, mostrar "Gerencie suas Palestras" */}
         {user?.role === "Administrador" ? (
           <motion.div
@@ -111,7 +112,9 @@ function Home() {
             transition={{ duration: 0.3 }}
           >
             <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
-            <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">Gerencie suas Palestras</h2>
+            <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">
+              Gerencie suas Palestras
+            </h2>
             <p className="text-gray-400 mb-4">
               Acesse, edite e organize suas palestras de forma prática.
             </p>
@@ -133,7 +136,9 @@ function Home() {
             transition={{ duration: 0.3 }}
           >
             <ChartBar className="h-12 w-12 text-blue-500 mb-4" />
-            <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">Entrar em palestra</h2>
+            <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">
+              Entrar em palestra
+            </h2>
             <p className="text-gray-400 mb-4">
               Cadastre-se, acesse suas palestras e quizzes de forma prática.
             </p>
@@ -156,7 +161,9 @@ function Home() {
         {/* Modal para entrada de código */}
         <BasicModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <div className="p-6">
-            <h2 className="text-xl font-bold mb-4">Digite o código da palestra</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Digite o código da palestra
+            </h2>
 
             <form
               onSubmit={(e) => {
@@ -197,7 +204,6 @@ function Home() {
           </div>
         </BasicModal>
 
-
         {/* Modal de Scanner de QR Code */}
         <BasicModal open={isScanning} onClose={() => setIsScanning(false)}>
           <QRScanner
@@ -219,7 +225,9 @@ function Home() {
           transition={{ duration: 0.3 }}
         >
           <UserIcon className="h-12 w-12 text-purple-500 mb-4" />
-          <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">Gerencie suas Conexões</h2>
+          <h2 className="text-2xl font-bold mb-2 text-black dark:text-white">
+            Gerencie suas Conexões
+          </h2>
           <p className="text-gray-400 mb-4">
             Conecte-se facilmente com outros usuários da plataforma.
           </p>
