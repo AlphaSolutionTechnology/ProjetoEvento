@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import QuizzesPage from './pages/QuizzesPage';
 import ConnectPage from './pages/ConnectPage';
 import RankingView from './pages/RankingView';
+import ProfilePage from './pages/ProfilePage';
 import PalestrasList from './pages/palestrasList';
 import RouteWrapper from './components/RouteWrapper';
 import Header from './components/headerGlobal/Header';
@@ -69,6 +70,16 @@ function App() {
               </ProtectedRouteLogin>
             }
           />
+
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRouteLogin>
+                <ProfilePage />
+              </ProtectedRouteLogin>
+            }
+          />
+          
         </Routes>
       </main>
     </WebSocketProvider>

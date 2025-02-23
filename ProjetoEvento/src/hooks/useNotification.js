@@ -31,7 +31,8 @@ function useNotifications() {
   }, [messages]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/connection/retrieveconnectionrequest", {
+    fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
+/api/connection/retrieveconnectionrequest`, {
       method: "GET",
       credentials: "include",
     })

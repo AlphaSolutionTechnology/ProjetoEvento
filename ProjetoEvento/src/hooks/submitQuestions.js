@@ -11,7 +11,8 @@ export async function submitQuestions(questions, idPalestra) {
           idPalestra,
         };
         try {
-          const res = await fetch("http://localhost:8080/api/questoes/createquestion", {
+          const res = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
+/api/questoes/createquestion`, {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },

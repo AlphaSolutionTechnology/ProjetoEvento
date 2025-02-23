@@ -5,6 +5,7 @@ import AlertToast from "../components/alert/AlertToast";
 import QuestoesList from "../components/questoes/QuestoesList";
 import CreateQuestoes from "../components/createQuestion/createquestoes";
 import QrCode from "react-qr-code";
+import QRCodeLink from "qrcode";
 
 function AdmQuiz() {
   const [palestraId, setPalestraId] = useState(null);
@@ -28,6 +29,7 @@ function AdmQuiz() {
 
     const codigo = location.state?.codigoPalestra;
     setCodigoPalestra(codigo || "");
+    if(codigo) handleDownloadQRCode(codigo);
   }, [location]);
 
   const showToast = (message, type) => {
@@ -59,6 +61,17 @@ function AdmQuiz() {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + questoes.length) % questoes.length);
   };
+
+  const [qrcodeLink, setQRCodeLink] = useState('');
+
+  const handleDownloadQRCode = (link_qrCode) => {
+      QRCodeLink.toDataURL(link_qrCode, {
+        width: 400,
+        margin: 3
+      }, function(err, url){
+        setQRCodeLink(url);
+      })
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -126,25 +139,42 @@ function AdmQuiz() {
       {/* Modal do QR Code */}
       {showQrCodeModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center max-w-sm ">
             <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
               QR Code da Palestra
             </h2>
-            <div className="mb-4">
+            <div className="mb-4 flex justify-center">
               <QrCode value={codigoPalestra} size={200} />
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               Código: <span className="font-bold">{codigoPalestra}</span>
             </p>
-            <button
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
-              onClick={() => setShowQrCodeModal(false)}
-            >
-              Fechar
-            </button>
+            <div className="flex gap-3 justify-center">
+              <button
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200"
+                onClick={() => {
+                  const link = document.createElement("a");
+                  link.href = qrcodeLink;
+                  link.download = "qrcode.png";
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+              >
+                Baixar QR Code
+              </button>
+
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
+                onClick={() => setShowQrCodeModal(false)}
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         </div>
       )}
+
 
       {/* AlertToast */}
       <AlertToast

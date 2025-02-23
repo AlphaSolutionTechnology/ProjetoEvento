@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import AnswerTimer from "../AnswerTimer/AnswerTimer";
 import { useParams } from "react-router-dom";
-import Loading from "../loading/loading";
 
 const Quiz = () => {
   const { idPalestra } = useParams();
@@ -23,7 +22,8 @@ const Quiz = () => {
       try {
         console.log("id da palestra:", idPalestra);
         const response = await fetch(
-          `http://localhost:8080/api/questoes/${idPalestra}`
+          `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/questoes/${idPalestra}`
         );
         if (!response.ok) {
           throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
@@ -62,10 +62,11 @@ const Quiz = () => {
 
   const getTotalTimeTaken = () => {
     if (!quizStartTime || !quizEndTime) return "Calculando...";
-    const totalSeconds = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
-    return `${totalSeconds} segundos`;
+    const totalMinutes = Math.round((quizEndTime - quizStartTime) / 60000);
+    return `${totalMinutes} minuto(s)`;
   };
-
+  
+  
   const enviarResultado = async () => {
     const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
 
@@ -78,7 +79,8 @@ const Quiz = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/questoes/registerresult",
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/questoes/registerresult`,
         {
           method: "POST",
           headers: {
@@ -119,7 +121,8 @@ const Quiz = () => {
     <div className="result text-center mt-6 p-4 bg-gray-300 dark:bg-gray-800 rounded-lg shadow-md max-w-md mx-auto">
       {!showResult ? (
         <>
-          <AnswerTimer duration={10} onTimeUp={() => onClickNext(false)} />
+          {/* Use durationInMinutes ao invés de duration em segundos */}
+          <AnswerTimer durationInMinutes={2} onTimeUp={() => onClickNext(false)} />
 
           <div className="flex items-center gap-2 text-xl font-semibold mt-2">
             <span className="active-question-no">{currentQuestion + 1}</span>
@@ -139,7 +142,7 @@ const Quiz = () => {
                       ? "bg-blue-500 text-white"
                       : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                   } 
-                   dark:hover:bg-blue-700 hover:bg-blue-200`}
+                  dark:hover:bg-blue-700 hover:bg-blue-200`}
                 role="button"
                 aria-pressed={answerIdx === index ? "true" : "false"}
               >

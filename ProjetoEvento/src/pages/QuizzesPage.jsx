@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import AlertToast from "../components/alert/AlertToast";
 
 function QuizzesPage() {
   const navigate = useNavigate();
   const [quizzes, SetQuizzes] = useState([]);
+  const [toastMessage, setToastMessage] = useState(null);
 
   const { idPalestra } = useParams();
 
@@ -23,7 +25,8 @@ function QuizzesPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/palestra/desinscrever/${idPalestra}`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/palestra/desinscrever/${idPalestra}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -72,6 +75,16 @@ function QuizzesPage() {
         >
           Desinscrever
         </button>
+
+        {/* Integração do AlertToast */}
+        {toastMessage && (
+          <AlertToast
+            open={!!toastMessage}
+            message={toastMessage.text}
+            type={toastMessage.type}
+            onClose={() => setToastMessage(null)}
+          />
+        )}
       </div>
     </>
   );

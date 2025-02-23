@@ -115,7 +115,8 @@ const ProfileComponent = () => {
 
   const checkAuthentication = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/auth/validate", {
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
+/api/auth/validate`, {
         method: "POST",
         credentials: "include",
       });
@@ -202,7 +203,8 @@ const ProfileComponent = () => {
   const handleAcceptConnection = async () => {
     try {
       await fetch(
-        "http://localhost:8080/api/connection/answerconnectionrequest",
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/connection/answerconnectionrequest`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -228,7 +230,8 @@ const ProfileComponent = () => {
   const handleDeclineConnection = async () => {
     try {
       await fetch(
-        "http://localhost:8080/api/connection/answerconnectionrequest",
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/connection/answerconnectionrequest`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

@@ -17,7 +17,8 @@ export default function NotificationButton() {
     )?.unique_code;
     try {
       const response = await fetch(
-        "http://localhost:8080/api/connection/answerconnectionrequest",
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/connection/answerconnectionrequest`,
         {
           method: "PATCH",
           credentials: "include",
@@ -49,7 +50,8 @@ export default function NotificationButton() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/connection/answerconnectionrequest",
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/connection/answerconnectionrequest`,
         {
           method: "PATCH",
           credentials: "include",
