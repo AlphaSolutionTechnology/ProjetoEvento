@@ -13,6 +13,7 @@ import PalestrasList from './pages/palestrasList';
 import RouteWrapper from './components/RouteWrapper';
 import Header from './components/headerGlobal/Header';
 import ProtectedRouteLogin from './components/ProtectedRouteLogin';
+import ProtectedRouteQuizz from './components/ProtectedRouteQuizz';
 
 
 function App() {
@@ -52,7 +53,7 @@ function App() {
 
           <Route path="/home" element={<ProtectedRouteLogin><Home /></ProtectedRouteLogin>} />
 
-          <Route path="/quizz/:idPalestra" element={<ProtectedRouteLogin><RouteWrapper component={Questoes} /></ProtectedRouteLogin>} />
+          <Route path="/quizz/:idPalestra" element={<ProtectedRouteLogin><ProtectedRouteQuizz><RouteWrapper component={Questoes} /></ProtectedRouteQuizz></ProtectedRouteLogin>} />
 
           <Route path="/conectar" element={<ProtectedRouteLogin><ConnectPage /></ProtectedRouteLogin>} />
 
