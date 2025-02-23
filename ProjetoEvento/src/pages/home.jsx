@@ -47,7 +47,7 @@ function Home() {
   const validarPalestra = async (codigo) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
+        `${import.meta.env.VITE_LOCAL_API_LINK}
 /api/palestra/inscrever/${codigo}`,
         {
           method: "PATCH",

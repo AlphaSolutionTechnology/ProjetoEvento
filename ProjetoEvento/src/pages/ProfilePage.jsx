@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import ChangeProfilePicture from "../components/userProfile/ChangeProfilePictureModal";
 import Badge from "../components/userProfile/Badge";
-import UserConnectionItem from "../components/userProfile/UserConnectionItem"; // Importe o componente
+import UserConnectionItem from "../components/userProfile/UserConnectionItem";
 import Loading from "../components/loading/loading";
 import { Trophy, Star, Users } from "lucide-react";
+import axios from "axios";
 
-function ProfilePage({ connections = [], badges = [] }) {
+function ProfilePage({ badges = [] }) {
   const { user, isLoading } = useAuth();
   const [profilePicture, setProfilePicture] = useState(user?.picture || "");
   const [activeUser, setActiveUser] = useState(null);
+  const [connections, setConnections] = useState([]);
+  const [loadingConnections, setLoadingConnections] = useState(true);
 
   useEffect(() => {
     if (user?.picture) {
@@ -17,7 +20,25 @@ function ProfilePage({ connections = [], badges = [] }) {
     }
   }, [user]);
 
-  // Coleta de Nome de Usuario
+  // Buscar conexões do backend
+  useEffect(() => {
+    const fetchConnections = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_LOCAL_API_LINK}/api/connection/getacceptedconnections`, {
+          withCredentials: true, // Garante que os cookies sejam enviados
+        });
+        setConnections(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar conexões:", error);
+      } finally {
+        setLoadingConnections(false);
+      }
+    };
+
+    fetchConnections();
+  }, []);
+
+  // Coleta de Nome de Usuário
   const retrieveName = (fullname) => {
     if (!fullname) return "";
     const splittedName = fullname.split(" ");
@@ -26,7 +47,7 @@ function ProfilePage({ connections = [], badges = [] }) {
       : splittedName[0];
   };
 
-  if (isLoading) {
+  if (isLoading || loadingConnections) {
     return <Loading />;
   }
 
@@ -63,18 +84,26 @@ function ProfilePage({ connections = [], badges = [] }) {
             <Users className="text-blue-500" /> Minhas Conexões
           </header>
           <div className="flex gap-4 mt-3 flex-wrap justify-center sm:justify-start">
-            {connections?.map((connection) => (
-              <UserConnectionItem
-                key={connection.id}
-                user={connection}
-                isActive={activeUser?.id === connection.id}
-                onClick={() =>
-                  setActiveUser(
-                    connection.id === activeUser?.id ? null : connection
-                  )
-                }
-              />
-            ))}
+            {connections.length > 0 ? (
+              connections.map((connection, index) => (
+                <UserConnectionItem
+                  key={index}
+                  user={connection}
+                  isActive={activeUser?.uniqueCode === connection.uniqueCode}
+                  onClick={() =>
+                    setActiveUser(
+                      connection.uniqueCode === activeUser?.uniqueCode
+                        ? null
+                        : connection
+                    )
+                  }
+                />
+              ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400">
+                Você ainda não tem conexões aceitas.
+              </p>
+            )}
           </div>
         </section>
       </section>
