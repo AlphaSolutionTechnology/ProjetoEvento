@@ -3,10 +3,12 @@ import { Camera, Medal, Users } from "lucide-react";
 import ChangeProfilePictureModal from "./ChangeProfilePictureModal";
 import Badge from "./Badge";
 import UserConnectionItem from "./UserConnectionItem";
+import UserBio from "./UserBio";
 
 function UserProfileCard({
   userName = "Usuário",
   avatar,
+  initialBio = "Esta pessoa ainda não adicionou uma biografia.", // Biografia inicial
   badges = [],
   connections = [],
 }) {
@@ -15,9 +17,15 @@ function UserProfileCard({
     avatar || "/avatars/default.png"
   );
   const [activeConnection, setActiveConnection] = useState(null);
+  const [bio, setBio] = useState(initialBio); // Estado para a biografia
 
   const handleConnectionClick = (index) => {
     setActiveConnection((prevIndex) => (prevIndex === index ? null : index));
+  };
+
+  const handleBioUpdate = (newBio) => {
+    setBio(newBio); // Atualiza a biografia
+    // Aqui você pode adicionar uma chamada à API para salvar a biografia no banco de dados
   };
 
   return (
@@ -26,6 +34,7 @@ function UserProfileCard({
       <section className="relative w-24 h-24 mx-auto mb-6 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
         <img
           src={selectedImage}
+          alt={`Avatar de ${userName}`}
           className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-200 object-cover sm:w-32 sm:h-32 lg:w-40 lg:h-40"
         />
         <button
@@ -37,13 +46,16 @@ function UserProfileCard({
         </button>
       </section>
 
-      {/* Nome do Usuário */}
+      {/* Nome do Usuário (apenas nome e sobrenome) */}
       <h2 className="text-2xl font-semibold text-center sm:text-3xl lg:text-4xl">
         {userName
           .split(" ") // Divide o nome completo em partes
           .slice(0, 2) // Pega apenas as duas primeiras partes (nome e sobrenome)
-          .join(" ")}{" "}
+          .join(" ")}
       </h2>
+
+      {/* Biografia do Usuário */}
+      <UserBio bio={bio} onBioUpdate={handleBioUpdate} />
 
       {/* Seção de Conquistas */}
       <section className="mt-6">
