@@ -45,7 +45,7 @@ const ProfileComponent = () => {
   const checkAuthentication = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/validate`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/validate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -128,28 +128,51 @@ const ProfileComponent = () => {
       console.warn("⚠️ userData ainda não carregado corretamente!", userData);
       return;
     }
-
+  
     if (messages.length > 0) {
       setIsLoading(false);
       const lastMessage = messages[messages.length - 1];
-
+  
       console.log("📩 Última mensagem recebida:", lastMessage);
+  
+      const messageTo = String(lastMessage.to || "").trim().toLowerCase();
+      const currentUserCode = String(userData.unique_code || "").trim().toLowerCase();
+  
+      if (messageTo === currentUserCode) {
 
-      if (String(lastMessage.to).trim().toLowerCase() === String(userData.unique_code).trim().toLowerCase()) {
-        if (lastMessage.message.includes("quer se conectar")) {
-          setDialogData({ fromUserName: lastMessage.name, fromUserCode: lastMessage.from });
-          setIsDialogOpen(true);
-        } else if (lastMessage.message.includes("resposta!")) {
-          setWaiting(true);
-        } else if (lastMessage.message.includes("conectados")) {
-          setAlreadyConnected(true);
+        switch ((lastMessage.message).trim()) {
+        
+          case "Você não pode enviar solicitação para si!":
+            setAlert({ open: true, message: lastMessage.message, type: "error" });
+            break;
+  
+          case "Não foi encontrado nenhum usuário com esse código:":
+            setAlert({ open: true, message: lastMessage.message, type: "error" });
+            break;
+  
+          case "Usuarios já estão conectados":
+            setAlreadyConnected(true);
+            setAlert({ open: true, message: "Vocês já estão conectados!", type: "info" });
+            break;
+  
+          case "Aguardando resposta do outro usuário":
+            setWaiting(true);
+            setAlert({ open: true, message: "Aguardando resposta do outro usuário...", type: "warning" });
+            break;
+  
+          case "Sucesso!":
+            setAlert({ open: true, message: "Solicitação enviada com sucesso!", type: "success" });
+            break;
+  
+          default:
+            console.warn("⚠️ Mensagem desconhecida recebida:", lastMessage.message);
         }
       } else {
         console.warn("🚨 Mensagem recebida, mas não corresponde ao usuário!", lastMessage.to, "!==", userData.unique_code);
       }
     }
   }, [messages, userData]);
-
+  
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center h-screen">
