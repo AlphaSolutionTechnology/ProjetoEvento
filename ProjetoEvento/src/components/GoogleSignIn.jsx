@@ -79,8 +79,7 @@ const GoogleSignIn = () => {
 
   const handleCredentialResponse = (response) => {
     fetch(
-      `${import.meta.env.VITE_LOCAL_API_LINK}
-/api/auth/google`,
+      `${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/google`,
       {
         method: "POST",
         headers: {
