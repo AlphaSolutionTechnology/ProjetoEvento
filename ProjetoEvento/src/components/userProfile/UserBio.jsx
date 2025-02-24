@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Edit, Save, X } from "lucide-react"; // Ícones da Lucide
 
-function UserBio({ bio = "Esta pessoa ainda não adicionou uma biografia.", onBioUpdate }) {
+function UserBio({
+  bio = "Esta pessoa ainda não adicionou uma biografia.",
+  onBioUpdate,
+}) {
   const [isEditing, setIsEditing] = useState(false); // Controla o modo de edição
   const [newBio, setNewBio] = useState(bio); // Armazena o texto temporário durante a edição
   const maxLength = 150; // Limite de caracteres para a biografia
