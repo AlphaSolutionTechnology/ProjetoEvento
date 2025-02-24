@@ -16,7 +16,6 @@ import useQuizz from "../../hooks/useQuizz";
 
 const Ranking = () => {
   const navigate = useNavigate();
-  
 
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +49,7 @@ const Ranking = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/ranking/getupdatedranking`,
         {
           method: "GET",

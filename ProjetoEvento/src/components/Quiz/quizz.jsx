@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
-import AnswerTimer from "../AnswerTimer/AnswerTimer";
+import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
+import QuestionCard from "./QuestionCard";
+import ResultCard from "./ResultCard";
+import QuizHeader from "./QuizHeader";
+import QuizFooter from "./QuizFooter";
 
 const Quiz = () => {
   const { idPalestra } = useParams();
@@ -21,11 +25,10 @@ const Quiz = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        console.log("id da palestra:", idPalestra);
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/${idPalestra}`,
+          `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${idPalestra}`,
           {
-            method:"GET",
+            method: "GET",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
@@ -36,7 +39,6 @@ const Quiz = () => {
           throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log("perguntas recebidas:", data);
         setQuestions(data);
         setQuizStartTime(Date.now());
       } catch (error) {
@@ -67,6 +69,12 @@ const Quiz = () => {
     }
   };
 
+  // Função para finalizar o quiz quando o tempo acabar
+  const handleTimeUp = () => {
+    setQuizEndTime(Date.now());
+    setShowResult(true);
+  };
+
   const getTotalTimeTaken = () => {
     if (!quizStartTime || !quizEndTime) return "Calculando...";
     const totalMinutes = Math.round((quizEndTime - quizStartTime) / 60000);
@@ -79,14 +87,15 @@ const Quiz = () => {
     const resultData = {
       correctAnswerCount: result.correctAnswers,
       wrongAnswerCount: result.wrongAnswers,
-      score: result.correctAnswers * 5,
+      score: result.correctAnswers * 12,
       totalTime: parseFloat(totalTime),
     };
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
-/api/questoes/registerresult/${idPalestra}`,
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/questoes/registerresult/${idPalestra}`,
         {
           method: "POST",
           headers: {
@@ -115,7 +124,7 @@ const Quiz = () => {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center text-white">
         Nenhuma questão encontrada.
       </div>
     );
@@ -124,78 +133,43 @@ const Quiz = () => {
   const { enunciado, choices } = questions[currentQuestion];
 
   return (
-    <div className="result text-center mt-6 p-4 bg-gray-300 dark:bg-gray-800 rounded-lg shadow-md max-w-md mx-auto">
-      {!showResult ? (
-        <>
-          {/* Use durationInMinutes ao invés de duration em segundos */}
-          <AnswerTimer
-            durationInMinutes={2}
-            onTimeUp={() => onClickNext(false)}
+    <div className="min-h-screen flex items-center justify-center p-2">
+      <motion.div
+        className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-3"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {!showResult ? (
+          <>
+            <QuizHeader
+              currentQuestion={currentQuestion}
+              totalQuestions={questions.length}
+              onTimeUp={handleTimeUp} // Passando a função para finalizar o quiz
+            />
+
+            <QuestionCard
+              enunciado={enunciado}
+              choices={choices}
+              answerIdx={answerIdx}
+              onAnswerClick={onAnswerClick}
+            />
+
+            <QuizFooter
+              onClickNext={onClickNext}
+              isLastQuestion={currentQuestion === questions.length - 1}
+              isDisabled={answerIdx === null}
+            />
+          </>
+        ) : (
+          <ResultCard
+            correctAnswers={result.correctAnswers}
+            wrongAnswers={result.wrongAnswers}
+            totalTime={getTotalTimeTaken()}
+            onExit={() => (window.location.href = `/ranking`)}
           />
-
-          <div className="flex items-center gap-2 text-xl font-semibold mt-2">
-            <span className="active-question-no">{currentQuestion + 1}</span>
-            <span className="total-question">/{questions.length}</span>
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-bold mt-2">{enunciado}</h2>
-
-          <ul className="mt-4 space-y-4">
-            {choices.map((choice, index) => (
-              <li
-                onClick={() => onAnswerClick(choice, index)}
-                key={choice}
-                className={`cursor-pointer p-3 rounded-lg transition-colors duration-300 ease-in-out 
-                  ${
-                    answerIdx === index
-                      ? "bg-blue-500 text-white"
-                      : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                  } 
-                  dark:hover:bg-blue-700 hover:bg-blue-200`}
-                role="button"
-                aria-pressed={answerIdx === index ? "true" : "false"}
-              >
-                {choice}
-              </li>
-            ))}
-          </ul>
-
-          <div className="footer mt-6">
-            <button
-              onClick={onClickNext}
-              disabled={answerIdx === null}
-              className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg transition-all hover:bg-blue-600 disabled:bg-gray-400"
-              aria-label="Próxima pergunta ou finalizar"
-            >
-              {currentQuestion === questions.length - 1
-                ? "Finalizar"
-                : "Próximo"}
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className="result text-center mt-6">
-          <h3 className="text-2xl font-semibold mb-4">Resultado</h3>
-          <p className="text-lg">
-            Total de Acertos:{" "}
-            <span className="font-bold">{result.correctAnswers}</span>
-          </p>
-          <p className="text-lg">
-            Total de Erros:{" "}
-            <span className="font-bold">{result.wrongAnswers}</span>
-          </p>
-
-          <h4 className="text-lg font-semibold mt-4">Tempo total do Quiz:</h4>
-          <p className="text-md font-bold">{getTotalTimeTaken()}</p>
-
-          <button
-            onClick={() => (window.location.href = `/ranking`)}
-            className="exit-button mt-6 py-2 px-4 bg-red-500 text-white rounded-lg transition-all hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
-          >
-            Sair
-          </button>
-        </div>
-      )}
+        )}
+      </motion.div>
     </div>
   );
 };

@@ -26,7 +26,7 @@ const AuthPage = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/auth/login`,
         {
           method: "POST",
@@ -47,7 +47,7 @@ const AuthPage = () => {
           text: "Login realizado com sucesso!",
         });
         await new Promise((resolve) => {
-          localStorage.setItem("user_data", JSON.stringify(data.data));
+          NETWORKStorage.setItem("user_data", JSON.stringify(data.data));
           setUser(data.data);
           resolve();
         });
@@ -94,7 +94,7 @@ const AuthPage = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/auth/register`,
         {
           method: "POST",

@@ -10,7 +10,7 @@ function useNotifications() {
     if (messages.length > 0) {
       const newMessage = messages[messages.length - 1];
       const currentUser = JSON.parse(
-        localStorage.getItem("user_data")
+        NETWORKStorage.getItem("user_data")
       )?.unique_code;
 
       if (newMessage.name && newMessage.to === currentUser) {
@@ -33,7 +33,7 @@ function useNotifications() {
   useEffect(() => {
     fetch(
       `${
-        import.meta.env.VITE_LOCAL_API_LINK
+        import.meta.env.VITE_NETWORK_API_LINK
       }/api/connection/retrieveconnectionrequest`,
       {
         method: "GET",
@@ -41,7 +41,7 @@ function useNotifications() {
       }
     );
     fetch(
-      `${import.meta.env.VITE_LOCAL_API_LINK}
+      `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/connection/retrieveconnectionrequest`,
       {
         method: "GET",

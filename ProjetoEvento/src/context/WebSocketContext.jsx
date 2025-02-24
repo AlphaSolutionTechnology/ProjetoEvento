@@ -16,7 +16,7 @@ const initializeWebSocketConnection = (
     console.log("📡 Tentando conectar ao WebSocket...");
 
     const socket = new SockJS(
-      `${import.meta.env.VITE_LOCAL_API_LINK}/websocket`
+      `${import.meta.env.VITE_NETWORK_API_LINK}/websocket`
     );
     stompClient = Stomp.over(socket);
 
@@ -34,7 +34,7 @@ const initializeWebSocketConnection = (
         stompClient.subscribe("/user/queue/notification", (message) => {
           const parsedMessage = JSON.parse(message.body);
           const currentUserId = JSON.parse(
-            localStorage.getItem("user_data")
+            NETWORKStorage.getItem("user_data")
           )?.unique_code;
 
           console.log("📩 Mensagem privada recebida:", parsedMessage);
@@ -67,7 +67,7 @@ export const WebSocketProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const location = useLocation();
-  const userData = localStorage.getItem("user_data");
+  const userData = NETWORKStorage.getItem("user_data");
 
   const addMessage = useCallback((message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
@@ -103,7 +103,7 @@ export const WebSocketProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user_data");
+    const userData = NETWORKStorage.getItem("user_data");
     if (!connected && userData) {
       setupConnection();
     }

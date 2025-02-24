@@ -16,28 +16,42 @@ export default function QuizzesPage() {
 
   const desinscreverUsuario = async () => {
     if (!idPalestra) {
-      setToastMessage({ text: "Erro: ID da palestra não encontrado.", type: "error" });
+      setToastMessage({
+        text: "Erro: ID da palestra não encontrado.",
+        type: "error",
+      });
       return;
     }
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/desinscrever/${idPalestra}`,
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/palestra/desinscrever/${idPalestra}`,
         { method: "DELETE", credentials: "include" }
       );
 
       if (!response.ok) {
         const errorMessage = await response.text();
-        setToastMessage({ text: `Erro ao desinscrever: ${errorMessage}`, type: "error" });
+        setToastMessage({
+          text: `Erro ao desinscrever: ${errorMessage}`,
+          type: "error",
+        });
         return;
       }
 
-      localStorage.removeItem("palestraAtual");
-      setToastMessage({ text: "Você foi desinscrito da palestra.", type: "success" });
+      NETWORKStorage.removeItem("palestraAtual");
+      setToastMessage({
+        text: "Você foi desinscrito da palestra.",
+        type: "success",
+      });
       setTimeout(() => navigate("/home"), 2000);
     } catch (error) {
       console.error("Erro ao desinscrever:", error);
-      setToastMessage({ text: "Erro inesperado ao desinscrever.", type: "error" });
+      setToastMessage({
+        text: "Erro inesperado ao desinscrever.",
+        type: "error",
+      });
     }
   };
 
