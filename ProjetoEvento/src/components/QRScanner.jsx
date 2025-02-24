@@ -51,6 +51,7 @@ const QRScanner = ({ onScan }) => {
           borderRadius: "8px",
           border: "1px solid #ccc",
           objectFit: "cover",
+          margin:"10px"
         }}
       />
     </div>
