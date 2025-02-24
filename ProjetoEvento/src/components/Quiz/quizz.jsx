@@ -135,7 +135,7 @@ const Quiz = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-2">
       <motion.div
-        className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-3"
+        className="w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-2xl p-3"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}

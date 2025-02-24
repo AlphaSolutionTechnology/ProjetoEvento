@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const QuestionCard = ({ enunciado, choices, answerIdx, onAnswerClick }) => {
   return (
-    <section className="p-6 rounded-lg shadow-lg bg-white dark:bg-gray-900">
+    <section className="p-6 rounded-lg shadow-lg ">
       <header>
         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">
           {enunciado}

@@ -1,6 +1,6 @@
 const QuizFooter = ({ onClickNext, isLastQuestion, isDisabled }) => {
     return (
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-center ">
         <button
           onClick={onClickNext}
           disabled={isDisabled}
