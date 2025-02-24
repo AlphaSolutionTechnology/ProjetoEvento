@@ -61,13 +61,10 @@ const initializeWebSocketConnection = (
     });
   }
 };
-
 export const WebSocketProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
-  const location = useLocation();
-  const userData = localStorage.getItem("user_data");
 
   const addMessage = useCallback((message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
@@ -89,28 +86,15 @@ export const WebSocketProvider = ({ children }) => {
     initializeWebSocketConnection(addMessage, reconnect, setConnected);
   }, [addMessage, reconnect]);
 
-  const sendMessage = useCallback((destination, message) => {
-    if (stompClient && stompClient.connected) {
-      try {
-        stompClient.send(destination, {}, JSON.stringify(message));
-        console.log("📤 Mensagem enviada:", message);
-      } catch (error) {
-        console.error("⛔ Erro ao enviar mensagem:", error);
-      }
-    } else {
-      console.error("⚠️ WebSocket não está conectado. Mensagem não enviada.");
-    }
-  }, []);
-
   useEffect(() => {
     const userData = localStorage.getItem("user_data");
     if (!connected && userData) {
       setupConnection();
     }
-  }, [userData, connected, setupConnection]);
+  }, [connected, setupConnection]);
 
   return (
-    <WebSocketContext.Provider value={{ connected, messages, sendMessage }}>
+    <WebSocketContext.Provider value={{ connected, messages }}>
       {children}
     </WebSocketContext.Provider>
   );
