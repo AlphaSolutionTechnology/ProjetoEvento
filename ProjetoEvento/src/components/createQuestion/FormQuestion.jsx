@@ -30,6 +30,7 @@ function FormQuestion({
           onChange={(e) => setQuestionText(e.target.value)}
           className={inputClass}
           placeholder="Digite o enunciado da questão..."
+          required
         />
       </div>
 
@@ -45,6 +46,7 @@ function FormQuestion({
             onChange={(e) => handleChoiceChange(index, e.target.value)}
             className={inputClass}
             placeholder={`Digite a alternativa ${index + 1}...`}
+            required
           />
         </div>
       ))}
@@ -60,6 +62,7 @@ function FormQuestion({
           onChange={(e) => setCorrectAnswer(e.target.value)}
           className={inputClass}
           placeholder="Digite a alternativa correta..."
+          required
         />
       </div>
 
