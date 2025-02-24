@@ -23,8 +23,14 @@ const Quiz = () => {
       try {
         console.log("id da palestra:", idPalestra);
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_LINK}
-/api/questoes/${idPalestra}`
+          `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/${idPalestra}`,
+          {
+            method:"GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
         if (!response.ok) {
           throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
