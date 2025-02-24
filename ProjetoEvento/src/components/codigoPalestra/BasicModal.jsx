@@ -32,7 +32,7 @@ const BasicModal = ({
           className="absolute top-2 right-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           aria-label="Fechar modal"
         >
-          <X size={24} />
+          <X size={24} className="text-pink-500 "/>
         </button>
 
         {title && (
