@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { LogOut, User, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import useAuth from "../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 
 export default function AccountMenu({ isOpen }) {
   const menuRef = useRef(null);
