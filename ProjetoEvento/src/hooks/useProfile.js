@@ -13,7 +13,7 @@ export const useProfile = () => {
   const textColor = "#333";
 
   const populateZone = () => {
-    setUserData(JSON.parse(NETWORKStorage.getItem("user_data")));
+    setUserData(JSON.parse(localStorage.getItem("user_data")));
   };
 
   const handleWebSocketMessages = () => {
@@ -27,7 +27,7 @@ export const useProfile = () => {
     try {
       const data = await checkAuthentication();
       setIsAuthenticated(true);
-      NETWORKStorage.setItem("user_data", JSON.stringify(data));
+      localStorage.setItem("user_data", JSON.stringify(data));
     } catch {
       setIsAuthenticated(false);
       navigate("/login");

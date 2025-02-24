@@ -6,8 +6,8 @@ import Loading from "./loading/loading";
 const ProtectedRouteLogin = ({ children, role }) => {
   const { user, isLoading } = useAuth();
 
-  // Fallback para dados do NETWORKStorage se isLoading for false
-  const NETWORKUser = JSON.parse(NETWORKStorage.getItem("user_data"));
+  // Fallback para dados do localStorage se isLoading for false
+  const LOCALUser = JSON.parse(localStorage.getItem("user_data"));
 
   if (isLoading) {
     return (
@@ -17,8 +17,8 @@ const ProtectedRouteLogin = ({ children, role }) => {
     );
   }
 
-  // Usa user ou NETWORKUser para evitar null
-  const currentUser = user || NETWORKUser;
+  // Usa user ou LOCALUser para evitar null
+  const currentUser = user || LOCALUser;
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;

@@ -63,9 +63,9 @@ function App() {
             path="/quizz/:idPalestra"
             element={
               <ProtectedRouteLogin>
-                <ProtectedRouteQuizz>
+                
                   <RouteWrapper component={Questoes} />
-                </ProtectedRouteQuizz>
+                
               </ProtectedRouteLogin>
             }
           />
