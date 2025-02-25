@@ -9,22 +9,29 @@ function useNotifications() {
   useEffect(() => {
     if (messages.length > 0) {
       const newMessage = messages[messages.length - 1]; // Última mensagem recebida
-      const currentUser = JSON.parse(localStorage.getItem("user_data"))?.unique_code;
+      const currentUser = JSON.parse(
+        localStorage.getItem("user_data")
+      )?.unique_code;
 
       console.log("🔔 Nova mensagem WebSocket recebida:", newMessage);
 
       if (newMessage.to === currentUser) {
         setNotifications((prev) => {
           // Verifica se a notificação já existe pelo userId
-          const isDuplicate = prev.some((notification) => notification.userId === newMessage.from);
+          const isDuplicate = prev.some(
+            (notification) => notification.userId === newMessage.from
+          );
 
           if (!isDuplicate) {
             console.log("✅ Adicionando nova notificação:", newMessage);
-            return [...prev, {
-              userId: newMessage.from, 
-              name: newMessage.name || "Desconhecido", // Agora usamos `name` diretamente
-              message: newMessage.message
-            }];
+            return [
+              ...prev,
+              {
+                userId: newMessage.from,
+                name: newMessage.name || "Desconhecido", // Agora usamos `name` diretamente
+                message: newMessage.message,
+              },
+            ];
           }
           return prev;
         });
@@ -47,13 +54,16 @@ function useNotifications() {
         if (data?.server) {
           setNotifications((prev) => {
             const uniqueNotifications = data.server.filter(
-              (notification) => !prev.some((n) => n.userId === notification.userId)
+              (notification) =>
+                !prev.some((n) => n.userId === notification.userId)
             );
             return [...prev, ...uniqueNotifications];
           });
         }
       })
-      .catch((error) => console.error("❌ Erro ao buscar notificações:", error));
+      .catch((error) =>
+        console.error("❌ Erro ao buscar notificações:", error)
+      );
   }, []);
 
   return { notifications, setNotifications, animateBadge };

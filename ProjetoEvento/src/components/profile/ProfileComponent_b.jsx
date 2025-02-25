@@ -71,25 +71,37 @@ const ProfileComponent = () => {
 
   const handleSendConnection = async (code) => {
     setInputCode("");
-  
+
     if (!code) {
-      setAlert({ open: true, message: "Por favor, insira um código.", type: "error" });
+      setAlert({
+        open: true,
+        message: "Por favor, insira um código.",
+        type: "error",
+      });
       return;
     }
-  
+
     if (typeof code !== "string" || code.trim().length !== 6) {
-      setAlert({ open: true, message: "O código deve ter exatamente 6 caracteres.", type: "error" });
+      setAlert({
+        open: true,
+        message: "O código deve ter exatamente 6 caracteres.",
+        type: "error",
+      });
       return;
     }
-  
+
     if (userData?.unique_code && code === userData.unique_code) {
       setUnauthorized(true);
-      setAlert({ open: true, message: "Você não pode se conectar consigo mesmo!", type: "error" });
+      setAlert({
+        open: true,
+        message: "Você não pode se conectar consigo mesmo!",
+        type: "error",
+      });
       return;
     }
     code = code.toUpperCase();
     setIsLoading(true);
-    console.log(code)
+    console.log(code);
     try {
       const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/connection/sendconnectionrequest`, {
         method: "POST",
@@ -99,19 +111,30 @@ const ProfileComponent = () => {
       });
   
       const data = await response.json();
-  
+
       if (response.ok) {
-        setAlert({ open: true, message: "Solicitação de conexão enviada com sucesso!", type: "success" });
+        setAlert({
+          open: true,
+          message: "Solicitação de conexão enviada com sucesso!",
+          type: "success",
+        });
       } else {
-        setAlert({ open: true, message: data.server || "Erro ao enviar solicitação.", type: "error" });
+        setAlert({
+          open: true,
+          message: data.server || "Erro ao enviar solicitação.",
+          type: "error",
+        });
       }
     } catch (error) {
-      setAlert({ open: true, message: "Erro de conexão com o servidor.", type: "error" });
+      setAlert({
+        open: true,
+        message: "Erro de conexão com o servidor.",
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
   };
-  
 
   const populateZone = () => {
     const storedUserData = localStorage.getItem("user_data");
@@ -132,42 +155,60 @@ const ProfileComponent = () => {
       console.warn("⚠️ userData ainda não carregado corretamente!", userData);
       return;
     }
-  
+
     if (messages.length > 0) {
       setIsLoading(false);
       const lastMessage = messages[messages.length - 1];
-  
+
       console.log("📩 Última mensagem recebida:", lastMessage);
-  
+
       // 🔹 Pegando os valores corretamente
-      const messageTo = String(lastMessage?.to || "").trim().toUpperCase();
-      const currentUserCode = String(userData.unique_code || "").trim().toUpperCase();
-      const messageText = lastMessage?.message ? lastMessage.message.trim() : "";
-  
+      const messageTo = String(lastMessage?.to || "")
+        .trim()
+        .toUpperCase();
+      const currentUserCode = String(userData.unique_code || "")
+        .trim()
+        .toUpperCase();
+      const messageText = lastMessage?.message
+        ? lastMessage.message.trim()
+        : "";
+
       if (messageTo === currentUserCode) {
         switch (messageText) {
           case "Você não pode enviar solicitação para si!":
             setAlert({ open: true, message: messageText, type: "error" });
             break;
-  
+
           case "Não foi encontrado nenhum usuário com esse código:":
             setAlert({ open: true, message: messageText, type: "error" });
             break;
-  
+
           case "Usuarios já estão conectados":
             setAlreadyConnected(true);
-            setAlert({ open: true, message: "Vocês já estão conectados!", type: "info" });
+            setAlert({
+              open: true,
+              message: "Vocês já estão conectados!",
+              type: "info",
+            });
             break;
-  
+
           case "Aguardando resposta do outro usuário":
             setWaiting(true);
-            setAlert({ open: true, message: "Aguardando resposta do outro usuário...", type: "warning" });
+            setAlert({
+              open: true,
+              message: "Aguardando resposta do outro usuário...",
+              type: "warning",
+            });
             break;
-  
+
           case "Sucesso!":
-            setAlert({ open: true, message: "Solicitação enviada com sucesso!", type: "success" });
+            setAlert({
+              open: true,
+              message: "Solicitação enviada com sucesso!",
+              type: "success",
+            });
             break;
-  
+
           // 🔹 Novo caso para pedidos de conexão recebidos
           default:
             if (messageText.includes("quer se conectar com você!")) {
@@ -181,11 +222,15 @@ const ProfileComponent = () => {
             }
         }
       } else {
-        console.warn("🚨 Mensagem recebida, mas não corresponde ao usuário!", lastMessage.to, "!==", userData.unique_code);
+        console.warn(
+          "🚨 Mensagem recebida, mas não corresponde ao usuário!",
+          lastMessage.to,
+          "!==",
+          userData.unique_code
+        );
       }
     }
   }, [messages, userData]);
-  
 
   if (!isAuthenticated) {
     return (
