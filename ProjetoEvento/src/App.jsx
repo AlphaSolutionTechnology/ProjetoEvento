@@ -1,45 +1,137 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Questoes from "./pages/Questoes";
-import ThemeToggle from "./components/toggleDarkMode";
-import { useAuth } from "./context/AuthContext";
-import TestConnection from "./pages/TestConnection";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { WebSocketProvider } from "./context/WebSocketContext";
+import { motion } from "framer-motion";
 import Home from "./pages/home";
+import AdmQuiz from "./pages/AdmQuiz";
+import Questoes from "./pages/Questoes";
 import LoginPage from "./pages/LoginPage";
-import { Test } from "./pages/Test";
+import QuizzesPage from "./pages/QuizzesPage";
+import ConnectPage from "./pages/ConnectPage";
+import RankingView from "./pages/RankingView";
+import ProfilePage from "./pages/ProfilePage";
 import PalestrasList from "./pages/palestrasList";
-import ParentComponent from "./pages/ParentComponent";
-import WebSTest from "./pages/WebSTest";
-import AdmQuizz from "./pages/admQuizz";
-import { WebSocketProvider } from "./context/WebSocketContext"; // Importa o contexto WebSocket
-
+import RouteWrapper from "./components/RouteWrapper";
+import Header from "./components/headerGlobal/Header";
+import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
+import ProtectedRouteQuizz from "./components/ProtectedRouteQuizz";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
-  const { user } = useAuth(); // pode ser null ou com dados
+  const location = useLocation();
 
   return (
-    <WebSocketProvider> {/* Provedor do WebSocket */}
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        {/* Header com o botão de alternância de tema */}
-        <header className="p-4 flex justify-between items-center bg-gray-200 dark:bg-gray-800">
-          <h1 className="text-xl font-bold">LOGO</h1>
-          <ThemeToggle />
-        </header>
+    <WebSocketProvider>
+      <main className="h-full w-full text-white dark:bg-[#0d1117] relative">
+        {/* Círculos decorativos com animação de escala */}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute top-10 left-10 w-40 h-40 bg-blue-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none"
+        ></motion.div>
 
-        {/* Rotas da aplicação */}
+        {/* Outro círculo */}
+        <motion.div
+          animate={{ scale: [1, 1.3, 1] }}
+          transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute bottom-10 right-20 w-52 h-52 bg-green-800 opacity-30 blur-3xl rounded-full z-0 pointer-events-none"
+        ></motion.div>
+
+        {/* Um terceiro círculo */}
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute bottom-20 left-32 w-36 h-36 bg-pink-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none"
+        ></motion.div>
+
+        {/* Renderiza o Header em todas as páginas, menos na tela de Login */}
+        {(location.pathname !== "/login" && location.pathname !== "/land") && <Header />}
+
         <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/home" element={user ? <Home /> : <LoginPage />} />
-          <Route path="/quizz" element={<Questoes />} />
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/test" element={<TestConnection />} />
-          <Route path="/googletest" element={<Test />} />
-          <Route path='/palestras' element={<PalestrasList/>}/>
-          <Route path="/parent" element={<ParentComponent />} />
-          <Route path="/websocket" element={<WebSTest />} />
-          <Route path='/admQuizz' element={<AdmQuizz/>} /> 
+
+          <Route
+            path="/home"
+            element={
+              <ProtectedRouteLogin>
+                <Home />
+              </ProtectedRouteLogin>
+            }
+          />
+
+          <Route
+            path="/quizz/:idPalestra"
+            element={
+              <ProtectedRouteLogin>
+                  <ProtectedRouteQuizz>
+                  <RouteWrapper component={Questoes} />
+                  </ProtectedRouteQuizz>
+              </ProtectedRouteLogin>
+            }
+          />
+
+          <Route
+            path="/conectar"
+            element={
+              <ProtectedRouteLogin>
+                <ConnectPage />
+              </ProtectedRouteLogin>
+            }
+          />
+
+          <Route
+            path="/palestras"
+            element={
+              <ProtectedRouteLogin role="Administrador">
+                <PalestrasList />
+              </ProtectedRouteLogin>
+            }
+          />
+
+          <Route
+            path="/admQuiz"
+            element={
+              <ProtectedRouteLogin role="Administrador">
+                <AdmQuiz />
+              </ProtectedRouteLogin>
+            }
+          />
+
+          <Route
+            path="/palestra/:idPalestra"
+            element={
+              <ProtectedRouteLogin role="Participante">
+                <RouteWrapper component={QuizzesPage} />
+              </ProtectedRouteLogin>
+            }
+          />
+
+          <Route
+            path="/ranking"
+            element={
+              <ProtectedRouteLogin>
+                <RankingView />
+              </ProtectedRouteLogin>
+            }
+          />
+
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRouteLogin>
+                <ProfilePage />
+              </ProtectedRouteLogin>
+            }
+          />
+          <Route 
+            path="/land"
+            element={<LandingPage/>}>
+            
+          </Route>
         </Routes>
-      </div>
+
+      </main>
     </WebSocketProvider>
   );
 }

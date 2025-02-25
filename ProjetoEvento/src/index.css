@@ -1,8 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@media (min-width: 600px) {
-    .css-1t7h5qn{
-        flex-direction: column !important;
-    }
-}
