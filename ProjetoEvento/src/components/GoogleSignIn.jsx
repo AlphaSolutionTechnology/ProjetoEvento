@@ -30,7 +30,7 @@ const GoogleSignIn = () => {
   const checkAuthentication = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/auth/validate`,
         {
           method: "POST",
@@ -72,13 +72,13 @@ const GoogleSignIn = () => {
         width: "240px",
         height: "50px",
         text: "continue_with",
-        LOCALe: "pt-BR",
+        locale: "pt-BR",
       }
     );
   };
 
   const handleCredentialResponse = (response) => {
-    fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/google`, {
+    fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/google`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

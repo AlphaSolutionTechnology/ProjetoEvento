@@ -7,7 +7,7 @@ const ProtectedRouteLogin = ({ children, role }) => {
   const { user, isLoading } = useAuth();
 
   // Fallback para dados do localStorage se isLoading for false
-  const LOCALUser = JSON.parse(localStorage.getItem("user_data"));
+  const localUser = JSON.parse(localStorage.getItem("user_data"));
 
   if (isLoading) {
     return (
@@ -17,8 +17,8 @@ const ProtectedRouteLogin = ({ children, role }) => {
     );
   }
 
-  // Usa user ou LOCALUser para evitar null
-  const currentUser = user || LOCALUser;
+  // Usa user ou localUser para evitar null
+  const currentUser = user || localUser;
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;
