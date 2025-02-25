@@ -10,19 +10,19 @@ let pingInterval = null;
 
 const initializeWebSocketConnection = (onMessage, reconnect, setConnected, user) => {
   if (!stompClient || !stompClient.connected) {
-    //("📡 Tentando conectar ao WebSocket...");
+
 
     const socket = new SockJS(`${import.meta.env.VITE_NETWORK_API_LINK}/websocket`);
     
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
-      //("✅ Conectado ao WebSocket!");
+
       setConnected(true);
 
       stompClient.subscribe("/topic/ranking", (message) => {
         const parsedMessage = JSON.parse(message.body);
-        //("📩 Mensagem de /topic/ranking:", parsedMessage);
+
         onMessage(parsedMessage);
       });
 
@@ -30,7 +30,7 @@ const initializeWebSocketConnection = (onMessage, reconnect, setConnected, user)
         const parsedMessage = JSON.parse(message.body);
 
         if (parsedMessage.to === user?.unique_code) {
-          //("✅ Nova notificação recebida:", parsedMessage);
+
           onMessage(parsedMessage);
         }
       });
@@ -38,9 +38,7 @@ const initializeWebSocketConnection = (onMessage, reconnect, setConnected, user)
       if (!pingInterval) {
         pingInterval = setInterval(() => {
           if (stompClient && stompClient.connected) {
-            stompClient.send("/app/ping", {}, "ping");
-            //("📡 Enviando keep-alive ping para manter conexão ativa.");
-          }
+            stompClient.send("/app/ping", {}, "ping");          }
         }, 30000);
       }
 
@@ -70,24 +68,19 @@ export const WebSocketProvider = ({ children }) => {
     const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
 
     if (reconnectAttempts < maxAttempts) {
-      //(`🔄 Tentativa de reconexão #${reconnectAttempts + 1} em ${delay / 1000}s`);
       
       setTimeout(() => {
         initializeWebSocketConnection(addMessage, reconnect, setConnected, user);
         setReconnectAttempts((prev) => prev + 1);
       }, delay);
-    } else {
-      //onsole.error("⛔ Número máximo de tentativas de reconexão atingido.");
-    }
+    } 
   }, [reconnectAttempts, addMessage, user]);
 
   useEffect(() => {
 
     if (!connected && user && location.pathname !== "/login") {
-      //("🔄 Tentando conectar WebSocket...");
       initializeWebSocketConnection(addMessage, reconnect, setConnected, user);
     } else if (!user) {
-      //("🛑 Usuário deslogado, desconectando WebSocket...");
       if (stompClient && stompClient.connected) {
         stompClient.disconnect();
       }

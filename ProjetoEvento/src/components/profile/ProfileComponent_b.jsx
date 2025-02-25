@@ -299,17 +299,17 @@ const ProfileComponent = () => {
           handleSendConnection={handleSendConnection}
         />
       )}
-
       <QRScannerModal
         isScannerOpen={isScannerOpen}
         setIsScannerOpen={setIsScannerOpen}
         handleScan={(data) => {
-          setIsScannerOpen(false);
+          setIsScannerOpen(false); // Fecha o scanner após a leitura
           setInputCode(data);
           handleSendConnection(data);
         }}
         darkMode={darkMode}
       />
+
 
       <ConnectionRequestDialog
         fromUserName={dialogData.fromUserName}
