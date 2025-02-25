@@ -1,97 +1,102 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import AuthContext from "../context/AuthContext"; // 🔹 Importa o contexto de autenticação
 
 export const WebSocketContext = createContext();
 
 let stompClient = null;
+let pingInterval = null; // Evita múltiplos pings
 
-const initializeWebSocketConnection = (
-  onMessage,
-  onDisconnect,
-  setConnected
-) => {
+const initializeWebSocketConnection = (onMessage, reconnect, setConnected, user) => {
   if (!stompClient || !stompClient.connected) {
     console.log("📡 Tentando conectar ao WebSocket...");
 
-    const socket = new SockJS(
-      `${import.meta.env.VITE_NETWORK_API_LINK}/websocket`
-    );
+    const socket = new SockJS(`${import.meta.env.VITE_NETWORK_API_LINK}/websocket`);
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
       console.log("✅ Conectado ao WebSocket!");
       setConnected(true);
 
-      if (!stompClient.subscribed) {
-        stompClient.subscribe("/topic/ranking", (message) => {
-          const parsedMessage = JSON.parse(message.body);
-          console.log("📩 Mensagem de /topic/ranking:", parsedMessage);
+      stompClient.subscribe("/topic/ranking", (message) => {
+        const parsedMessage = JSON.parse(message.body);
+        console.log("📩 Mensagem de /topic/ranking:", parsedMessage);
+        onMessage(parsedMessage);
+      });
+
+      stompClient.subscribe("/user/queue/notification", (message) => {
+        const parsedMessage = JSON.parse(message.body);
+
+        if (parsedMessage.to === user?.unique_code) {
+          console.log("✅ Nova notificação recebida:", parsedMessage);
           onMessage(parsedMessage);
-        });
+        }
+      });
 
-        stompClient.subscribe("/user/queue/notification", (message) => {
-          const parsedMessage = JSON.parse(message.body);
-          const currentUserId = JSON.parse(
-            localStorage.getItem("user_data")
-          )?.unique_code;
-
-          console.log("📩 Mensagem privada recebida:", parsedMessage);
-          console.log(
-            "🚀 Comparação de destinatário:",
-            parsedMessage.to,
-            "vs",
-            currentUserId
-          );
-
-          if (parsedMessage.to === currentUserId) {
-            console.log("✅ Nova notificação recebida:", parsedMessage);
-            onMessage(parsedMessage);
-          } else {
-            console.warn(
-              "⚠️ Mensagem ignorada (não é do usuário atual):",
-              parsedMessage
-            );
+      // 🔹 Evita múltiplos intervalos de ping
+      if (!pingInterval) {
+        pingInterval = setInterval(() => {
+          if (stompClient && stompClient.connected) {
+            stompClient.send("/app/ping", {}, "ping");
+            console.log("📡 Enviando keep-alive ping para manter conexão ativa.");
           }
-        });
-
-        stompClient.subscribed = true; // 🔥 Evita múltiplas assinaturas
+        }, 30000);
       }
+
+    }, (error) => {
+      console.error("❌ Erro na conexão WebSocket, tentando reconectar...", error);
+      setConnected(false);
+      clearInterval(pingInterval);
+      pingInterval = null;
+      reconnect(); 
     });
   }
 };
+
 export const WebSocketProvider = ({ children }) => {
+  const { user } = useContext(AuthContext); // 🔹 Pega o usuário autenticado
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const location = useLocation();
 
   const addMessage = useCallback((message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   }, []);
 
   const reconnect = useCallback(() => {
-    if (reconnectAttempts < 5) {
-      console.log(`🔄 Tentativa de reconexão #${reconnectAttempts + 1}`);
-      setReconnectAttempts((prev) => prev + 1);
+    const maxAttempts = 10;
+    const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+
+    if (reconnectAttempts < maxAttempts) {
+      console.log(`🔄 Tentativa de reconexão #${reconnectAttempts + 1} em ${delay / 1000}s`);
+      
       setTimeout(() => {
-        initializeWebSocketConnection(addMessage, reconnect, setConnected);
-      }, 3000);
+        initializeWebSocketConnection(addMessage, reconnect, setConnected, user);
+        setReconnectAttempts((prev) => prev + 1);
+      }, delay);
     } else {
       console.error("⛔ Número máximo de tentativas de reconexão atingido.");
     }
-  }, [reconnectAttempts, addMessage]);
-
-  const setupConnection = useCallback(() => {
-    initializeWebSocketConnection(addMessage, reconnect, setConnected);
-  }, [addMessage, reconnect]);
+  }, [reconnectAttempts, addMessage, user]);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user_data");
-    if (!connected && userData) {
-      setupConnection();
+    // 🚀 O WebSocket só conecta se o usuário estiver logado e não estiver na página de login
+    if (!connected && user && location.pathname !== "/login") {
+      console.log("🔄 Tentando conectar WebSocket...");
+      initializeWebSocketConnection(addMessage, reconnect, setConnected, user);
+    } else if (!user) {
+      console.log("🛑 Usuário deslogado, desconectando WebSocket...");
+      if (stompClient && stompClient.connected) {
+        stompClient.disconnect();
+      }
+      clearInterval(pingInterval);
+      pingInterval = null;
+      setConnected(false);
     }
-  }, [connected, setupConnection]);
+  }, [connected, user, addMessage, reconnect, location]);
 
   return (
     <WebSocketContext.Provider value={{ connected, messages }}>
