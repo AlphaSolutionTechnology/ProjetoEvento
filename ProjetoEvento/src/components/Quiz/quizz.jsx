@@ -112,10 +112,14 @@ const Quiz = () => {
 
   const getTotalTimeTaken = () => {
     if (!quizStartTime || !quizEndTime) return "Calculando...";
-    const totalMinutes = Math.round((quizEndTime - quizStartTime) / 60000);
-    return `${totalMinutes} minuto(s)`;
+    const totalTimeMs = quizEndTime - quizStartTime;
+    const totalSeconds = Math.floor(totalTimeMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+  
+    return `${minutes} minuto(s) e ${seconds} segundo(s)`;
   };
-
+  
   const enviarResultado = async () => {
     const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
 
@@ -128,16 +132,18 @@ const Quiz = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/registerresult/${idPalestra}`,
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/${idPalestra}`,
         {
-          method: "POST",
+          method: "GET",
+          mode: "cors",             // Garante que requisições cross-origin sejam tratadas corretamente
+          credentials: "include",   // Envia cookies junto com a requisição
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",
-          body: JSON.stringify(resultData),
         }
       );
+      
+      
 
       if (!response.ok) {
         console.error("Erro ao enviar resultado:", response.statusText);
