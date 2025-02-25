@@ -47,7 +47,7 @@ function Home() {
   const validarPalestra = async (codigo) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/palestra/inscrever/${codigo}`,
         {
           method: "PATCH",
@@ -61,7 +61,7 @@ function Home() {
 
       if (!idPalestra) throw new Error("ID da Palestra não encontrado!");
 
-      localStorage.setItem("palestraAtual", idPalestra);
+      NETWORKStorage.setItem("palestraAtual", idPalestra);
 
       // Exibe toast de sucesso
       setToastType("success");
@@ -144,7 +144,7 @@ function Home() {
             </p>
             <button
               onClick={() => {
-                const palestraSalva = localStorage.getItem("palestraAtual");
+                const palestraSalva = NETWORKStorage.getItem("palestraAtual");
                 if (palestraSalva) {
                   navigate(`/palestra/${palestraSalva}`);
                 } else {

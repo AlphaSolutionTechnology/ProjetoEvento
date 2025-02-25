@@ -26,7 +26,7 @@ const Quiz = () => {
     const fetchQuestions = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/${idPalestra}`,
+          `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${idPalestra}`,
           {
             method: "GET",
             credentials: "include",
@@ -61,7 +61,7 @@ const Quiz = () => {
       // Considera que o objeto de questão possui o campo "id"
       const questionId = questions[currentQuestion].id;
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/validate`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/validate`,
         {
           method: "POST",
           headers: {
@@ -127,7 +127,7 @@ const Quiz = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/${idPalestra}`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${idPalestra}`,
         {
           method: "GET",
           mode: "cors",             // Garante que requisições cross-origin sejam tratadas corretamente

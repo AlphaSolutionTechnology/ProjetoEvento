@@ -4,7 +4,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user_data");
+    const storedUser = NETWORKStorage.getItem("user_data");
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const checkAuthentication = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/validate`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/validate`,
         {
           method: "POST",
           credentials: "include",
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem("user_data", JSON.stringify(data));
+        NETWORKStorage.setItem("user_data", JSON.stringify(data));
         setUser(data);
       } else {
         logout();
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/logout`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/logout`,
         {
           method: "DELETE",
           credentials: "include",
@@ -44,8 +44,8 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     } finally {
-      localStorage.removeItem("user_data");
-      localStorage.removeItem("palestraAtual");
+      NETWORKStorage.removeItem("user_data");
+      NETWORKStorage.removeItem("palestraAtual");
       setUser(null);
     }
   };

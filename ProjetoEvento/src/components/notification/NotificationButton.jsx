@@ -13,10 +13,10 @@ export default function NotificationButton() {
 
   const handleAccept = async (userId) => {
     const userUniqueCode = JSON.parse(
-      localStorage.getItem("user_data")
+      NETWORKStorage.getItem("user_data")
     )?.unique_code;
     try {
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/connection/answerconnectionrequest`, {
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/answerconnectionrequest`, {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -41,11 +41,11 @@ export default function NotificationButton() {
 
   const handleDeny = async (userId) => {
     const userUniqueCode = JSON.parse(
-      localStorage.getItem("user_data")
+      NETWORKStorage.getItem("user_data")
     )?.unique_code;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/connection/answerconnectionrequest`, {
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/answerconnectionrequest`, {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

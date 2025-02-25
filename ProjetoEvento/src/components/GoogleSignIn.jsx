@@ -30,7 +30,7 @@ const GoogleSignIn = () => {
   const checkAuthentication = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/auth/validate`,
         {
           method: "POST",
@@ -41,7 +41,7 @@ const GoogleSignIn = () => {
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
-        localStorage.setItem("user_data", JSON.stringify(data));
+        NETWORKStorage.setItem("user_data", JSON.stringify(data));
         setUser(data); // 🔥 Atualiza o estado global imediatamente
 
         if (location.pathname === "/login") {
@@ -72,13 +72,13 @@ const GoogleSignIn = () => {
         width: "240px",
         height: "50px",
         text: "continue_with",
-        locale: "pt-BR",
+        NETWORKe: "pt-BR",
       }
     );
   };
 
   const handleCredentialResponse = (response) => {
-    fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/google`, {
+    fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/google`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -94,7 +94,7 @@ const GoogleSignIn = () => {
       })
       .then((data) => {
         //("Dados do usuário recebidos:", data);
-        localStorage.setItem("user_data", JSON.stringify(data));
+        NETWORKStorage.setItem("user_data", JSON.stringify(data));
         setUser(data);
         navigate("/home");
       })

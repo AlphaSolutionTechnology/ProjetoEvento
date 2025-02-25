@@ -11,8 +11,8 @@ function UserProfileCard({
   initialBio = "Esta pessoa ainda não adicionou uma biografia.",
   badges = [],
 }) {
-  // Recupera os dados do usuário do localStorage de forma segura
-  const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+  // Recupera os dados do usuário do NETWORKStorage de forma segura
+  const userData = JSON.parse(NETWORKStorage.getItem("user_data") || "{}");
   const { avatar: userAvatar, name: userNameInitial } = userData;
 
   // Estados para controlar o modal de alteração de foto e a bio

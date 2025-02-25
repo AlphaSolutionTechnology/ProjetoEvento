@@ -45,7 +45,7 @@ const ProfileComponent = () => {
   const checkAuthentication = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/validate`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/validate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -56,7 +56,7 @@ const ProfileComponent = () => {
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
-        localStorage.setItem("user_data", JSON.stringify(data));
+        NETWORKStorage.setItem("user_data", JSON.stringify(data));
       } else {
         console.warn("⚠️ Usuário não autenticado.");
         setIsAuthenticated(false);
@@ -93,7 +93,7 @@ const ProfileComponent = () => {
     setIsLoading(true);
   
     try {
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/connection/sendconnectionrequest`, {
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/sendconnectionrequest`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -148,7 +148,7 @@ const ProfileComponent = () => {
   
 
   const populateZone = () => {
-    const storedUserData = localStorage.getItem("user_data");
+    const storedUserData = NETWORKStorage.getItem("user_data");
     if (storedUserData) {
       setUserData(JSON.parse(storedUserData));
     } else {
