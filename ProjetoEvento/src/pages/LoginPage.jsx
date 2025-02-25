@@ -26,7 +26,7 @@ const AuthPage = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
+        `${import.meta.env.VITE_LOCAL_API_LINK}
 /api/auth/login`,
         {
           method: "POST",
@@ -94,7 +94,7 @@ const AuthPage = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
+        `${import.meta.env.VITE_LOCAL_API_LINK}
 /api/auth/register`,
         {
           method: "POST",
