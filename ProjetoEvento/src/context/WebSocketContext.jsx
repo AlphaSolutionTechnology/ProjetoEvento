@@ -12,7 +12,7 @@ const initializeWebSocketConnection = (onMessage, reconnect, setConnected, user)
   if (!stompClient || !stompClient.connected) {
 
 
-    const socket = new SockJS(`${import.meta.env.VITE_LOCAL_API_LINK}/websocket`);
+    const socket = new SockJS(`${import.meta.env.VITE_NETWORK_API_LINK}/websocket`);
     
     stompClient = Stomp.over(socket);
 
