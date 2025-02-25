@@ -19,7 +19,7 @@ export function useGenerateQuestions() {
     setLoading(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
+        `${import.meta.env.VITE_LOCAL_API_LINK}
 /api/AI/requestquestion`,
         {
           method: "POST",
