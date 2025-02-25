@@ -21,7 +21,7 @@ const Quiz = () => {
   });
   const [showResult, setShowResult] = useState(false);
 
-  // Buscar perguntas do backend
+  // Buscar as questões do back-end (note que elas já não contêm o campo "correctAnswer")
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -49,23 +49,58 @@ const Quiz = () => {
     fetchQuestions();
   }, [idPalestra]);
 
+  // Armazena apenas a resposta selecionada (string) e o índice escolhido
   const onAnswerClick = (selectedAnswer, index) => {
     setAnswerIdx(index);
-    setAnswer(selectedAnswer === questions[currentQuestion].correctAnswer);
+    setAnswer(selectedAnswer);
   };
 
-  const onClickNext = () => {
-    setAnswerIdx(null);
-    setResult((prev) => ({
-      correctAnswers: answer ? prev.correctAnswers + 1 : prev.correctAnswers,
-      wrongAnswers: !answer ? prev.wrongAnswers + 1 : prev.wrongAnswers,
-    }));
+  // Ao clicar em "Próxima", envia a resposta selecionada para o back-end para validação
+  const onClickNext = async () => {
+    try {
+      // Considera que o objeto de questão possui o campo "id"
+      const questionId = questions[currentQuestion].id;
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/validate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            questionId: questionId,
+            selectedAnswer: answer,
+          }),
+        }
+      );
 
-    if (currentQuestion !== questions.length - 1) {
-      setCurrentQuestion((prev) => prev + 1);
-    } else {
-      setQuizEndTime(Date.now());
-      setShowResult(true);
+      if (!response.ok) {
+        throw new Error("Erro na validação da resposta");
+      }
+
+      const data = await response.json();
+      const isCorrect = data.isCorrect;
+
+      setResult((prev) => ({
+        correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
+        wrongAnswers: !isCorrect ? prev.wrongAnswers + 1 : prev.wrongAnswers,
+        idPalestra: prev.idPalestra,
+      }));
+
+      // Limpa a seleção da resposta
+      setAnswerIdx(null);
+      setAnswer(null);
+
+      // Avança para a próxima pergunta ou finaliza o quiz
+      if (currentQuestion !== questions.length - 1) {
+        setCurrentQuestion((prev) => prev + 1);
+      } else {
+        setQuizEndTime(Date.now());
+        setShowResult(true);
+      }
+    } catch (error) {
+      console.error("Erro ao validar resposta:", error);
     }
   };
 
@@ -93,9 +128,7 @@ const Quiz = () => {
 
     try {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_NETWORK_API_LINK
-        }/api/questoes/registerresult/${idPalestra}`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/registerresult/${idPalestra}`,
         {
           method: "POST",
           headers: {
@@ -106,9 +139,7 @@ const Quiz = () => {
         }
       );
 
-      if (response.ok) {
-        //("Resultado enviado com sucesso!");
-      } else {
+      if (!response.ok) {
         console.error("Erro ao enviar resultado:", response.statusText);
       }
     } catch (error) {
@@ -145,7 +176,7 @@ const Quiz = () => {
             <QuizHeader
               currentQuestion={currentQuestion}
               totalQuestions={questions.length}
-              onTimeUp={handleTimeUp} // Passando a função para finalizar o quiz
+              onTimeUp={handleTimeUp}
             />
 
             <QuestionCard
