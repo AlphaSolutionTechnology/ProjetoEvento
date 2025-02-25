@@ -123,12 +123,7 @@ const Quiz = () => {
   const enviarResultado = async () => {
     const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
 
-    const resultData = {
-      correctAnswerCount: result.correctAnswers,
-      wrongAnswerCount: result.wrongAnswers,
-      score: result.correctAnswers * 12,
-      totalTime: parseFloat(totalTime),
-    };
+  
 
     try {
       const response = await fetch(
