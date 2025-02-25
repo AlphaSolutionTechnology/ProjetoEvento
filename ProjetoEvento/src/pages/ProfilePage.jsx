@@ -1,17 +1,9 @@
-import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import UserProfileCard from "../components/userProfile/UserProfileCard";
 import Loading from "../components/loading/loading";
 
-function ProfilePage({ connections = [], badges = [] }) {
+function ProfilePage() {
   const { user, isLoading } = useAuth();
-  const [profilePicture, setProfilePicture] = useState(user?.picture || "");
-
-  useEffect(() => {
-    if (user?.picture) {
-      setProfilePicture(user.picture);
-    }
-  }, [user]);
 
   if (isLoading) {
     return <Loading />;
@@ -20,14 +12,8 @@ function ProfilePage({ connections = [], badges = [] }) {
   return (
     <main>
       <section className="p-6">
-        {/* Utilize o UserProfileCard para encapsular a lógica do perfil */}
-        <UserProfileCard
-          userName={user?.name}
-          avatar={profilePicture}
-          badges={badges}
-          connections={connections}
-          onChangePicture={setProfilePicture}
-        />
+        {/* Passe as conexões para o UserProfileCard */}
+        <UserProfileCard userName={user?.name || "Usuário"} />
       </section>
     </main>
   );

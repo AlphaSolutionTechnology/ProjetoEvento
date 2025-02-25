@@ -2,29 +2,25 @@ import { useState } from "react";
 import { Camera } from "lucide-react";
 import ChangeProfilePictureModal from "./ChangeProfilePictureModal";
 import UserBio from "./UserBio";
-import AchievementsSection from "./AchievementsSection"; // Importando o componente separado
-import ConnectionsSection from "./ConnectionsSection"; // Importando o componente separado
+import AchievementsSection from "./AchievementsSection";
+import ConnectionsSection from "./ConnectionsSection";
 
 function UserProfileCard({
   userName = "Usuário",
   avatar = "/avatars/default.png",
   initialBio = "Esta pessoa ainda não adicionou uma biografia.",
   badges = [],
-  connections = [],
 }) {
   // Recupera os dados do usuário do localStorage de forma segura
   const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
   const { avatar: userAvatar, name: userNameInitial } = userData;
 
+  // Estados para controlar o modal de alteração de foto e a bio
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(avatar);
-  const [activeConnection, setActiveConnection] = useState(null);
   const [bio, setBio] = useState(initialBio);
 
-  const handleConnectionClick = (index) => {
-    setActiveConnection((prevIndex) => (prevIndex === index ? null : index));
-  };
-
+  // Função para atualizar a bio
   const handleBioUpdate = (newBio) => {
     setBio(newBio);
     // Aqui você pode adicionar uma chamada à API para salvar a biografia no banco de dados
@@ -56,10 +52,7 @@ function UserProfileCard({
 
       {/* Nome do Usuário (apenas nome e sobrenome) */}
       <h2 className="text-2xl font-semibold text-center sm:text-3xl lg:text-4xl">
-        {userName
-          .split(" ")
-          .slice(0, 2)
-          .join(" ")}
+        {userName.split(" ").slice(0, 2).join(" ")}
       </h2>
 
       {/* Biografia do Usuário */}
@@ -69,11 +62,7 @@ function UserProfileCard({
       <AchievementsSection badges={badges} />
 
       {/* Seção de Conexões */}
-      <ConnectionsSection
-        connections={connections}
-        activeConnection={activeConnection}
-        onConnectionClick={handleConnectionClick}
-      />
+      <ConnectionsSection />
 
       {/* Modal de Seleção de Avatar */}
       {isModalOpen && (
