@@ -30,17 +30,13 @@ const Ranking = () => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
 
-      console.log("mensagem websocket recebida:", lastMessage);
+      //("mensagem websocket recebida:", lastMessage);
 
       if (lastMessage?.type === "ranking_update") {
-        console.log(
-          "Sinal de atualização do ranking recebido. Buscando novos dados..."
-        );
+        // console.log(
+        //   "Sinal de atualização do ranking recebido. Buscando novos dados..."
+        // );
         fetchUpdatedRanking();
-      } else {
-        console.log(
-          "Mensagem WebSocket ignorada. Não é uma atualização do ranking."
-        );
       }
     }
   }, [messages]);

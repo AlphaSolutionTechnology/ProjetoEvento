@@ -9,7 +9,7 @@ const ConnectionsSection = () => {
   useEffect(() => {
     const fetchConnections = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/connection/getacceptedconnections`, {
+        const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/getacceptedconnections`, {
           method: 'GET',
           credentials: 'include', // Inclui cookies automaticamente, como o eventToken
           headers: {
@@ -19,7 +19,7 @@ const ConnectionsSection = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Dados recebidos:", data);
+          //("Dados recebidos:", data);
           setConnections(data || []); //  usa data diretamento
         } else {
           console.error("Erro ao buscar conexões:", response.statusText);

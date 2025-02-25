@@ -48,7 +48,7 @@ const GoogleSignIn = () => {
           navigate("/home");
         }
       } else {
-        console.log("Usuário não autenticado.");
+        //("Usuário não autenticado.");
         setIsAuthenticated(false);
       }
     } catch (error) {
@@ -93,7 +93,7 @@ const GoogleSignIn = () => {
         return res.json();
       })
       .then((data) => {
-        console.log("Dados do usuário recebidos:", data);
+        //("Dados do usuário recebidos:", data);
         localStorage.setItem("user_data", JSON.stringify(data));
         setUser(data);
         navigate("/home");

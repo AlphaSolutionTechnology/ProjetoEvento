@@ -23,7 +23,7 @@ const ProtectedRouteLogin = ({ children, role }) => {
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
-  console.log(user);
+  //(user);
   if (role && currentUser.role !== role) {
     alert("Você não tem permissão para acessar essa pagina!");
     return <Navigate to="/home" replace />;

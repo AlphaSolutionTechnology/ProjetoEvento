@@ -107,7 +107,7 @@ const Quiz = () => {
       );
 
       if (response.ok) {
-        console.log("Resultado enviado com sucesso!");
+        //("Resultado enviado com sucesso!");
       } else {
         console.error("Erro ao enviar resultado:", response.statusText);
       }

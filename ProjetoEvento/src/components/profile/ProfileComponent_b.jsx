@@ -45,7 +45,7 @@ const ProfileComponent = () => {
   const checkAuthentication = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/auth/validate`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/validate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -68,20 +68,10 @@ const ProfileComponent = () => {
       navigate("/login");
     }
   };
-
   const handleSendConnection = async (code) => {
     setInputCode("");
-
-    if (!code) {
-      setAlert({
-        open: true,
-        message: "Por favor, insira um código.",
-        type: "error",
-      });
-      return;
-    }
-
-    if (typeof code !== "string" || code.trim().length !== 6) {
+  
+    if (!code || typeof code !== "string" || code.trim().length !== 6) {
       setAlert({
         open: true,
         message: "O código deve ter exatamente 6 caracteres.",
@@ -89,9 +79,8 @@ const ProfileComponent = () => {
       });
       return;
     }
-
+  
     if (userData?.unique_code && code === userData.unique_code) {
-      setUnauthorized(true);
       setAlert({
         open: true,
         message: "Você não pode se conectar consigo mesmo!",
@@ -99,33 +88,54 @@ const ProfileComponent = () => {
       });
       return;
     }
+  
     code = code.toUpperCase();
     setIsLoading(true);
-    console.log(code);
+  
     try {
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/connection/sendconnectionrequest`, {
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/sendconnectionrequest`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ from: userData.unique_code, to: code }),
       });
   
-      const data = await response.json();
+      const data = await response.json(); // 🔹 Pegamos a mensagem do servidor
+  
+      
+      switch (response.status) {
 
-      if (response.ok) {
-        setAlert({
-          open: true,
-          message: "Solicitação de conexão enviada com sucesso!",
-          type: "success",
-        });
-      } else {
-        setAlert({
-          open: true,
-          message: data.server || "Erro ao enviar solicitação.",
-          type: "error",
-        });
+        case 200: // OK
+          setAlert({ open: true, message: data.server, type: "success" });
+          break;
+  
+        case 400: // BAD REQUEST (Usuário que enviou a solicitação não corresponde ao token)
+          setAlert({ open: true, message: data.server, type: "error" });
+          break;
+  
+        case 406: // UNAUTHORIZED (Outro usuário já enviou solicitação e está aguardando resposta)
+          setAlert({ open: true, message: data.server, type: "warning" });
+          break;
+  
+        case 403: // FORBIDDEN (Token inválido)
+          setAlert({ open: true, message: "Sua sessão expirou. Faça login novamente.", type: "error" });
+          navigate("/login"); // 🔹 Redireciona para login
+          break;
+  
+        case 409: // CONFLICT (Usuários já conectados)
+          setAlert({ open: true, message: "Vocês já estão conectados!", type: "info" });
+          break;
+  
+        case 500: // INTERNAL SERVER ERROR (Erro inesperado)
+          setAlert({ open: true, message: "Erro no servidor. Tente novamente mais tarde.", type: "error" });
+          break;
+  
+        default: // Qualquer outro código não tratado
+          setAlert({ open: true, message: data.server || "Erro desconhecido.", type: "error" });
+          break;
       }
     } catch (error) {
+      console.error("❌ Erro ao conectar:", error);
       setAlert({
         open: true,
         message: "Erro de conexão com o servidor.",
@@ -135,6 +145,7 @@ const ProfileComponent = () => {
       setIsLoading(false);
     }
   };
+  
 
   const populateZone = () => {
     const storedUserData = localStorage.getItem("user_data");
@@ -160,7 +171,7 @@ const ProfileComponent = () => {
       setIsLoading(false);
       const lastMessage = messages[messages.length - 1];
 
-      console.log("📩 Última mensagem recebida:", lastMessage);
+      //("📩 Última mensagem recebida:", lastMessage);
 
       // 🔹 Pegando os valores corretamente
       const messageTo = String(lastMessage?.to || "")

@@ -13,7 +13,7 @@ function useNotifications() {
         localStorage.getItem("user_data")
       )?.unique_code;
 
-      console.log("🔔 Nova mensagem WebSocket recebida:", newMessage);
+      //("🔔 Nova mensagem WebSocket recebida:", newMessage);
 
       if (newMessage.to === currentUser) {
         setNotifications((prev) => {
@@ -23,7 +23,7 @@ function useNotifications() {
           );
 
           if (!isDuplicate) {
-            console.log("✅ Adicionando nova notificação:", newMessage);
+            //("✅ Adicionando nova notificação:", newMessage);
             return [
               ...prev,
               {
@@ -45,7 +45,7 @@ function useNotifications() {
 
   // Carregar notificações do backend ao iniciar
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/connection/retrieveconnectionrequest`, {
+    fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/retrieveconnectionrequest`, {
       method: "GET",
       credentials: "include",
     })

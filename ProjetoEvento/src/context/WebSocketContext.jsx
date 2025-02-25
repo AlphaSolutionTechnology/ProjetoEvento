@@ -2,27 +2,27 @@ import React, { createContext, useState, useEffect, useCallback, useContext } fr
 import { useLocation } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import AuthContext from "../context/AuthContext"; // 🔹 Importa o contexto de autenticação
-
+import AuthContext from "../context/AuthContext";
 export const WebSocketContext = createContext();
 
 let stompClient = null;
-let pingInterval = null; // Evita múltiplos pings
+let pingInterval = null; 
 
 const initializeWebSocketConnection = (onMessage, reconnect, setConnected, user) => {
   if (!stompClient || !stompClient.connected) {
-    console.log("📡 Tentando conectar ao WebSocket...");
+    //("📡 Tentando conectar ao WebSocket...");
 
     const socket = new SockJS(`${import.meta.env.VITE_NETWORK_API_LINK}/websocket`);
+    
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
-      console.log("✅ Conectado ao WebSocket!");
+      //("✅ Conectado ao WebSocket!");
       setConnected(true);
 
       stompClient.subscribe("/topic/ranking", (message) => {
         const parsedMessage = JSON.parse(message.body);
-        console.log("📩 Mensagem de /topic/ranking:", parsedMessage);
+        //("📩 Mensagem de /topic/ranking:", parsedMessage);
         onMessage(parsedMessage);
       });
 
@@ -30,17 +30,16 @@ const initializeWebSocketConnection = (onMessage, reconnect, setConnected, user)
         const parsedMessage = JSON.parse(message.body);
 
         if (parsedMessage.to === user?.unique_code) {
-          console.log("✅ Nova notificação recebida:", parsedMessage);
+          //("✅ Nova notificação recebida:", parsedMessage);
           onMessage(parsedMessage);
         }
       });
 
-      // 🔹 Evita múltiplos intervalos de ping
       if (!pingInterval) {
         pingInterval = setInterval(() => {
           if (stompClient && stompClient.connected) {
             stompClient.send("/app/ping", {}, "ping");
-            console.log("📡 Enviando keep-alive ping para manter conexão ativa.");
+            //("📡 Enviando keep-alive ping para manter conexão ativa.");
           }
         }, 30000);
       }
@@ -56,7 +55,7 @@ const initializeWebSocketConnection = (onMessage, reconnect, setConnected, user)
 };
 
 export const WebSocketProvider = ({ children }) => {
-  const { user } = useContext(AuthContext); // 🔹 Pega o usuário autenticado
+  const { user } = useContext(AuthContext);
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
@@ -71,24 +70,24 @@ export const WebSocketProvider = ({ children }) => {
     const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
 
     if (reconnectAttempts < maxAttempts) {
-      console.log(`🔄 Tentativa de reconexão #${reconnectAttempts + 1} em ${delay / 1000}s`);
+      //(`🔄 Tentativa de reconexão #${reconnectAttempts + 1} em ${delay / 1000}s`);
       
       setTimeout(() => {
         initializeWebSocketConnection(addMessage, reconnect, setConnected, user);
         setReconnectAttempts((prev) => prev + 1);
       }, delay);
     } else {
-      console.error("⛔ Número máximo de tentativas de reconexão atingido.");
+      //onsole.error("⛔ Número máximo de tentativas de reconexão atingido.");
     }
   }, [reconnectAttempts, addMessage, user]);
 
   useEffect(() => {
-    // 🚀 O WebSocket só conecta se o usuário estiver logado e não estiver na página de login
+
     if (!connected && user && location.pathname !== "/login") {
-      console.log("🔄 Tentando conectar WebSocket...");
+      //("🔄 Tentando conectar WebSocket...");
       initializeWebSocketConnection(addMessage, reconnect, setConnected, user);
     } else if (!user) {
-      console.log("🛑 Usuário deslogado, desconectando WebSocket...");
+      //("🛑 Usuário deslogado, desconectando WebSocket...");
       if (stompClient && stompClient.connected) {
         stompClient.disconnect();
       }
