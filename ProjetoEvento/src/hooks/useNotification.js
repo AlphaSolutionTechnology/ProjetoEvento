@@ -45,10 +45,15 @@ function useNotifications() {
 
   // Carregar notificações do backend ao iniciar
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/retrieveconnectionrequest`, {
-      method: "GET",
-      credentials: "include",
-    })
+    fetch(
+      `${
+        import.meta.env.VITE_NETWORK_API_LINK
+      }/api/connection/retrieveconnectionrequest`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data?.server) {

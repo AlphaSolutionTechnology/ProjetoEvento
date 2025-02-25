@@ -34,13 +34,10 @@ export const AuthProvider = ({ children }) => {
   };
   const logout = async () => {
     try {
-      await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/logout`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
+      await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/logout`, {
+        method: "DELETE",
+        credentials: "include",
+      });
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     } finally {

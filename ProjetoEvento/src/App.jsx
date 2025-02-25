@@ -21,7 +21,7 @@ function App() {
 
   return (
     <WebSocketProvider>
-      <main className="h-full w-full text-white dark:bg-[#0d1117] relative">
+      <main className="min-w-full min-h-screen text-white dark:bg-[#0d1117] relative">
         {/* Círculos decorativos com animação de escala */}
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
@@ -47,7 +47,7 @@ function App() {
         {(location.pathname !== "/login" && location.pathname !== "/land") && <Header />}
 
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<Navigate to="/land" />} />
 
           <Route path="/login" element={<LoginPage />} />
 

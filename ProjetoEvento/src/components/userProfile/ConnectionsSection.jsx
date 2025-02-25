@@ -9,13 +9,18 @@ const ConnectionsSection = () => {
   useEffect(() => {
     const fetchConnections = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/getacceptedconnections`, {
-          method: 'GET',
-          credentials: 'include', // Inclui cookies automaticamente, como o eventToken
-          headers: {
-            'Content-Type': 'application/json', // Indica que esperamos JSON como resposta
-          },
-        });
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_NETWORK_API_LINK
+          }/api/connection/getacceptedconnections`,
+          {
+            method: "GET",
+            credentials: "include", // Inclui cookies automaticamente, como o eventToken
+            headers: {
+              "Content-Type": "application/json", // Indica que esperamos JSON como resposta
+            },
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
