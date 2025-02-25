@@ -14,13 +14,14 @@ import RouteWrapper from "./components/RouteWrapper";
 import Header from "./components/headerGlobal/Header";
 import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
 import ProtectedRouteQuizz from "./components/ProtectedRouteQuizz";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   const location = useLocation();
 
   return (
     <WebSocketProvider>
-      <main className="min-h-screen text-white dark:bg-[#0d1117] relative">
+      <main className="h-full w-full text-white dark:bg-[#0d1117] relative">
         {/* Círculos decorativos com animação de escala */}
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
@@ -43,7 +44,7 @@ function App() {
         ></motion.div>
 
         {/* Renderiza o Header em todas as páginas, menos na tela de Login */}
-        {location.pathname !== "/login" && <Header />}
+        {(location.pathname !== "/login" && location.pathname !== "/land") && <Header />}
 
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
@@ -123,7 +124,13 @@ function App() {
               </ProtectedRouteLogin>
             }
           />
+          <Route 
+            path="/land"
+            element={<LandingPage/>}>
+            
+          </Route>
         </Routes>
+
       </main>
     </WebSocketProvider>
   );
