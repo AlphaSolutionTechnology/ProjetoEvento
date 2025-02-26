@@ -10,7 +10,7 @@ function useNotifications() {
     if (messages.length > 0) {
       const newMessage = messages[messages.length - 1]; // Última mensagem recebida
       const currentUser = JSON.parse(
-        NETWORKStorage.getItem("user_data")
+        localStorage.getItem("user_data")
       )?.unique_code;
 
       //("🔔 Nova mensagem WebSocket recebida:", newMessage);
@@ -45,10 +45,15 @@ function useNotifications() {
 
   // Carregar notificações do backend ao iniciar
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/retrieveconnectionrequest`, {
-      method: "GET",
-      credentials: "include",
-    })
+    fetch(
+      `${
+        import.meta.env.VITE_NETWORK_API_LINK
+      }/api/connection/retrieveconnectionrequest`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data?.server) {

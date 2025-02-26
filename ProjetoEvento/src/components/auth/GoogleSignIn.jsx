@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth"; // Importa o AuthContext
+import useAuth from "../../hooks/useAuth"; // Importa o AuthContext
 
 const GoogleSignIn = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -41,7 +41,7 @@ const GoogleSignIn = () => {
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
-        NETWORKStorage.setItem("user_data", JSON.stringify(data));
+        localStorage.setItem("user_data", JSON.stringify(data));
         setUser(data); // 🔥 Atualiza o estado global imediatamente
 
         if (location.pathname === "/login") {
@@ -72,7 +72,7 @@ const GoogleSignIn = () => {
         width: "240px",
         height: "50px",
         text: "continue_with",
-        NETWORKe: "pt-BR",
+        locale: "pt-BR",
       }
     );
   };
@@ -94,7 +94,7 @@ const GoogleSignIn = () => {
       })
       .then((data) => {
         //("Dados do usuário recebidos:", data);
-        NETWORKStorage.setItem("user_data", JSON.stringify(data));
+        localStorage.setItem("user_data", JSON.stringify(data));
         setUser(data);
         navigate("/home");
       })

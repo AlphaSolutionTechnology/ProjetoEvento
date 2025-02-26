@@ -56,7 +56,7 @@ const ProfileComponent = () => {
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
-        NETWORKStorage.setItem("user_data", JSON.stringify(data));
+        localStorage.setItem("user_data", JSON.stringify(data));
       } else {
         console.warn("⚠️ Usuário não autenticado.");
         setIsAuthenticated(false);
@@ -148,7 +148,7 @@ const ProfileComponent = () => {
   
 
   const populateZone = () => {
-    const storedUserData = NETWORKStorage.getItem("user_data");
+    const storedUserData = localStorage.getItem("user_data");
     if (storedUserData) {
       setUserData(JSON.parse(storedUserData));
     } else {

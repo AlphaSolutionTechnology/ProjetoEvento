@@ -40,7 +40,7 @@ export default function QuizzesPage() {
         return;
       }
 
-      NETWORKStorage.removeItem("palestraAtual");
+      localStorage.removeItem("palestraAtual");
       setToastMessage({
         text: "Você foi desinscrito da palestra.",
         type: "success",

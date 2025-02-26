@@ -4,7 +4,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const storedUser = NETWORKStorage.getItem("user_data");
+    const storedUser = localStorage.getItem("user_data");
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const data = await response.json();
-        NETWORKStorage.setItem("user_data", JSON.stringify(data));
+        localStorage.setItem("user_data", JSON.stringify(data));
         setUser(data);
       } else {
         logout();
@@ -34,18 +34,15 @@ export const AuthProvider = ({ children }) => {
   };
   const logout = async () => {
     try {
-      await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/logout`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
+      await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/logout`, {
+        method: "DELETE",
+        credentials: "include",
+      });
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     } finally {
-      NETWORKStorage.removeItem("user_data");
-      NETWORKStorage.removeItem("palestraAtual");
+      localStorage.removeItem("user_data");
+      localStorage.removeItem("palestraAtual");
       setUser(null);
     }
   };

@@ -21,7 +21,7 @@ function App() {
 
   return (
     <WebSocketProvider>
-      <main className="h-full w-full text-white dark:bg-[#0d1117] relative">
+      <main className="min-w-full min-h-screen dark:bg-[#0d1117] relative">
         {/* Círculos decorativos com animação de escala */}
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
@@ -43,11 +43,11 @@ function App() {
           className="absolute bottom-20 left-32 w-36 h-36 bg-pink-500 opacity-30 blur-3xl rounded-full z-0 pointer-events-none"
         ></motion.div>
 
-        {/* Renderiza o Header em todas as páginas, menos na tela de Login */}
+        {/* Renderiza o Header em todas as páginas, menos na tela de Login e landingPage */}
         {(location.pathname !== "/login" && location.pathname !== "/land") && <Header />}
 
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<Navigate to="/land" />} />
 
           <Route path="/login" element={<LoginPage />} />
 

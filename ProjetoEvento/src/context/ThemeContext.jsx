@@ -7,17 +7,17 @@ const ThemeContext = createContext();
 // Provedor de tema
 export const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(
-    NETWORKStorage.getItem("theme") === "dark" || false
+    localStorage.getItem("theme") === "dark" || false
   );
 
   // Sincronizar o estado com a classe "dark" no <html>
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
-      NETWORKStorage.setItem("theme", "dark");
+      localStorage.setItem("theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
-      NETWORKStorage.setItem("theme", "light");
+      localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
 
