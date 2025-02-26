@@ -23,7 +23,7 @@ function UserProfileCard({
   // Função para atualizar a bio
   const handleBioUpdate = (newBio) => {
     setBio(newBio);
-    // Aqui você pode adicionar uma chamada à API para salvar a biografia no banco de dados
+    // Aqui pode adicionar uma chamada à API para salvar a biografia no banco de dados
   };
 
   return (

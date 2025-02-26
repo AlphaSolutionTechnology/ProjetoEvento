@@ -51,7 +51,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="p-4 flex justify-between items-center bg-white dark:bg-gray-800 shadow-ld rounded-lg relative z-50 bg-opacity-50 backdrop-blur-md dark:bg-opacity-60">
+    <header className="p-4 flex justify-between items-center bg-white dark:bg-gray-800 shadow-lg rounded-lg relative z-50 bg-opacity-50 backdrop-blur-md dark:bg-opacity-40">
       <h1
         onClick={handleNavigateHome}
         className="text-xl font-bold cursor-pointer text-gray-900 dark:text-white hover:text-blue-500 transition-colors"
