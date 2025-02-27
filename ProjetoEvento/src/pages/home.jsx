@@ -99,6 +99,7 @@ const Home = () => {
           onScan={async (data) => {
             await validarPalestra(data);
           }}
+          isScannerOpen={isScanning}
         />
       </BasicModal>
 

@@ -1,12 +1,13 @@
 import QRScanner from "../QRScanner";
 
-const HomeQRScanner = ({ isOpen, onClose, onScan }) => {
+const HomeQRScanner = ({ onScan, isScannerOpen }) => {
   return (
     <QRScanner
       onScan={(data) => {
         onScan(data);
         onClose();
-      }}
+       }}
+       isScannerOpen={isScannerOpen}
     />
   );
 };
