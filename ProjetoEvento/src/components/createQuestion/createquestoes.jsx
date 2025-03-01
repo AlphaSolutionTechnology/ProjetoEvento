@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
-import QuestionsInvite from "./QuestionsInvite.jsx";
-import ChatComponent from "../AI/Groq.jsx"; // Importa o componente de geração de questões
+import QuestionsInvite from "./QuestionsInvite.jsx"; 
 import AlertToast from "../alert/AlertToast.jsx";
 
 function CreateQuestoes() {
