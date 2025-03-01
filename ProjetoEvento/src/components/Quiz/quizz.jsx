@@ -15,7 +15,9 @@ const Quiz = () => {
   const [quizStartTime, setQuizStartTime] = useState(null);
   const [quizEndTime, setQuizEndTime] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  
+  const [finalResult, setFinalResult] = useState(null);
+
+  // Buscar as questões do back-end (sem o campo "correctAnswer")
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -41,16 +43,26 @@ const Quiz = () => {
     fetchQuestions();
   }, [idPalestra]);
 
+  // Registra a escolha do usuário
   const onAnswerClick = (selectedAnswer, index) => {
     setAnswerIdx(index);
     setAnswer(selectedAnswer);
   };
 
+  // Valida e registra a resposta usando validateAndRecord.
+  // Se for a última questão, inclui "final: true" no payload para que o back-end retorne o resultado final.
   const onClickNext = async () => {
     try {
       const questionId = questions[currentQuestion].id;
-
       const timeSpent = ((Date.now() - quizStartTime) / 1000).toFixed(2);
+      const isLast = currentQuestion === questions.length - 1;
+
+      const payload = {
+        questionId: questionId,
+        selectedAnswer: answer,
+        timeSpent: parseFloat(timeSpent),
+        final: isLast, // flag para indicar se é a última questão
+      };
 
       const response = await fetch(
         `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/validateAndRecord`,
@@ -58,11 +70,7 @@ const Quiz = () => {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            questionId: questionId,
-            selectedAnswer: answer,
-            timeSpent: parseFloat(timeSpent),
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -73,27 +81,28 @@ const Quiz = () => {
       const data = await response.json();
       console.log("Resposta validada, isCorrect:", data.isCorrect);
 
-      setAnswerIdx(null);
-      setAnswer(null);
-
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion((prev) => prev + 1);
-      } else {
+      if (isLast) {
         setQuizEndTime(Date.now());
+        // O endpoint retorna os dados finais (por exemplo, acertos, erros e tempo total)
+        setFinalResult(data);
         setShowResult(true);
+      } else {
+        setAnswerIdx(null);
+        setAnswer(null);
+        setCurrentQuestion((prev) => prev + 1);
       }
     } catch (error) {
       console.error("Erro na validação e registro da resposta:", error);
     }
   };
 
-  // Função para finalizar o quiz quando o tempo acabar
+  // Função para finalizar o quiz (por exemplo, quando o tempo acabar)
   const handleTimeUp = () => {
     setQuizEndTime(Date.now());
     setShowResult(true);
   };
 
-  // Calcula o tempo total de quiz
+  // Calcula o tempo total de quiz localmente (como fallback)
   const getTotalTimeTaken = () => {
     if (!quizStartTime || !quizEndTime) return "Calculando...";
     const totalMs = quizEndTime - quizStartTime;
@@ -128,14 +137,12 @@ const Quiz = () => {
               totalQuestions={questions.length}
               onTimeUp={handleTimeUp}
             />
-
             <QuestionCard
               enunciado={enunciado}
               choices={choices}
               answerIdx={answerIdx}
               onAnswerClick={onAnswerClick}
             />
-
             <QuizFooter
               onClickNext={onClickNext}
               isLastQuestion={currentQuestion === questions.length - 1}
@@ -144,10 +151,13 @@ const Quiz = () => {
           </>
         ) : (
           <ResultCard
-          
-            correctAnswers={0}
-            wrongAnswers={0}
-            totalTime={getTotalTimeTaken()}
+            correctAnswers={finalResult ? finalResult.correctAnswers : 0}
+            wrongAnswers={finalResult ? finalResult.wrongAnswers : 0}
+            totalTime={
+              finalResult
+                ? `${finalResult.totalTime} segundo(s)`
+                : getTotalTimeTaken()
+            }
             onExit={() => (window.location.href = `/ranking`)}
           />
         )}
