@@ -53,7 +53,7 @@ const Quiz = () => {
       const timeSpent = ((Date.now() - quizStartTime) / 1000).toFixed(2);
 
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/validateAndRecord`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/validateAndRecord`,
         {
           method: "POST",
           credentials: "include",
