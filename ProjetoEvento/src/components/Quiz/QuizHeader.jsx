@@ -27,7 +27,7 @@ const QuizHeader = ({ currentQuestion, totalQuestions, onTimeUp, idPalestra }) =
     const fetchDuration = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/duration`,
+          `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/duration`,
           {
             method: "GET",
             credentials: "include",
