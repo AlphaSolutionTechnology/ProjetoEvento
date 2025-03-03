@@ -14,8 +14,10 @@ const Quiz = () => {
   const [answer, setAnswer] = useState(null);
   const [quizStartTime, setQuizStartTime] = useState(null);
   const [quizEndTime, setQuizEndTime] = useState(null);
+  const [answers, setAnswers] = useState([]);
   const [showResult, setShowResult] = useState(false);
-  
+  const [finalResult, setFinalResult] = useState(null);
+
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -27,9 +29,7 @@ const Quiz = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
         const data = await response.json();
         setQuestions(data);
         setQuizStartTime(Date.now());
@@ -37,7 +37,6 @@ const Quiz = () => {
         console.error(error.message);
       }
     };
-
     fetchQuestions();
   }, [idPalestra]);
 
@@ -46,54 +45,62 @@ const Quiz = () => {
     setAnswer(selectedAnswer);
   };
 
-  const onClickNext = async () => {
+  const onClickNext = () => {
+    const questionId = questions[currentQuestion].id;
+    const timeSpent = ((Date.now() - quizStartTime) / 1000).toFixed(2);
+    const newAnswer = {
+      questionId,
+      selectedAnswer: answer,
+      timeSpent: parseFloat(timeSpent),
+    };
+    const updatedAnswers = [...answers, newAnswer];
+    const isLastQuestion = currentQuestion === questions.length - 1;
+    if (isLastQuestion) {
+      setAnswers(updatedAnswers);
+      setQuizEndTime(Date.now());
+      setShowResult(true);
+      sendAllAnswers(updatedAnswers);
+    } else {
+      setAnswers(updatedAnswers);
+      setAnswerIdx(null);
+      setAnswer(null);
+      setCurrentQuestion((prev) => prev + 1);
+    }
+  };
+
+  const sendAllAnswers = async (answersArray) => {
     try {
-      const questionId = questions[currentQuestion].id;
-
-      const timeSpent = ((Date.now() - quizStartTime) / 1000).toFixed(2);
-
+      const endTime = Date.now();
+      const totalTimeSeconds = ((endTime - quizStartTime) / 1000).toFixed(2);
+      const payload = {
+        idPalestra,
+        totalTime: parseFloat(totalTimeSeconds),
+        answers: answersArray,
+        final: true,
+      };
       const response = await fetch(
         `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/validateAndRecord`,
         {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            questionId: questionId,
-            selectedAnswer: answer,
-            timeSpent: parseFloat(timeSpent),
-          }),
+          body: JSON.stringify(payload),
         }
       );
-
-      if (!response.ok) {
-        throw new Error("Erro ao validar e registrar resposta");
-      }
-
+      if (!response.ok) throw new Error("Erro ao enviar todas as respostas");
       const data = await response.json();
-      console.log("Resposta validada, isCorrect:", data.isCorrect);
-
-      setAnswerIdx(null);
-      setAnswer(null);
-
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion((prev) => prev + 1);
-      } else {
-        setQuizEndTime(Date.now());
-        setShowResult(true);
-      }
+      setFinalResult(data);
     } catch (error) {
-      console.error("Erro na validação e registro da resposta:", error);
+      console.error("Erro ao enviar todas as respostas:", error);
     }
   };
 
-  // Função para finalizar o quiz quando o tempo acabar
   const handleTimeUp = () => {
     setQuizEndTime(Date.now());
     setShowResult(true);
+    sendAllAnswers(answers);
   };
 
-  // Calcula o tempo total de quiz
   const getTotalTimeTaken = () => {
     if (!quizStartTime || !quizEndTime) return "Calculando...";
     const totalMs = quizEndTime - quizStartTime;
@@ -127,15 +134,14 @@ const Quiz = () => {
               currentQuestion={currentQuestion}
               totalQuestions={questions.length}
               onTimeUp={handleTimeUp}
+              idPalestra={idPalestra}
             />
-
             <QuestionCard
               enunciado={enunciado}
               choices={choices}
               answerIdx={answerIdx}
               onAnswerClick={onAnswerClick}
             />
-
             <QuizFooter
               onClickNext={onClickNext}
               isLastQuestion={currentQuestion === questions.length - 1}
@@ -144,10 +150,10 @@ const Quiz = () => {
           </>
         ) : (
           <ResultCard
-          
-            correctAnswers={0}
-            wrongAnswers={0}
-            totalTime={getTotalTimeTaken()}
+            correctAnswers={finalResult ? finalResult.correctAnswers : 0}
+            wrongAnswers={finalResult ? finalResult.wrongAnswers : 0}
+            totalTime={finalResult ? finalResult.totalTime : getTotalTimeTaken()}
+            score={finalResult ? finalResult.score : 0}
             onExit={() => (window.location.href = `/ranking`)}
           />
         )}

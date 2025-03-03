@@ -1,6 +1,6 @@
 import { CheckCircle, XCircle, Clock, Trophy } from "lucide-react";
 
-const ResultCard = ({ correctAnswers, wrongAnswers, totalTime, onExit }) => {
+const ResultCard = ({ correctAnswers, wrongAnswers, totalTime, score, onExit }) => {
   return (
     <section className="text-center p-6">
       <header>
@@ -25,6 +25,13 @@ const ResultCard = ({ correctAnswers, wrongAnswers, totalTime, onExit }) => {
           <dt className="text-xl">Tempo:</dt>
           <dd className="text-xl font-bold">{totalTime}</dd>
         </div>
+        {score !== undefined && (
+          <div className="flex items-center gap-3">
+            <Trophy className="w-8 h-8 text-yellow-500" />
+            <dt className="text-xl">Pontuação:</dt>
+            <dd className="text-xl font-bold">{score}</dd>
+          </div>
+        )}
       </dl>
 
       <button

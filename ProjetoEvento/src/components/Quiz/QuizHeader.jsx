@@ -11,13 +11,55 @@ const PROGRESS_COLORS = {
 
 const ANIMATION_DURATION = 0.5;
 
-const QuizHeader = ({ currentQuestion, totalQuestions, durationInMinutes = 1, onTimeUp }) => {
+const QuizHeader = ({ currentQuestion, totalQuestions, onTimeUp, idPalestra }) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const durationInSeconds = durationInMinutes * 60;
+  
+  // Tempo total (em segundos) definido pelo back-end
+  const [duration, setDuration] = useState(null);
+  // Contador em segundos
   const [counter, setCounter] = useState(0);
   const [progressLoaded, setProgressLoaded] = useState(0);
   const intervalRef = useRef(null);
+
+  // Busca a duração do quiz a partir do back-end
+  useEffect(() => {
+    const fetchDuration = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/duration`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Erro ao buscar a duração do quiz");
+        }
+        const data = await response.json();
+        setDuration(data.duration); // duração em segundos
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    fetchDuration();
+  }, [idPalestra]);
+
+  // Inicia o contador somente quando a duração for carregada
+  useEffect(() => {
+    if (duration !== null) {
+      intervalRef.current = setInterval(() => {
+        setCounter((cur) => cur + 1);
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [duration]);
 
   const handleTimeUp = useCallback(() => {
     if (onTimeUp) {
@@ -25,30 +67,27 @@ const QuizHeader = ({ currentQuestion, totalQuestions, durationInMinutes = 1, on
     }
   }, [onTimeUp]);
 
+  // Atualiza o progresso e verifica se o tempo acabou
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCounter((cur) => cur + 1);
-    }, 1000);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (counter >= durationInSeconds) {
+    if (duration === null) return;
+    if (counter >= duration) {
       clearInterval(intervalRef.current);
       handleTimeUp();
     }
-    setProgressLoaded((100 * counter) / durationInSeconds);
-  }, [counter, durationInSeconds, handleTimeUp]);
+    setProgressLoaded((100 * counter) / duration);
+  }, [counter, duration, handleTimeUp]);
 
   const getProgressColor = () => {
     if (progressLoaded > 80) return PROGRESS_COLORS.high;
     if (progressLoaded > 50) return PROGRESS_COLORS.medium;
     return PROGRESS_COLORS.low;
+  };
+
+  // Formata o tempo decorrido para exibição (minutos e segundos)
+  const formatTime = (seconds) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}m ${sec < 10 ? "0" : ""}${sec}s`;
   };
 
   const handleQuit = () => {
@@ -59,7 +98,7 @@ const QuizHeader = ({ currentQuestion, totalQuestions, durationInMinutes = 1, on
   return (
     <>
       <header className="flex flex-col p-6 bg-gradient-to-r from-teal-600 to-blue-600 rounded-xl shadow-2xl relative">
-        {/* Seção do botão de desistência */}
+        {/* Botão de desistência */}
         <section className="flex justify-start p-2">
           <button
             onClick={() => setShowModal(true)}
@@ -70,11 +109,20 @@ const QuizHeader = ({ currentQuestion, totalQuestions, durationInMinutes = 1, on
           </button>
         </section>
 
-        {/* Seção da contagem de perguntas e barra de progresso */}
-        <section className="flex items-center justify-between w-full mt-2">
+        {/* Contagem de perguntas, timer e barra de progresso */}
+        <section className="flex flex-col sm:flex-row items-center justify-between w-full mt-2">
           <div className="flex items-center gap-2 text-2xl font-bold text-white">
             <span className="bg-white/10 p-3 rounded-lg shadow-sm">{currentQuestion + 1}</span>
             <span className="text-teal-200">/{totalQuestions}</span>
+          </div>
+
+          {/* Exibe o timer (tempo decorrido) */}
+          <div className="text-white font-bold text-lg mt-2 sm:mt-0">
+            {duration !== null ? (
+              <span>Tempo: {formatTime(counter)}</span>
+            ) : (
+              <span>Carregando tempo...</span>
+            )}
           </div>
 
           <motion.div
@@ -90,10 +138,9 @@ const QuizHeader = ({ currentQuestion, totalQuestions, durationInMinutes = 1, on
               animate={{ width: `${progressLoaded}%` }}
             />
           </motion.div>
-
         </section>
 
-        {/* Alerta "Acelere!" */}
+        {/* Alerta "Acelere!" se o progresso for alto */}
         {progressLoaded > 80 && (
           <motion.div
             className="absolute top-16 right-4 flex items-center space-x-2 p-2 bg-red-600 text-white rounded-full shadow-lg"
