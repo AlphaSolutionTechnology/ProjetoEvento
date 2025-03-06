@@ -8,7 +8,11 @@ export default function ChatComponent({ onReceiveQuestion }) {
   const [questionCount, setQuestionCount] = useState("2");
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
-  const [alert, setAlert] = useState({ open: false, message: "", type: "success" });
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    type: "success",
+  });
 
   const handleExtractText = async (file) => {
     try {
@@ -17,7 +21,11 @@ export default function ChatComponent({ onReceiveQuestion }) {
     } catch (error) {
       console.error("Erro ao extrair texto do PDF:", error);
       setPdfText("");
-      setAlert({ open: true, message: "Erro ao extrair texto do PDF.", type: "error" });
+      setAlert({
+        open: true,
+        message: "Erro ao extrair texto do PDF.",
+        type: "error",
+      });
     }
   };
 
@@ -40,14 +48,18 @@ export default function ChatComponent({ onReceiveQuestion }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/AI/requestquestion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: pdfText,
-          questionCount: questionCount || "2",
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/AI/requestquestion`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: pdfText,
+            questionCount: questionCount || "2",
+          }),
+        }
+      );
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -58,13 +70,21 @@ export default function ChatComponent({ onReceiveQuestion }) {
 
       if (Array.isArray(data)) {
         data.forEach(onReceiveQuestion); // Passa as questões corretamente para `CreateQuestoes`
-        setAlert({ open: true, message: "Questões geradas com sucesso.", type: "success" });
+        setAlert({
+          open: true,
+          message: "Questões geradas com sucesso.",
+          type: "success",
+        });
       } else {
-        console.warn("A resposta da API não está no formato esperado:", data);
+        console.warn("A resposta da /api não está no formato esperado:", data);
       }
     } catch (error) {
       console.error("Erro ao gerar questões:", error);
-      setAlert({ open: true, message: "Erro ao gerar questões.", type: "error" });
+      setAlert({
+        open: true,
+        message: "Erro ao gerar questões.",
+        type: "error",
+      });
     } finally {
       setLoading(false);
       setShowPrompt(false);

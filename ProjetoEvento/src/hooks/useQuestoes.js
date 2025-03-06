@@ -12,7 +12,8 @@ export const useQuestoes = (palestraId) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/questoes/${palestraId}`
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/questoes/${palestraId}`
       );
 
       if (response.ok) {
@@ -33,7 +34,8 @@ export const useQuestoes = (palestraId) => {
   const deleteQuestao = async (idQuestao) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/questoes/delete/${idQuestao}`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/questoes/delete/${idQuestao}`,
         {
           method: "DELETE",
           headers: {

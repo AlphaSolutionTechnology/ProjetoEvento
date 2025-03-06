@@ -5,61 +5,60 @@ import useTheme from "../../hooks/useTheme";
 import { motion } from "framer-motion";
 import AvatarSection from "./AvatarSection";
 import QRCodeSection from "./QRCodeSection";
-import ConnectionForm from "./ConnectionForm"; // Já está importado corretamente
+import ConnectionForm from "./ConnectionForm";
 import QRScannerModal from "./QRScannerModal";
 import ConnectionRequestDialog from "./ConnectionRequestDialog";
-import AlertToast from "../alert/AlertToast"; // Importe o AlertToast
+import AlertToast from "../alert/AlertToast";
 
 const ProfileComponent = () => {
   const [activeTab, setActiveTab] = useState(1);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [successAlert, setSuccessAlert] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [inputCode, setInputCode] = useState("");
   const navigate = useNavigate();
   const { darkMode } = useTheme();
   const { sendMessage, messages } = useContext(WebSocketContext);
   const [alert, setAlert] = useState({ open: false, message: "", type: "" });
-  const [unautorized, setUnautorized] = useState(false);
+
+  // 🔹 Estados adicionados para evitar erros
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [alreadyConnected, setAlreadyConnected] = useState(false);
-  const [notFound, setNotFound] = useState(false);
+  const [unauthorized, setUnauthorized] = useState(false);
+
   const [dialogData, setDialogData] = useState({
     fromUserName: "",
     fromUserCode: "",
   });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     if (alert.open) {
       const timer = setTimeout(() => {
         setAlert((prevState) => ({ ...prevState, open: false }));
       }, 3000);
-
-      // Limpeza do timer quando o componente é desmontado
       return () => clearTimeout(timer);
     }
   }, [alert]);
 
-  const checkAuthentication = async (code) => {
+  const checkAuthentication = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/auth/validate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ code }),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/validate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
         localStorage.setItem("user_data", JSON.stringify(data));
       } else {
-        console.log("Usuário não autenticado.");
+        console.warn("⚠️ Usuário não autenticado.");
         setIsAuthenticated(false);
         navigate("/login");
       }
@@ -69,20 +68,10 @@ const ProfileComponent = () => {
       navigate("/login");
     }
   };
-
   const handleSendConnection = async (code) => {
-    setInputCode(""); // Limpa o código
-
-    if (!code) {
-      setAlert({
-        open: true,
-        message: "Por favor, insira um código.",
-        type: "error",
-      });
-      return;
-    }
-
-    if (typeof code !== "string" || code.trim().length !== 6) {
+    setInputCode("");
+  
+    if (!code || typeof code !== "string" || code.trim().length !== 6) {
       setAlert({
         open: true,
         message: "O código deve ter exatamente 6 caracteres.",
@@ -90,9 +79,8 @@ const ProfileComponent = () => {
       });
       return;
     }
-
-    if (code === userData.unique_code) {
-      setUnautorized(true);
+  
+    if (userData?.unique_code && code === userData.unique_code) {
       setAlert({
         open: true,
         message: "Você não pode se conectar consigo mesmo!",
@@ -100,34 +88,69 @@ const ProfileComponent = () => {
       });
       return;
     }
-
+  
+    code = code.toUpperCase();
     setIsLoading(true);
-
+  
     try {
-      await sendMessage("/app/sendrequest", { to: code });
-
-      setAlert({
-        open: true,
-        message: "Solicitação de conexão enviada com sucesso!",
-        type: "success",
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/connection/sendconnectionrequest`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ from: userData.unique_code, to: code }),
       });
+  
+      const data = await response.json(); // 🔹 Pegamos a mensagem do servidor
+  
+      
+      switch (response.status) {
+
+        case 200: // OK
+          setAlert({ open: true, message: data.server, type: "success" });
+          break;
+  
+        case 400: // BAD REQUEST (Usuário que enviou a solicitação não corresponde ao token)
+          setAlert({ open: true, message: data.server, type: "error" });
+          break;
+  
+        case 406: // UNAUTHORIZED (Outro usuário já enviou solicitação e está aguardando resposta)
+          setAlert({ open: true, message: data.server, type: "warning" });
+          break;
+  
+        case 403: // FORBIDDEN (Token inválido)
+          setAlert({ open: true, message: "Sua sessão expirou. Faça login novamente.", type: "error" });
+          navigate("/login"); // 🔹 Redireciona para login
+          break;
+  
+        case 409: // CONFLICT (Usuários já conectados)
+          setAlert({ open: true, message: "Vocês já estão conectados!", type: "info" });
+          break;
+  
+        case 500: // INTERNAL SERVER ERROR (Erro inesperado)
+          setAlert({ open: true, message: "Erro no servidor. Tente novamente mais tarde.", type: "error" });
+          break;
+  
+        default: // Qualquer outro código não tratado
+          setAlert({ open: true, message: data.server || "Erro desconhecido.", type: "error" });
+          break;
+      }
     } catch (error) {
-      console.error("Erro ao enviar solicitação:", error);
+      console.error("❌ Erro ao conectar:", error);
       setAlert({
         open: true,
-        message: "Usuário não encontrado. Tente novamente.",
+        message: "Erro de conexão com o servidor.",
         type: "error",
       });
     } finally {
       setIsLoading(false);
     }
-};
-
+  };
+  
 
   const populateZone = () => {
     const storedUserData = localStorage.getItem("user_data");
     if (storedUserData) {
-      setUserData(() => JSON.parse(storedUserData));
+      setUserData(JSON.parse(storedUserData));
     } else {
       setUserData(null);
     }
@@ -139,42 +162,83 @@ const ProfileComponent = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Messages:", messages);
-    console.log("User Data:", userData);
+    if (!userData || !userData.unique_code) {
+      console.warn("⚠️ userData ainda não carregado corretamente!", userData);
+      return;
+    }
 
-    if (messages.length > 0 && userData) {
+    if (messages.length > 0) {
       setIsLoading(false);
-
       const lastMessage = messages[messages.length - 1];
-      console.log("Última mensagem recebida:", lastMessage.message);
 
-      if (String(lastMessage.to) === String(userData.unique_code)) {
-        // 1) Notificação de pedido de conexão
-        if (lastMessage.message.includes("quer se conectar")) {
-          console.log("Mensagem de conexão recebida:", lastMessage.message);
-          setDialogData({
-            fromUserName: lastMessage.name,
-            fromUserCode: lastMessage.from,
-          });
-          setIsDialogOpen(true);
+      //("📩 Última mensagem recebida:", lastMessage);
+
+      // 🔹 Pegando os valores corretamente
+      const messageTo = String(lastMessage?.to || "")
+        .trim()
+        .toUpperCase();
+      const currentUserCode = String(userData.unique_code || "")
+        .trim()
+        .toUpperCase();
+      const messageText = lastMessage?.message
+        ? lastMessage.message.trim()
+        : "";
+
+      if (messageTo === currentUserCode) {
+        switch (messageText) {
+          case "Você não pode enviar solicitação para si!":
+            setAlert({ open: true, message: messageText, type: "error" });
+            break;
+
+          case "Não foi encontrado nenhum usuário com esse código:":
+            setAlert({ open: true, message: messageText, type: "error" });
+            break;
+
+          case "Usuarios já estão conectados":
+            setAlreadyConnected(true);
+            setAlert({
+              open: true,
+              message: "Vocês já estão conectados!",
+              type: "info",
+            });
+            break;
+
+          case "Aguardando resposta do outro usuário":
+            setWaiting(true);
+            setAlert({
+              open: true,
+              message: "Aguardando resposta do outro usuário...",
+              type: "warning",
+            });
+            break;
+
+          case "Sucesso!":
+            setAlert({
+              open: true,
+              message: "Solicitação enviada com sucesso!",
+              type: "success",
+            });
+            break;
+
+          // 🔹 Novo caso para pedidos de conexão recebidos
+          default:
+            if (messageText.includes("quer se conectar com você!")) {
+              setDialogData({
+                fromUserName: messageText.split(" ")[0], // Extrai o nome do remetente
+                fromUserCode: lastMessage.from, // Pega o código do remetente
+              });
+              setIsDialogOpen(true);
+            } else {
+              console.warn("⚠️ Mensagem desconhecida recebida:", messageText);
+            }
         }
-
-        // 2) Usuário não encontrado
-        else if (lastMessage.message.includes("código")) {
-          setNotFound(true);
-
-          // 3) Sucesso no envio
-        } else if (lastMessage.message.includes("Sucesso!")) {
-          setSuccessAlert(true);
-
-          // 4) Aguardando resposta
-        } else if (lastMessage.message.includes("resposta!")) {
-          setWaiting(true);
-
-          // 5) Já conectados
-        } else if (lastMessage.message.includes("conectados")) {
-          setAlreadyConnected(true);
-        }
+      } else {
+        console.warn(
+          "🚨 Mensagem recebida, mas não corresponde ao usuário!",
+          lastMessage.to,
+          "!==",
+          userData.unique_code
+        );
       }
     }
   }, [messages, userData]);
@@ -189,34 +253,39 @@ const ProfileComponent = () => {
 
   return (
     <div className="p-4 h-screen bg-white bg-opacity-30 backdrop-blur-lg rounded-2xl border border-white border-opacity-20 shadow-2xl dark:bg-black dark:bg-opacity-30 dark:border-black dark:border-opacity-20">
-      {/* Seção de Avatar e Nome */}
       <AvatarSection userData={userData} darkMode={darkMode} />
 
-      {/* Seção de Tabs */}
-      <div className="flex justify-center mb-4">
-        <button
-          onClick={() => setActiveTab(0)}
-          className={`px-4 py-2 mx-2 ${
-            activeTab === 0
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
-          } rounded-md`}
-        >
-          Meu QR Code
-        </button>
-        <button
-          onClick={() => setActiveTab(1)}
-          className={`px-4 py-2 mx-2 ${
-            activeTab === 1
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
-          } rounded-md`}
-        >
-          Conectar
-        </button>
-      </div>
+      <section className="flex justify-center mb-4">
+        <nav>
+          <ul className="flex space-x-4">
+            <li>
+              <button
+                onClick={() => setActiveTab(0)}
+                className={`relative px-6 py-3 rounded-md transition-all duration-300 ${
+                  activeTab === 0
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 border-b-2 border-transparent hover:border-blue-600"
+                }`}
+              >
+                Meu QR Code
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveTab(1)}
+                className={`relative px-6 py-3 rounded-md transition-all duration-300 ${
+                  activeTab === 1
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 border-b-2 border-transparent hover:border-blue-600"
+                }`}
+              >
+                Conectar
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </section>
 
-      {/* Conteúdo das abas */}
       {activeTab === 0 && (
         <QRCodeSection userData={userData} darkMode={darkMode} />
       )}
@@ -225,20 +294,19 @@ const ProfileComponent = () => {
           darkMode={darkMode}
           sendMessage={sendMessage}
           setIsScannerOpen={setIsScannerOpen}
-          inputCode={inputCode} // Passando inputCode
-          setInputCode={setInputCode} // Passando setInputCode
+          inputCode={inputCode}
+          setInputCode={setInputCode}
           handleSendConnection={handleSendConnection}
         />
       )}
 
-      {/* Modal e Dialog */}
       <QRScannerModal
         isScannerOpen={isScannerOpen}
         setIsScannerOpen={setIsScannerOpen}
         handleScan={(data) => {
           setIsScannerOpen(false);
-          setInputCode(data); // Atualiza o campo de input
-          handleSendConnection(data); // Envia o código automaticamente
+          setInputCode(data);
+          handleSendConnection(data);
         }}
         darkMode={darkMode}
       />
@@ -246,16 +314,10 @@ const ProfileComponent = () => {
       <ConnectionRequestDialog
         fromUserName={dialogData.fromUserName}
         fromUserCode={dialogData.fromUserCode}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
       />
 
-      {/* Indicador de carregamento */}
-      <motion.div className="flex justify-center mt-4">
-        {isLoading && (
-          <div className="animate-spin w-8 h-8 border-t-4 border-blue-500 border-solid rounded-full"></div>
-        )}
-      </motion.div>
-
-      {/* AlertToast */}
       <AlertToast
         open={alert.open}
         type={alert.type}

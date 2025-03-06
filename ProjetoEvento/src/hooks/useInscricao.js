@@ -7,7 +7,8 @@ const useInscricao = (idPalestra) => {
     const verificarInscricao = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/palestra/verificarInscricao/${idPalestra}`,
+          `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/palestra/verificarPalestra/${idPalestra}`,
           {
             method: "GET",
             credentials: "include",

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth"; // Importa o AuthContext
+import useAuth from "../../hooks/useAuth"; // Importa o AuthContext
 
 const GoogleSignIn = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -29,10 +29,14 @@ const GoogleSignIn = () => {
 
   const checkAuthentication = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/auth/validate", {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/auth/validate`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -44,7 +48,7 @@ const GoogleSignIn = () => {
           navigate("/home");
         }
       } else {
-        console.log("Usuário não autenticado.");
+        //("Usuário não autenticado.");
         setIsAuthenticated(false);
       }
     } catch (error) {
@@ -74,7 +78,7 @@ const GoogleSignIn = () => {
   };
 
   const handleCredentialResponse = (response) => {
-    fetch("http://localhost:8080/api/auth/google", {
+    fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/google`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,9 +93,9 @@ const GoogleSignIn = () => {
         return res.json();
       })
       .then((data) => {
-        console.log("Dados do usuário recebidos:", data);
+        //("Dados do usuário recebidos:", data);
         localStorage.setItem("user_data", JSON.stringify(data));
-        setUser(data); 
+        setUser(data);
         navigate("/home");
       })
       .catch((error) => {

@@ -12,7 +12,7 @@ function FormQuestion({
   multiMode, // se true, renderiza sem form e sem botão de submit
 }) {
   const inputClass =
-    "w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all";
+    "w-full border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 text-black dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all";
 
   const content = (
     <>
@@ -30,6 +30,7 @@ function FormQuestion({
           onChange={(e) => setQuestionText(e.target.value)}
           className={inputClass}
           placeholder="Digite o enunciado da questão..."
+          required
         />
       </div>
 
@@ -45,6 +46,7 @@ function FormQuestion({
             onChange={(e) => handleChoiceChange(index, e.target.value)}
             className={inputClass}
             placeholder={`Digite a alternativa ${index + 1}...`}
+            required
           />
         </div>
       ))}
@@ -60,6 +62,7 @@ function FormQuestion({
           onChange={(e) => setCorrectAnswer(e.target.value)}
           className={inputClass}
           placeholder="Digite a alternativa correta..."
+          required
         />
       </div>
 

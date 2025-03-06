@@ -17,7 +17,9 @@ export default function NotificationButton() {
     )?.unique_code;
     try {
       const response = await fetch(
-        "http://localhost:8080/api/connection/answerconnectionrequest",
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/connection/answerconnectionrequest`,
         {
           method: "PATCH",
           credentials: "include",
@@ -49,7 +51,9 @@ export default function NotificationButton() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/connection/answerconnectionrequest",
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/connection/answerconnectionrequest`,
         {
           method: "PATCH",
           credentials: "include",
@@ -75,7 +79,6 @@ export default function NotificationButton() {
 
   return (
     <div className="relative">
-      {/* Botão do sino com Badge */}
       <motion.button
         className="relative flex items-center justify-center p-2 rounded-full transition duration-200 bg-transparent hover:bg-gray-300 dark:hover:bg-gray-700"
         onClick={toggleDropdown}
@@ -84,12 +87,10 @@ export default function NotificationButton() {
         <Bell size={24} className="text-gray-800 dark:text-gray-200" />
       </motion.button>
 
-      {/* Badge reposicionada corretamente */}
       {notifications.length > 0 && (
         <Badge count={notifications.length} animateBadge={animateBadge} />
       )}
 
-      {/* Dropdown de notificações */}
       <AnimatePresence>
         {isOpen && (
           <motion.div

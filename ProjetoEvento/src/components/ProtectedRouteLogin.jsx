@@ -17,13 +17,13 @@ const ProtectedRouteLogin = ({ children, role }) => {
     );
   }
 
-  // Usa user ou localUser para evitar null
+  // Usa user ou NETWORKUser para evitar null
   const currentUser = user || localUser;
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
-  console.log(user);
+  //(user);
   if (role && currentUser.role !== role) {
     alert("Você não tem permissão para acessar essa pagina!");
     return <Navigate to="/home" replace />;
