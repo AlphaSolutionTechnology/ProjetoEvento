@@ -1,117 +1,116 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
+import { useLocation } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-
+import AuthContext from "../context/AuthContext";
 export const WebSocketContext = createContext();
 
 let stompClient = null;
+let pingInterval = null;
 
-const initializeWebSocketConnection = (onMessage, onDisconnect, setConnected) => {
+const initializeWebSocketConnection = (
+  onMessage,
+  reconnect,
+  setConnected,
+  user
+) => {
   if (!stompClient || !stompClient.connected) {
-    const socket = new SockJS("http://localhost:8080/websocket");
+    const socket = new SockJS(
+      `${import.meta.env.VITE_NETWORK_API_LINK}/websocket`
+    );
+
     stompClient = Stomp.over(socket);
 
     stompClient.connect(
       {},
       () => {
-        console.log("Conectado ao WebSocket!");
-        setConnected(true); // Atualiza o estado para indicar que está conectado
+        setConnected(true);
 
-        // Inscreve-se no canal global para mensagens
-        stompClient.subscribe("/topic/messages", (message) => {
-          try {
-            const parsedMessage = JSON.parse(message.body);
-            onMessage(parsedMessage);
-          } catch (error) {
-            console.error("Erro ao processar mensagem global:", error);
-          }
+        stompClient.subscribe("/topic/ranking", (message) => {
+          const parsedMessage = JSON.parse(message.body);
+
+          onMessage(parsedMessage);
         });
 
-        // Inscreve-se no canal privado do usuário
         stompClient.subscribe("/user/queue/notification", (message) => {
-          try {
-            const parsedMessage = JSON.parse(message.body);
-            console.log("Mensagem recebida no canal privado:", parsedMessage);
+          const parsedMessage = JSON.parse(message.body);
+
+          if (parsedMessage.to === user?.unique_code) {
             onMessage(parsedMessage);
-          } catch (error) {
-            console.error("Erro ao processar mensagem privada:", error);
           }
         });
+
+        if (!pingInterval) {
+          pingInterval = setInterval(() => {
+            if (stompClient && stompClient.connected) {
+              stompClient.send("/app/ping", {}, "ping");
+            }
+          }, 30000);
+        }
       },
       (error) => {
-        console.error("Erro ao conectar ao WebSocket:", error);
-        setConnected(false); // Indica que a conexão foi perdida
-        onDisconnect(); // Chama a função de reconexão
+        console.error(
+          "❌ Erro na conexão WebSocket, tentando reconectar...",
+          error
+        );
+        setConnected(false);
+        clearInterval(pingInterval);
+        pingInterval = null;
+        reconnect();
       }
     );
-
-    // Detectar desconexões
-    stompClient.onclose = () => {
-      console.warn("WebSocket desconectado.");
-      setConnected(false);
-      onDisconnect(); // Chama a função de reconexão
-    };
   }
 };
 
 export const WebSocketProvider = ({ children }) => {
+  const { user } = useContext(AuthContext);
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const location = useLocation();
 
-  // Adiciona uma nova mensagem ao estado
   const addMessage = useCallback((message) => {
-    setMessages((prev) => [...prev, message]);
+    setMessages((prevMessages) => [...prevMessages, message]);
   }, []);
 
-  // Função de reconexão
   const reconnect = useCallback(() => {
-    if (reconnectAttempts < 5) { // Limita o número de tentativas
-      console.log(`Tentativa de reconexão #${reconnectAttempts + 1}`);
-      setReconnectAttempts((prev) => prev + 1);
+    const maxAttempts = 10;
+    const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+
+    if (reconnectAttempts < maxAttempts) {
       setTimeout(() => {
-        initializeWebSocketConnection(addMessage, reconnect, setConnected);
-      }, 3000); // Aguarda 3 segundos antes de tentar reconectar
-    } else {
-      console.error("Número máximo de tentativas de reconexão atingido.");
+        initializeWebSocketConnection(
+          addMessage,
+          reconnect,
+          setConnected,
+          user
+        );
+        setReconnectAttempts((prev) => prev + 1);
+      }, delay);
     }
-  }, [reconnectAttempts, addMessage]);
+  }, [reconnectAttempts, addMessage, user]);
 
-  // Configuração inicial da conexão
-  const setupConnection = useCallback(() => {
-    initializeWebSocketConnection(addMessage, reconnect, setConnected);
-  }, [addMessage, reconnect]);
-
-  // Função para enviar mensagens ao servidor
-  const sendMessage = useCallback((destination, message) => {
-    if (stompClient && stompClient.connected) {
-      try {
-        stompClient.send(destination, {}, JSON.stringify(message));
-        console.log("Mensagem enviada:", message);
-      } catch (error) {
-        console.error("Erro ao enviar mensagem:", error);
-      }
-    } else {
-      console.error("WebSocket não está conectado. Mensagem não enviada.");
-    }
-  }, []);
-
-  // Efeito para inicializar a conexão
   useEffect(() => {
-    if (!connected) {
-      setupConnection();
+    if (!connected && user && location.pathname !== "/login") {
+      initializeWebSocketConnection(addMessage, reconnect, setConnected, user);
+    } else if (!user) {
+      if (stompClient && stompClient.connected) {
+        stompClient.disconnect();
+      }
+      clearInterval(pingInterval);
+      pingInterval = null;
+      setConnected(false);
     }
-  }, [connected, setupConnection]);
+  }, [connected, user, addMessage, reconnect, location]);
 
-  // Expondo valores via contexto
   return (
-    <WebSocketContext.Provider
-      value={{
-        connected,
-        messages,
-        sendMessage,
-      }}
-    >
+    <WebSocketContext.Provider value={{ connected, messages }}>
       {children}
     </WebSocketContext.Provider>
   );

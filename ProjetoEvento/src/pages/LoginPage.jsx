@@ -1,77 +1,73 @@
-import React, { useState } from 'react';
-import GoogleSignIn from '../components/GoogleSignIn';
+import React from "react";
+import { motion } from "framer-motion";
+import AlertToast from "../components/alert/AlertToast";
+import AuthHeader from "../components/auth/AuthHeader";
+import AuthForm from "../components/auth/AuthForm";
+import AuthToggle from "../components/auth/AuthToggle";
+import GoogleSignIn from "../components/auth/GoogleSignIn";
+import useAuthForm from "../hooks/useAuthForm";
 
-const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
+const LoginPage = () => {
+  const {
+    isLogin,
+    setIsLogin,
+    formData,
+    handleChange,
+    handleLogin,
+    handleRegister,
+    loading,
+    toastMessage,
+    setToastMessage,
+  } = useAuthForm();
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-center items-center bg-white text-black dark:bg-gray-700 dark:text-white">
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-6 text-center">
-        {isLogin ? "Login" : "Registro"}
-      </h1>
+    <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-900 overflow-hidden">
+      <AuthHeader />
 
-      <div className="w-11/12 sm:w-3/4 lg:w-1/2 bg-gray-200 dark:bg-gray-800 rounded-lg p-6 shadow-lg">
-        {/* Formulário de Login ou Registro */}
-        <form>
-          {!isLogin && (
-            <div className="mb-4">
-              <label className="block mb-2">Nome</label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Digite seu nome"
-              />
-            </div>
-          )}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
+        className="relative z-10 w-11/12 sm:w-3/4 lg:w-1/3 bg-white bg-opacity-10 backdrop-blur-lg rounded-lg p-6 shadow-2xl border border-white/10"
+      >
+        <AuthForm
+          isLogin={isLogin}
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={isLogin ? handleLogin : handleRegister}
+          loading={loading}
+        />
 
-          <div className="mb-4">
-            <label className="block mb-2">Email</label>
-            <input
-              type="email"
-              className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Digite seu email"
-            />
-          </div>
+        <AuthToggle
+          isLogin={isLogin}
+          setIsLogin={setIsLogin}
+          setToastMessage={setToastMessage}
+        />
 
-          <div className="mb-4">
-            <label className="block mb-2">Senha</label>
-            <input
-              type="password"
-              className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Digite sua senha"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition duration-300"
-          >
-            {isLogin ? "Entrar" : "Registrar"}
-          </button>
-        </form>
-
-        {/* Alternar entre Login e Registro */}
-        <div className="text-center mt-4">
-          <span
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-blue-500 cursor-pointer hover:underline"
-          >
-            {isLogin
-              ? "Não tem uma conta? Registre-se"
-              : "Já tem uma conta? Faça login"}
-          </span>
+        <div className="flex items-center my-6">
+          <div className="flex-grow border-t border-gray-600"></div>
+          <span className="mx-4 text-gray-400">ou</span>
+          <div className="flex-grow border-t border-gray-600"></div>
         </div>
 
-        {/* Separador para opções de autenticação */}
-        <div className="my-6 border-t"></div>
-
-        {/* Botões de autenticação social */}
-        <div className="flex flex-col items-center">
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="flex flex-col items-center"
+        >
           <GoogleSignIn />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
+
+      {toastMessage && (
+        <AlertToast
+          open={!!toastMessage}
+          message={toastMessage.text}
+          type={toastMessage.type}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
     </div>
   );
 };
 
-export default AuthPage;
+export default LoginPage;

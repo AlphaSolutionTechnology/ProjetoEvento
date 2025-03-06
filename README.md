@@ -147,6 +147,29 @@ Para gerar os arquivos otimizados para produção, execute o comando:
 
 Os arquivos otimizados estarão disponíveis na pasta `build/`.
 
+### 8. O projeto tambem utiliza Framer Motion:
+installe: 
+```bash
+npm install motion
+
+```
+usando:
+```bash
+import { motion } from "motion/react";
+```
+### 9. o projeto tambem utiliza Lucide React:
+instalando: 
+```bash
+npm install lucide-react
+
+```
+usando:
+```bash
+import { camera } from 'lucide-react'
+```
+
+
+
 ## Tecnologias Utilizadas
 
 - [React](https://reactjs.org/)
