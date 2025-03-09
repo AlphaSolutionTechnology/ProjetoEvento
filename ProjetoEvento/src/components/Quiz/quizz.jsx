@@ -123,14 +123,11 @@ const Quiz = () => {
   const enviarResultado = async () => {
     const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
 
-  
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${idPalestra}`,
         {
-          method: "GET",
-          mode: "cors",             // Garante que requisições cross-origin sejam tratadas corretamente
+          method: "GET", 
           credentials: "include",   // Envia cookies junto com a requisição
           headers: {
             "Content-Type": "application/json",
@@ -138,8 +135,6 @@ const Quiz = () => {
         }
       );
       
-      
-
       if (!response.ok) {
         console.error("Erro ao enviar resultado:", response.statusText);
       }
