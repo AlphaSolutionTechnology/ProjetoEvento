@@ -14,14 +14,10 @@ const Quiz = () => {
   const [answer, setAnswer] = useState(null);
   const [quizStartTime, setQuizStartTime] = useState(null);
   const [quizEndTime, setQuizEndTime] = useState(null);
-  const [result, setResult] = useState({
-    correctAnswers: 0,
-    wrongAnswers: 0,
-    idPalestra: idPalestra,
-  });
+  const [answers, setAnswers] = useState([]);
   const [showResult, setShowResult] = useState(false);
+  const [finalResult, setFinalResult] = useState(null);
 
-  // Buscar as questões do back-end (note que elas já não contêm o campo "correctAnswer")
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -30,14 +26,10 @@ const Quiz = () => {
           {
             method: "GET",
             credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
           }
         );
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
         const data = await response.json();
         setQuestions(data);
         setQuizStartTime(Date.now());
@@ -45,109 +37,78 @@ const Quiz = () => {
         console.error(error.message);
       }
     };
-
     fetchQuestions();
   }, [idPalestra]);
 
-  // Armazena apenas a resposta selecionada (string) e o índice escolhido
   const onAnswerClick = (selectedAnswer, index) => {
     setAnswerIdx(index);
     setAnswer(selectedAnswer);
   };
 
-  // Ao clicar em "Próxima", envia a resposta selecionada para o back-end para validação
-  const onClickNext = async () => {
-    try {
-      // Considera que o objeto de questão possui o campo "id"
-      const questionId = questions[currentQuestion].id;
-      const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/validate`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            questionId: questionId,
-            selectedAnswer: answer,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Erro na validação da resposta");
-      }
-
-      const data = await response.json();
-      const isCorrect = data.isCorrect;
-
-      setResult((prev) => ({
-        correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
-        wrongAnswers: !isCorrect ? prev.wrongAnswers + 1 : prev.wrongAnswers,
-        idPalestra: prev.idPalestra,
-      }));
-
-      // Limpa a seleção da resposta
+  const onClickNext = () => {
+    const questionId = questions[currentQuestion].id;
+    const timeSpent = ((Date.now() - quizStartTime) / 1000).toFixed(2);
+    const newAnswer = {
+      questionId,
+      selectedAnswer: answer,
+      timeSpent: parseFloat(timeSpent),
+    };
+    const updatedAnswers = [...answers, newAnswer];
+    const isLastQuestion = currentQuestion === questions.length - 1;
+    if (isLastQuestion) {
+      setAnswers(updatedAnswers);
+      setQuizEndTime(Date.now());
+      setShowResult(true);
+      sendAllAnswers(updatedAnswers);
+    } else {
+      setAnswers(updatedAnswers);
       setAnswerIdx(null);
       setAnswer(null);
-
-      // Avança para a próxima pergunta ou finaliza o quiz
-      if (currentQuestion !== questions.length - 1) {
-        setCurrentQuestion((prev) => prev + 1);
-      } else {
-        setQuizEndTime(Date.now());
-        setShowResult(true);
-      }
-    } catch (error) {
-      console.error("Erro ao validar resposta:", error);
+      setCurrentQuestion((prev) => prev + 1);
     }
   };
 
-  // Função para finalizar o quiz quando o tempo acabar
+  const sendAllAnswers = async (answersArray) => {
+    try {
+      const endTime = Date.now();
+      const totalTimeSeconds = ((endTime - quizStartTime) / 1000).toFixed(2);
+      const payload = {
+        idPalestra,
+        totalTime: parseFloat(totalTimeSeconds),
+        answers: answersArray,
+        final: true,
+      };
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/validateAndRecord`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!response.ok) throw new Error("Erro ao enviar todas as respostas");
+      const data = await response.json();
+      setFinalResult(data);
+    } catch (error) {
+      console.error("Erro ao enviar todas as respostas:", error);
+    }
+  };
+
   const handleTimeUp = () => {
     setQuizEndTime(Date.now());
     setShowResult(true);
+    sendAllAnswers(answers);
   };
 
   const getTotalTimeTaken = () => {
     if (!quizStartTime || !quizEndTime) return "Calculando...";
-    const totalTimeMs = quizEndTime - quizStartTime;
-    const totalSeconds = Math.floor(totalTimeMs / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-  
+    const totalMs = quizEndTime - quizStartTime;
+    const totalSec = Math.floor(totalMs / 1000);
+    const minutes = Math.floor(totalSec / 60);
+    const seconds = totalSec % 60;
     return `${minutes} minuto(s) e ${seconds} segundo(s)`;
   };
-  
-  const enviarResultado = async () => {
-    const totalTime = ((quizEndTime - quizStartTime) / 1000).toFixed(2);
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${idPalestra}`,
-        {
-          method: "GET", 
-          credentials: "include",   // Envia cookies junto com a requisição
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      
-      if (!response.ok) {
-        console.error("Erro ao enviar resultado:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Erro ao conectar com o servidor:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (showResult) {
-      enviarResultado();
-    }
-  }, [showResult]);
 
   if (questions.length === 0) {
     return (
@@ -173,15 +134,14 @@ const Quiz = () => {
               currentQuestion={currentQuestion}
               totalQuestions={questions.length}
               onTimeUp={handleTimeUp}
+              idPalestra={idPalestra}
             />
-
             <QuestionCard
               enunciado={enunciado}
               choices={choices}
               answerIdx={answerIdx}
               onAnswerClick={onAnswerClick}
             />
-
             <QuizFooter
               onClickNext={onClickNext}
               isLastQuestion={currentQuestion === questions.length - 1}
@@ -190,9 +150,10 @@ const Quiz = () => {
           </>
         ) : (
           <ResultCard
-            correctAnswers={result.correctAnswers}
-            wrongAnswers={result.wrongAnswers}
-            totalTime={getTotalTimeTaken()}
+            correctAnswers={finalResult ? finalResult.correctAnswers : 0}
+            wrongAnswers={finalResult ? finalResult.wrongAnswers : 0}
+            totalTime={finalResult ? finalResult.totalTime : getTotalTimeTaken()}
+            score={finalResult ? finalResult.score : 0}
             onExit={() => (window.location.href = `/ranking`)}
           />
         )}

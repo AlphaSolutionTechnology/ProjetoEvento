@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
-import QuestionsInvite from "./QuestionsInvite.jsx";
-import ChatComponent from "../AI/Groq.jsx"; // Importa o componente de geração de questões
+import QuestionsInvite from "./QuestionsInvite.jsx"; 
 import AlertToast from "../alert/AlertToast.jsx";
 
 function CreateQuestoes() {
-  const [questions, setQuestions] = useState([]);
+  // Inicializa com uma questão padrão para exibir o formulário já na carga
+  const [questions, setQuestions] = useState([
+    { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
+  ]);
   const [message, setMessage] = useState("");
   const [alertType, setAlertType] = useState("warning");
   const [openAlert, setOpenAlert] = useState(false);
@@ -14,24 +16,20 @@ function CreateQuestoes() {
 
   useEffect(() => {
     if (!idPalestra) {
-      setMessage(
-        "ID da palestra não encontrado. Verifique o fluxo de navegação."
-      );
+      setMessage("ID da palestra não encontrado. Verifique o fluxo de navegação.");
       setAlertType("error");
       setOpenAlert(true);
     }
   }, [idPalestra]);
 
-  // Callback para receber a questão gerada pela IA
+  // Callback para receber questões geradas pela IA
   const handleReceiveQuestion = useCallback((newQuestion) => {
     if (!newQuestion || !newQuestion.question) return;
-
     const formattedQuestion = {
       questionText: newQuestion.question || "",
       choices: newQuestion.choices || ["", "", "", ""],
       correctAnswer: newQuestion.correctAnswer || "",
     };
-
     setQuestions((prevQuestions) => [...prevQuestions, formattedQuestion]);
     setMessage("Questão gerada com sucesso.");
     setAlertType("success");
@@ -39,17 +37,17 @@ function CreateQuestoes() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen ">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <QuestionsInvite
         questions={questions}
         setQuestions={setQuestions}
         idPalestra={idPalestra}
         setMessage={setMessage}
+        onReceiveQuestion={handleReceiveQuestion}
       />
 
-      {/* Componente de alerta atualizado*/}
       <AlertToast
-        open={message}
+        open={openAlert}
         message={message}
         type={alertType}
         onClose={() => setOpenAlert(false)}
