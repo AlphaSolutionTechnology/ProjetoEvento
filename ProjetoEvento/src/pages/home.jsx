@@ -7,7 +7,7 @@ import HomeCard from "../components/home/HomeCard";
 import HomeModal from "../components/home/HomeModal";
 import HomeQRScanner from "../components/home/HomeQRScanner";
 import AlertToast from "../components/alert/AlertToast";
-import { UserIcon, ChartBar, Puzzle } from "lucide-react";
+import { UserIcon, ChartBar, Tickets } from "lucide-react";
 import BasicModal from "../components/codigoPalestra/BasicModal";
 import { useNavigate } from "react-router-dom";
 
@@ -48,25 +48,27 @@ const Home = () => {
           <HomeCard
             darkMode={darkMode}
             icon={<ChartBar className="h-12 w-12 text-blue-500 mb-4" />}
-            title="Gerencie suas Palestras"
-            description="Acesse, edite e organize suas palestras de forma prática."
-            buttonText="Acessar Palestras"
-            onClick={() => navigate("/palestras")}
+            title="Gerencie seus Eventos"
+            description="Acesse, edite e organize seus eventos de forma prática."
+            buttonText="Acessar Eventos"
+            onClick={() => navigate("/organizer")}
           />
         ) : (
           <HomeCard
             darkMode={darkMode}
-            icon={<Puzzle className="h-12 w-12 text-blue-500 mb-4" />}
-            title="Complete desafios!"
+            icon={<Tickets className="h-12 w-12 text-blue-500 mb-4" />}
+            title="Encontre seu Evento!"
             description="Participe de quizzes, ganhe pontos e desbloqueie conquistas incríveis."
-            buttonText="Iniciar Quiz"
+            buttonText="Eventos"
             onClick={() => {
-              const palestraSalva = localStorage.getItem("palestraAtual");
+              navigate("/eventos");
+
+              {/* const palestraSalva = localStorage.getItem("palestraAtual");
               if (palestraSalva) {
                 navigate(`/palestra/${palestraSalva}`);
               } else {
                 setIsModalOpen(true);
-              }
+              } */}
             }}
           />
         )}
@@ -82,7 +84,7 @@ const Home = () => {
         />
       </section>
 
-      <BasicModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      {/* <BasicModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <HomeModal
           codigoPalestra={codigoPalestra}
           setCodigoPalestra={setCodigoPalestra}
@@ -92,16 +94,16 @@ const Home = () => {
           }}
           onScanQR={() => setIsScanning(true)}
         />
-      </BasicModal>
+      </BasicModal> */}
 
-      <BasicModal open={isScanning} onClose={() => setIsScanning(false)}>
+      {/* <BasicModal open={isScanning} onClose={() => setIsScanning(false)}>
         <HomeQRScanner
           onScan={async (data) => {
             await validarPalestra(data);
           }}
           isScannerOpen={isScanning}
         />
-      </BasicModal>
+      </BasicModal> */}
 
       <AlertToast
         open={toastOpen}

@@ -29,7 +29,8 @@ const Quiz = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
-        if (!response.ok) throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
+        if (!response.ok)
+          throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
         const data = await response.json();
         setQuestions(data);
         setQuizStartTime(Date.now());
@@ -79,7 +80,9 @@ const Quiz = () => {
         final: true,
       };
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/validateAndRecord`,
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/questoes/validateAndRecord`,
         {
           method: "POST",
           credentials: "include",
@@ -152,7 +155,9 @@ const Quiz = () => {
           <ResultCard
             correctAnswers={finalResult ? finalResult.correctAnswers : 0}
             wrongAnswers={finalResult ? finalResult.wrongAnswers : 0}
-            totalTime={finalResult ? finalResult.totalTime : getTotalTimeTaken()}
+            totalTime={
+              finalResult ? finalResult.totalTime : getTotalTimeTaken()
+            }
             score={finalResult ? finalResult.score : 0}
             onExit={() => (window.location.href = `/ranking`)}
           />

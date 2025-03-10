@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
 import UserConnectionItem from "./UserConnectionItem";
 
+// Função para gerar um avatar padrão com base no nome do usuário
+const generateDefaultAvatar = (name) => {
+  const seed = name || "user"; // Usa o nome do usuário como semente
+  return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+};
+
 const ConnectionsSection = () => {
   const [connections, setConnections] = useState([]); // Estado para armazenar as conexões
   const [showAll, setShowAll] = useState(false); // Estado para controlar a exibição de todas as conexões
@@ -26,7 +32,12 @@ const ConnectionsSection = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setConnections(data || []); // Atualiza o estado com as conexões recebidas
+          // Adiciona um avatar padrão para cada conexão, se não houver um avatar
+          const connectionsWithAvatars = data.map((user) => ({
+            ...user,
+            avatar: user.avatar || generateDefaultAvatar(user.name),
+          }));
+          setConnections(connectionsWithAvatars || []); // Atualiza o estado com as conexões recebidas
         } else {
           console.error("Erro ao buscar conexões:", response.statusText);
         }
@@ -67,16 +78,28 @@ const ConnectionsSection = () => {
           Carregando conexões...
         </p>
       ) : (
-        <div className="flex gap-4 flex-wrap justify-center sm:justify-start">
-          {visibleConnections.length > 0 ? (
-            visibleConnections.map((conn, index) => (
-              <UserConnectionItem key={index} user={conn} />
-            ))
-          ) : (
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Nenhuma conexão ativa no momento.
-            </p>
-          )}
+        <div className="overflow-x-auto">
+          {" "}
+          {/* Adiciona scroll horizontal */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 min-w-max">
+            {" "}
+            {/* Layout de grade */}
+            {visibleConnections.length > 0 ? (
+              visibleConnections.map((conn, index) => (
+                <UserConnectionItem key={index} user={conn} />
+              ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-sm col-span-full">
+                Nenhuma conexão ativa no momento.
+              </p>
+            )}
+          </div>
+          {!showAll &&
+            connections.length > 4 && ( // Mostra o texto "e mais X conexões" se houver mais de 4 conexões
+              <div className="flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm mt-2">
+                e mais {connections.length - 4} conexões...
+              </div>
+            )}
         </div>
       )}
     </section>

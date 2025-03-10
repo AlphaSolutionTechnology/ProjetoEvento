@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react"; 
 import { Camera, X } from "lucide-react";
 
-// Lista de avatares pré-definidos
-const avatars = [
-  "/images/avatar1.png",
-  "/images/avatar2.png",
-  "/images/avatar3.png",
-  "/images/avatar4.png",
+// Estilos de avatares disponíveis no DiceBear
+const avatarStyles = [
+  { id: 1, style: "bottts", label: "Bot Avatar" },
+  { id: 2, style: "identicon", label: "Identicon Avatar" },
+  { id: 3, style: "avataaars", label: "Avataaars" },
+  { id: 4, style: "micah", label: "Micah Avatar" },
 ];
 
 function ChangeProfilePictureModal({
@@ -14,10 +15,30 @@ function ChangeProfilePictureModal({
   onChangePicture,
   onClose,
 }) {
-  const handleAvatarClick = (avatar) => {
-    onChangePicture(avatar); // Atualiza a imagem com a escolhida
-    onClose(); // Fechar o modal
+  // Estado para armazenar as sementes de cada avatar
+  const [avatarSeeds, setAvatarSeeds] = useState({});
+
+  // Função para gerar uma nova semente aleatória
+  const generateRandomSeed = () => {
+    return Math.random().toString(36).substring(7);
   };
+
+  // Função para lidar com a escolha do avatar
+  const handleAvatarClick = (style) => {
+    const seed = avatarSeeds[style]; // Recupera a semente do avatar clicado
+    const avatarUrl = `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`;
+    onChangePicture(avatarUrl); // Atualiza a imagem com a escolhida
+    onClose(); 
+  };
+
+  // Gera sementes para cada estilo de avatar ao abrir o modal
+  useEffect(() => {
+    const seeds = {};
+    avatarStyles.forEach((avatar) => {
+      seeds[avatar.style] = generateRandomSeed();
+    });
+    setAvatarSeeds(seeds);
+  }, []);
 
   return (
     <main className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -38,18 +59,17 @@ function ChangeProfilePictureModal({
           </button>
         </header>
 
-        {/* Grid de Avatares Pré-definidos */}
-        {/* Grid de Avatares Pré-definidos */}
+        {/* Grid de Avatares Dinâmicos */}
         <section className="grid grid-cols-2 gap-4 mb-6">
-          {avatars.map((avatar, index) => (
+          {avatarStyles.map((avatar) => (
             <div
-              key={index}
+              key={avatar.id}
               className="cursor-pointer rounded-full w-16 h-16 border-2 border-white overflow-hidden transition-transform transform hover:scale-105"
-              onClick={() => handleAvatarClick(avatar)}
+              onClick={() => handleAvatarClick(avatar.style)}
             >
               <img
-                src={avatar}
-                alt={`Avatar ${index + 1}`}
+                src={`https://api.dicebear.com/7.x/${avatar.style}/svg?seed=${avatarSeeds[avatar.style]}`}
+                alt={avatar.label}
                 className="w-full h-full object-cover"
               />
             </div>

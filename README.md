@@ -92,10 +92,10 @@ O projeto utiliza Heroicons para ícones SVG. Caso ainda não estejam instalados
 
 ```bash
 npm install @heroicons/react
-
 ```
+
 Depois, use os ícones nos componentes React. Exemplo:
-```bash
+```javascript
 import { ArrowRightIcon } from '@heroicons/react/solid';
 
 function ExampleButton() {
@@ -109,7 +109,8 @@ function ExampleButton() {
 
 export default ExampleButton;
 ```
-OBS: A biblioteca Heroicons oferece ícones nos estilos solid (cheio) e outline (contorno). Escolha o que se adapta melhor ao seu design.
+
+**OBS:** A biblioteca Heroicons oferece ícones nos estilos solid (cheio) e outline (contorno). Escolha o que se adapta melhor ao seu design.
 
 ### 6. Execute o Projeto
 
@@ -147,28 +148,79 @@ Para gerar os arquivos otimizados para produção, execute o comando:
 
 Os arquivos otimizados estarão disponíveis na pasta `build/`.
 
-### 8. O projeto tambem utiliza Framer Motion:
-installe: 
+### 8. O projeto também utiliza Framer Motion:
+Instale:
 ```bash
-npm install motion
+npm install framer-motion
+```
 
+Usando:
+```javascript
+import { motion } from "framer-motion";
 ```
-usando:
-```bash
-import { motion } from "motion/react";
-```
-### 9. o projeto tambem utiliza Lucide React:
-instalando: 
+
+### 9. O projeto também utiliza Lucide React:
+Instale:
 ```bash
 npm install lucide-react
-
-```
-usando:
-```bash
-import { camera } from 'lucide-react'
 ```
 
+Usando:
+```javascript
+import { Camera } from 'lucide-react';
+```
 
+### 10. API de Avatares (DiceBear)
+
+O projeto utiliza a API [DiceBear](https://www.dicebear.com/) para gerar avatares personalizados com base no nome do usuário ou em uma semente aleatória. A API oferece diversos estilos de avatares, como `bottts`, `identicon`, `avataaars`, e `micah`.
+
+#### Como a API é usada no projeto:
+
+1. **Geração de Avatares Padrão:**
+   - Se o usuário não tiver um avatar definido, um avatar padrão é gerado usando o nome do usuário como semente.
+   - Exemplo de URL para gerar um avatar:
+     ```javascript
+     const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${userName}`;
+     ```
+
+2. **Uso no Código:**
+   - No componente `AvatarSection`, o avatar é carregado do `localStorage` ou gerado usando a API DiceBear.
+   - Exemplo de código:
+     ```javascript
+     const generateDefaultAvatar = (name) => {
+       const seed = name || "user"; // Usa o nome do usuário como semente
+       return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+     };
+     ```
+
+3. **Estilos Disponíveis:**
+   - O projeto permite escolher entre diferentes estilos de avatares. Exemplo de estilos:
+     ```javascript
+     const avatarStyles = [
+       { id: 1, style: "bottts", label: "Bot Avatar" },
+       { id: 2, style: "identicon", label: "Identicon Avatar" },
+       { id: 3, style: "avataaars", label: "Avataaars" },
+       { id: 4, style: "micah", label: "Micah Avatar" },
+     ];
+     ```
+
+4. **Alteração de Avatar:**
+   - O usuário pode escolher um novo avatar no modal `ChangeProfilePictureModal`, que gera avatares dinâmicos usando a API DiceBear.
+
+#### Exemplo de Uso no Modal:
+```javascript
+const handleAvatarClick = (style) => {
+  const seed = avatarSeeds[style]; // Recupera a semente do avatar clicado
+  const avatarUrl = `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`;
+  onChangePicture(avatarUrl); // Atualiza a imagem com a escolhida
+  onClose();
+};
+```
+
+#### Documentação da API:
+- Para mais detalhes sobre a API DiceBear, consulte a [documentação oficial](https://www.dicebear.com/how-to-use/http-api).
+
+---
 
 ## Tecnologias Utilizadas
 
@@ -176,3 +228,8 @@ import { camera } from 'lucide-react'
 - [Tailwind CSS](https://tailwindcss.com/)
 - [React Router](https://reactrouter.com/)
 - [HeroIcons](https://heroicons.com)
+- [Framer Motion](https://www.framer.com/motion/)
+- [Lucide React](https://lucide.dev/)
+- [DiceBear Avatares](https://www.dicebear.com/)
+
+---
