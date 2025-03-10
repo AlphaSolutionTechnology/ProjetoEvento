@@ -1,93 +1,180 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AlertToast from "../components/alert/AlertToast";
+import QuizListCard from "../components/quizList/QuizListCard";
+import QuizListActions from "../components/quizList/QuizListActions";
+import QuizListConfirmationModal from "../components/quizList/QuizListConfirmationModal";
 
-function QuizzesPage() {
+export default function QuizzesPage() {
   const navigate = useNavigate();
-  const [quizzes, SetQuizzes] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
-
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [score, setScore] = useState(0);
   const { idPalestra } = useParams();
 
-  const desinscreverUsuario = async () => {
-    // Confirmar se o usuário tem certeza de que deseja desinscrever
-    const isConfirmed = window.confirm(
-      "Você tem certeza de que deseja desinscrever da palestra?"
-    );
-    if (!isConfirmed) {
-      return;
-    }
+  // Função para verificar o status do quiz
+  const verificarStatusQuizz = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/verificarStatus/${idPalestra}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
+      if (response.status === 404) {
+        return true; // Resultado não encontrado, pode iniciar o quiz
+      }
+      if (response.ok) {
+        return false; // Resultado existe, quiz já cadastrado
+      }
+      throw new Error(`Erro ao verificar status: ${response.statusText}`);
+    } catch (error) {
+      console.error("Erro ao verificar status do quiz:", error.message);
+      setToastMessage({
+        text: "Erro ao verificar status do quiz.",
+        type: "error",
+      });
+      return false; // Em caso de erro, assume que não pode iniciar
+    }
+  };
+
+  const desinscreverUsuario = async () => {
     if (!idPalestra) {
-      alert("Erro: ID da palestra não encontrado.");
+      setToastMessage({
+        text: "Erro: ID da palestra não encontrado.",
+        type: "error",
+      });
       return;
     }
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
-/api/palestra/desinscrever/${idPalestra}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/desinscrever/${idPalestra}`,
+        { method: "DELETE", credentials: "include" }
       );
 
       if (!response.ok) {
         const errorMessage = await response.text();
-        alert(`Erro ao desinscrever: ${errorMessage}`);
+        setToastMessage({
+          text: `Erro ao sair: ${errorMessage}`,
+          type: "error",
+        });
         return;
       }
 
       localStorage.removeItem("palestraAtual");
-
-      alert("Você foi desinscrito da palestra.");
-      navigate("/home");
+      setToastMessage({
+        text: "Você saiu da palestra.",
+        type: "success",
+      });
+      setTimeout(() => navigate("/lista-de-palestras"), 2000);
     } catch (error) {
       console.error("Erro ao desinscrever:", error);
-      alert("Erro inesperado ao desinscrever.");
+      setToastMessage({
+        text: "Erro inesperado ao desinscrever.",
+        type: "error",
+      });
     }
   };
 
+  const handleParticiparQuizz = async () => {
+    try {
+      // Verifica se o quiz pode ser iniciado
+      const podeIniciar = await verificarStatusQuizz();
+
+      if (!podeIniciar) {
+        setToastMessage({
+          text: "Você já participou deste quiz. Veja o ranking!",
+          type: "info",
+        });
+        navigate("/ranking");
+        return;
+      }
+
+      // Inicia o quiz se o resultado não existir (404)
+      const iniciarResponse = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/startquiz/${idPalestra}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (!iniciarResponse.ok) throw new Error(`Erro ao iniciar quiz: ${iniciarResponse.statusText}`);
+
+      // Após iniciar o quiz com sucesso, atualiza o estado e navega
+      setQuizCompleted(false);
+      setProgress(0);
+      setScore(0);
+      localStorage.setItem("palestraAtual", idPalestra); // Salva o idPalestra no localStorage
+      navigate(`/quizz/${idPalestra}`);
+    } catch (error) {
+      console.error("Erro ao iniciar o quiz:", error.message);
+      setToastMessage({
+        text: "Erro ao iniciar o quiz. Tente novamente.",
+        type: "error",
+      });
+    }
+  };
+
+  // Verifica o status ao carregar a página para atualizar o estado inicial
+  useEffect(() => {
+    const checkQuizStatus = async () => {
+      const podeIniciar = await verificarStatusQuizz();
+      setQuizCompleted(!podeIniciar); // Se não pode iniciar, o quiz está concluído
+    };
+    checkQuizStatus();
+  }, [idPalestra]);
+
   return (
-    <>
-      <div className="flex flex-col items-center justify-center min-h-screen ">
-        <div className="border rounded flex flex-col p-3 items-center bg-purple-950 gap-3 ">
-          <h1 className="text-center">Quizz</h1>
-          <button
-            className="bg-white text-purple-950 hover:bg-purple-400 hover:text-white rounded p-1"
-            onClick={() => navigate(`/quizz/${idPalestra}`)}
-          >
-            Participar
-          </button>
-        </div>
+    <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
+      {/* Usando o QuizListCard */}
+      <QuizListCard
+        title="Quizz"
+        description="Teste seus conhecimentos e veja como você se sai!"
+        progress={progress}
+        score={score}
+        badges={1}
+        onAction={handleParticiparQuizz}
+        actionLabel={quizCompleted ? "Concluído" : "Participar"}
+      />
 
-        <button
-          onClick={() => navigate(`/ranking`)}
-          className="mt-8 bg-white rounded text-black p-2 hover:bg-gray-700 hover:text-white"
-        >
-          Ver Ranking
-        </button>
+      {/* Usando o QuizListAction */}
+      <QuizListActions
+        quizCompleted={quizCompleted}
+        onViewRanking={() => navigate("/ranking")}
+        onUnsubscribe={() => setIsConfirmationModalOpen(true)}
+      />
 
-        <button
-          onClick={desinscreverUsuario}
-          className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-        >
-          Desinscrever
-        </button>
+      {/* Usando o QuizListConfirmationModal */}
+      <QuizListConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+        onConfirm={() => {
+          setIsConfirmationModalOpen(false);
+          desinscreverUsuario();
+        }}
+        title="Desinscrever da Palestra"
+        message="Você tem certeza de que deseja desinscrever da palestra?"
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
+      />
 
-        {/* Integração do AlertToast */}
-        {toastMessage && (
-          <AlertToast
-            open={!!toastMessage}
-            message={toastMessage.text}
-            type={toastMessage.type}
-            onClose={() => setToastMessage(null)}
-          />
-        )}
-      </div>
-    </>
+      {/* Integração do AlertToast */}
+      {toastMessage && (
+        <AlertToast
+          open={!!toastMessage}
+          message={toastMessage.text}
+          type={toastMessage.type}
+          onClose={() => setToastMessage(null)}
+          aria-live="polite"
+        />
+      )}
+    </main>
   );
 }
-
-export default QuizzesPage;

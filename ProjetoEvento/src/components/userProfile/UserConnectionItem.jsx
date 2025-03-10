@@ -1,40 +1,21 @@
-import { motion } from "framer-motion";
+import React from "react";
 
-function UserConnectionItem({ user, isActive, onClick }) {
+const UserConnectionItem = ({ user }) => {
+  const userName = user.name || "Usuário";
+  const userInitial = userName[0].toUpperCase();
+
   return (
-    <div className="relative">
-      {/* Imagem da conexão */}
-      <img
-        src={user.picture}
-        alt={user.name}
-        className="w-12 h-12 rounded-full cursor-pointer hover:scale-105 transition sm:w-16 sm:h-16 lg:w-20 lg:h-20"
-        onClick={onClick}
-      />
-
-      {/* Exibição do card de detalhes */}
-      {isActive && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute top-14 left-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 z-50 w-60 sm:w-72 lg:w-80"
-        >
-          <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base sm:text-lg">
-            {user.name}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Conectado(a) com você
-          </p>
-          <button
-            className="mt-2 bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
-            onClick={() => onClick()}  // Fecha o card
-          >
-            Fechar
-          </button>
-        </motion.div>
-      )}
+    <div className="flex flex-col items-center p-4">
+      {/* Círculo com a inicial do nome */}
+      <div className="w-14 h-14 flex items-center justify-center bg-blue-500 dark:bg-blue-600 rounded-full text-white text-xl font-bold shadow-md">
+        {userInitial}
+      </div>
+      {/* Nome do usuário */}
+      <p className="mt-3 text-base font-medium text-gray-900 dark:text-gray-100">
+        {userName.split(" ").slice(0, 2).join(" ")}
+      </p>
     </div>
   );
-}
+};
 
 export default UserConnectionItem;

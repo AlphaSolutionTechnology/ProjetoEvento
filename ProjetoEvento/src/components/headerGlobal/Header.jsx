@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Menu, X, UserCircle } from "lucide-react";
 import NotificationButton from "../notification/NotificationButton";
-import ThemeToggle from "../ThemeToggle";
-import AccountMenu from "../AccountMenu";
+import ThemeToggle from "./ThemeToggle";
+import AccountMenu from "./AccountMenu";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -51,7 +51,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="p-4 flex justify-between items-center bg-white dark:bg-gray-800 shadow-ld rounded-lg relative z-50 bg-opacity-50 backdrop-blur-md dark:bg-opacity-60">
+    <header className="p-4 flex justify-between items-center bg-white dark:bg-gray-800 shadow-lg rounded-lg relative z-50 bg-opacity-50 backdrop-blur-md dark:bg-opacity-40">
       <h1
         onClick={handleNavigateHome}
         className="text-xl font-bold cursor-pointer text-gray-900 dark:text-white hover:text-blue-500 transition-colors"

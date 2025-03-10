@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import QuestionItem from "./QuestionItem";
 import AlertToast from "../alert/AlertToast";
 import { Loader2 } from "lucide-react";
@@ -6,7 +6,7 @@ import { usePdfText } from "../../hooks/usePdfText.js";
 import { useGenerateQuestions } from "../../hooks/useGenerateQuestions";
 import { submitQuestions } from "../../hooks/submitQuestions";
 
-function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
+function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage, onReceiveQuestion }) {
   const [showPrompt, setShowPrompt] = useState(false);
   const [questionCount, setQuestionCount] = useState("2");
   const [pdfFile, setPdfFile] = useState(null);
@@ -27,7 +27,9 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
     const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
       setPdfFile(file);
-      handleExtractText(file).catch((error) => showAlert(error.message, "error"));
+      handleExtractText(file).catch((error) =>
+        showAlert(error.message, "error")
+      );
     } else {
       showAlert("Por favor, selecione um arquivo PDF válido.", "error");
     }
@@ -39,6 +41,7 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
       const success = await submitQuestions(questions, idPalestra);
       if (success) {
         showAlert("Questões enviadas com sucesso!", "success");
+        // Reinicia com uma questão vazia, se desejado:
         setQuestions([
           { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
         ]);
@@ -50,17 +53,47 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
     }
   };
 
-  const addQuestion = () =>
+  const addQuestion = () => {
     setQuestions((prev) => [
       ...prev,
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
     ]);
+  };
 
   const clearForm = () => {
     setQuestions([
       { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
     ]);
     setMessage("");
+  };
+
+  const handleCreateWithAI = () => {
+    // Opcional: limpe o estado para evitar mesclar com o formulário vazio
+    setQuestions([]);
+    handleFetchChatCompletion(pdfText, questionCount, [], setQuestions)
+      .then((generatedQuestions) => {
+        if (
+          generatedQuestions &&
+          Array.isArray(generatedQuestions) &&
+          generatedQuestions.length > 0
+        ) {
+          // Garante que não haja questões vazias no array gerado
+          const nonEmptyQuestions = generatedQuestions.filter(
+            (q) => q.questionText.trim() !== ""
+          );
+          setQuestions(nonEmptyQuestions);
+          if (onReceiveQuestion) {
+            nonEmptyQuestions.forEach((q) => onReceiveQuestion(q));
+          }
+          showAlert("Questões geradas com sucesso!", "success");
+        } else {
+          showAlert("Nenhuma questão foi gerada pela IA.", "warning");
+        }
+        setShowPrompt(false);
+        setQuestionCount("2");
+        setPdfFile(null);
+      })
+      .catch((error) => showAlert(error.message, "error"));
   };
 
   return (
@@ -72,10 +105,14 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
         {...alert}
         onClose={() => setAlert({ open: false, message: "", type: "success" })}
       />
+
       {questions.map((question, index) => (
         <QuestionItem
           key={index}
-          {...{ question, index, questions, setQuestions }}
+          question={question}
+          index={index}
+          questions={questions}
+          setQuestions={setQuestions}
         />
       ))}
 
@@ -113,7 +150,9 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
       {showPrompt && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-sm">
-            <h2 className="text-lg text-black dark:text-white font-bold mb-4">Configurar Questões</h2>
+            <h2 className="text-lg text-black dark:text-white font-bold mb-4">
+              Configurar Questões
+            </h2>
             <input
               type="number"
               min="1"
@@ -136,14 +175,8 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage }) {
                 Cancelar
               </button>
               <button
-                onClick={() => handleFetchChatCompletion(pdfText, questionCount, questions, setQuestions)
-                  .then(() => {
-                    showAlert("Questões geradas com sucesso!", "success");
-                    setShowPrompt(false);
-                    setQuestionCount("2");
-                    setPdfFile(null);
-                  })
-                  .catch((error) => showAlert(error.message, "error"))}
+                type="button"
+                onClick={handleCreateWithAI}
                 className="bg-blue-500 px-4 py-2 text-white rounded-lg"
               >
                 Confirmar

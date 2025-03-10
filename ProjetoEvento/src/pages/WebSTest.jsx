@@ -17,7 +17,7 @@ const WebSTest = () => {
     }
   };
 
-  console.log("Mensagens no WebSTest:", messages); // Debug para garantir que está recebendo
+  //("Mensagens no WebSTest:", messages); // Debug para garantir que está recebendo
 
   return (
     <div style={{ padding: "20px" }}>

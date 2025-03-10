@@ -19,7 +19,7 @@ export const useProfile = () => {
   const handleWebSocketMessages = () => {
     if (messages.length > 0 && userData) {
       const lastMessage = messages[messages.length - 1];
-      console.log("Última mensagem:", lastMessage.message);
+      //("Última mensagem:", lastMessage.message);
     }
   };
 

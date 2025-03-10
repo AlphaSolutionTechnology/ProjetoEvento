@@ -10,13 +10,14 @@ export const AuthProvider = ({ children }) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const checkAuthentication = async () => {
-    
     try {
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/auth/validate`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/validate`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -33,8 +34,7 @@ export const AuthProvider = ({ children }) => {
   };
   const logout = async () => {
     try {
-      await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/auth/logout`, {
+      await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/auth/logout`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("user_data");
       localStorage.removeItem("palestraAtual");
       setUser(null);
-    } 
+    }
   };
 
   useEffect(() => {

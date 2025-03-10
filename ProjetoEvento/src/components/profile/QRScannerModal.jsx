@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import QRScanner from "../QRScanner";
 
-const QRScannerModal = ({
-  isScannerOpen,
-  setIsScannerOpen,
-  handleScan,
-  darkMode,
-}) => {
-  // Se isScannerOpen for false, não renderiza o modal
+const QRScannerModal = ({ isScannerOpen, setIsScannerOpen, handleScan, darkMode }) => {
+  useEffect(() => {
+    if (!isScannerOpen) {
+      // Para a câmera ao fechar
+      const videoElement = document.querySelector("video");
+      if (videoElement && videoElement.srcObject) {
+        const tracks = videoElement.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        videoElement.srcObject = null;
+      }
+    }
+  }, [isScannerOpen]);
+
   if (!isScannerOpen) return null;
 
   return (
@@ -41,7 +47,7 @@ const QRScannerModal = ({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <QRScanner onScan={handleScan} />
+          <QRScanner onScan={handleScan} isScannerOpen={isScannerOpen} />
         </motion.div>
 
         <motion.button
@@ -50,7 +56,7 @@ const QRScannerModal = ({
               ? "text-white border-purple-400 hover:bg-purple-400 hover:text-white"
               : "text-gray-800 border-blue-500 hover:bg-blue-500 hover:text-white"
           }`}
-          onClick={() => setIsScannerOpen(false)}
+          onClick={() => setIsScannerOpen(false)} // Atualizado para garantir fechamento
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}

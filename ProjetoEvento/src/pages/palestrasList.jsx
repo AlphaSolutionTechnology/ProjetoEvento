@@ -33,15 +33,18 @@ function PalestrasList() {
     const createPalestra = { ...formData };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/palestra/criar`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(createPalestra),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/palestra/criar`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(createPalestra),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -64,14 +67,17 @@ function PalestrasList() {
 
   const handlePalestrasList = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}
-/api/palestra/lista`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}
+/api/palestra/lista`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         const list = await response.json();
@@ -92,15 +98,14 @@ function PalestrasList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_NETWORK_API_LINK}
-/api/palestra/excluir`,
+          `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/excluir`,
           {
             method: "DELETE",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({id})
+            body: JSON.stringify({ id }),
           }
         );
 
@@ -137,7 +142,6 @@ function PalestrasList() {
 
   return (
     <div className="min-h-screen p-6 text-white dark:bg-[#0d1117]">
-
       {/* Título principal */}
       <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6 sm:text-3xl md:text-4xl lg:text-4xl">
         Gerencie suas Palestras
