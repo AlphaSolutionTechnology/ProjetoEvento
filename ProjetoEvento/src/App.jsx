@@ -21,6 +21,7 @@ import OrganizerDashboard from "./pages/OrganizerDashboard";
 import CreateEvent from "./pages/CreateEvent";
 import CreateLecture from "./pages/CreateLecture";
 
+import PalestrasListParticipante from "./pages/PalestrasListParticipante";
 
 function App() {
   const location = useLocation();
@@ -105,7 +106,14 @@ function App() {
               </ProtectedRouteLogin>
             }
           />
-
+          <Route
+            path="/lista-de-palestras"
+            element={
+              <ProtectedRouteLogin role="Participante">
+                <PalestrasListParticipante />
+              </ProtectedRouteLogin>
+            }
+          />
           <Route
             path="/palestra/:idPalestra"
             element={

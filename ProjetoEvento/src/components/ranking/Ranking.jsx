@@ -1,5 +1,3 @@
-// path: src/components/ranking/Ranking.jsx
-
 import React, { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import {
@@ -11,8 +9,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { WebSocketContext } from "../../context/WebSocketContext";
-import { useLocation, useNavigate } from "react-router-dom";
-import useQuizz from "../../hooks/useQuizz";
+import { useNavigate } from "react-router-dom";
 
 const Ranking = () => {
   const navigate = useNavigate();
@@ -29,13 +26,7 @@ const Ranking = () => {
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-
-      //("mensagem websocket recebida:", lastMessage);
-
       if (lastMessage?.type === "ranking_update") {
-        // console.log(
-        //   "Sinal de atualização do ranking recebido. Buscando novos dados..."
-        // );
         fetchUpdatedRanking();
       }
     }
@@ -45,8 +36,7 @@ const Ranking = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}
-/api/ranking/getupdatedranking`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/ranking/getupdatedranking`,
         {
           method: "GET",
           credentials: "include",
@@ -55,7 +45,7 @@ const Ranking = () => {
 
       if (!response.ok) {
         throw new Error(
-          `Erro na requisição: ${response.status} - ${response.statusText} `
+          `Erro na requisição: ${response.status} - ${response.statusText}`
         );
       }
 
@@ -68,7 +58,7 @@ const Ranking = () => {
     }
   };
 
-  // para medalhas de ouro, prata e bronze
+  // Função para medalhas de ouro, prata e bronze
   const getMedal = (position) => {
     const medals = {
       1: { color: "text-yellow-500", label: "Ouro" },
@@ -77,12 +67,20 @@ const Ranking = () => {
     };
 
     const medal = medals[position];
-
     if (medal) {
       return <Medal className={`${medal.color} w-6 h-6`} size={24} />;
     }
-
     return null;
+  };
+
+  // Função para lidar com o clique no botão "Voltar"
+  const handleBack = () => {
+    const idPalestra = localStorage.getItem("palestraAtual");
+    if (idPalestra) {
+      navigate(`/palestra/${idPalestra}`);
+    } else {
+      navigate("/home"); // Fallback para a página inicial se não houver palestraAtual
+    }
   };
 
   return (
@@ -160,7 +158,7 @@ const Ranking = () => {
       </div>
 
       <button
-        onClick={() => navigate(-1)}
+        onClick={handleBack}
         className="mt-8 bg-white rounded text-black p-2 hover:bg-gray-700 hover:text-white"
       >
         Voltar

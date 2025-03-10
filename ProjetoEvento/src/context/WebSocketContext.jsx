@@ -32,6 +32,12 @@ const initializeWebSocketConnection = (
       () => {
         setConnected(true);
 
+         // Assinatura do tópico onde a liberação do quiz será notificada
+         stompClient.subscribe("/topic/quizz-liberado", (message) => {
+          const parsedMessage = JSON.parse(message.body);
+          onMessage(parsedMessage);  // Enviar para o participante que o quiz foi liberado
+        });
+
         stompClient.subscribe("/topic/ranking", (message) => {
           const parsedMessage = JSON.parse(message.body);
 

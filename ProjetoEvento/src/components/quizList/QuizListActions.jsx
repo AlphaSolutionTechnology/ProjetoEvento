@@ -20,7 +20,7 @@ export default function QuizListActions({ quizCompleted, onViewRanking, onUnsubs
         aria-label="Desinscrever da palestra"
       >
         <XCircle size={18} aria-hidden="true" />
-        Desinscrever
+        Sair da palestra!
       </button>
     </section>
   );

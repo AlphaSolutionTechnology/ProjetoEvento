@@ -8,12 +8,15 @@ import QrCode from "react-qr-code";
 import QRCodeLink from "qrcode";
 import { motion, AnimatePresence } from "framer-motion"; // Importações do Framer Motion
 import { Download, X, ArrowLeft, ArrowRight, Eye, Plus } from "lucide-react"; // Ícones do Lucide
+import QuizControls from "../components/QuizControls";
 
 function AdmQuiz() {
   const [palestraId, setPalestraId] = useState(null);
   const [showQuestoes, setShowQuestoes] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [codigoPalestra, setCodigoPalestra] = useState("");
+  const [horaLiberacao, setHoraLiberacao] = useState("");
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({
     open: false,
     message: "",
@@ -77,6 +80,38 @@ function AdmQuiz() {
       }
     );
   };
+
+
+  const liberarQuizz = async (agora) => {
+    setLoading(true);
+    
+    try {
+      const formattedHoraLiberacao = new Date(horaLiberacao).toISOString().slice(0, 19).replace("T", " ");
+      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/liberar`, {
+        method: "POST",
+        credentials:"include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ palestraId, horaProgramada: formattedHoraLiberacao}),
+      });
+      const data = await response.json();
+      if (data.success) {
+        showToast( agora ? "Quiz liberado agora!":  "Quiz será liberado na hora programada!", "success");
+      } else {
+        showToast("Erro ao liberar quiz. 1", "error");
+      }
+    } catch (error) {
+      showToast("Erro ao liberar quiz agora.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //libera imediatamente
+  const liberarQuizAgora = () => liberarQuizz(true);
+  //libera no horário programado
+  const liberarQuizProgramado = () => liberarQuizz(false);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
@@ -205,6 +240,15 @@ function AdmQuiz() {
             </motion.div>
           </motion.div>
         )}
+        <div className="mt-12">
+          <QuizControls
+            liberarQuizAgora={liberarQuizAgora}
+            liberarQuizProgramado={liberarQuizProgramado}
+            loading={loading}
+            horaLiberacao={horaLiberacao}
+            setHoraLiberacao={setHoraLiberacao}
+          />
+        </div>
       </AnimatePresence>
 
       {/* AlertToast */}

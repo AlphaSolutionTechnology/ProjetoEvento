@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import QuestionCard from "./QuestionCard";
 import ResultCard from "./ResultCard";
 import QuizHeader from "./QuizHeader";
@@ -8,115 +8,150 @@ import QuizFooter from "./QuizFooter";
 
 const Quiz = () => {
   const { idPalestra } = useParams();
+  const navigate = useNavigate();
+
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answerIdx, setAnswerIdx] = useState(null);
   const [answer, setAnswer] = useState(null);
-  const [quizStartTime, setQuizStartTime] = useState(null);
-  const [quizEndTime, setQuizEndTime] = useState(null);
-  const [answers, setAnswers] = useState([]);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState(0);
+  const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [finalResult, setFinalResult] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // Função para buscar as perguntas
+  const fetchQuestions = async () => {
+    try {
+      if (questions.length > 0) return; // Evita requisições duplicadas
+
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${idPalestra}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (!response.ok) throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
+
+      const data = await response.json();
+      setQuestions(data);
+    } catch (error) {
+      console.error("Erro ao buscar perguntas:", error.message);
+      navigate(`/quizzes/${idPalestra}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Carrega as perguntas ao montar o componente
   useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${idPalestra}`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        if (!response.ok)
-          throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
-        const data = await response.json();
-        setQuestions(data);
-        setQuizStartTime(Date.now());
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
     fetchQuestions();
   }, [idPalestra]);
+
+  const validateAnswer = async (selectedAnswer) => {
+    try {
+      const questionId = questions[currentQuestion].id;
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/validate`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ questionId, selectedAnswer }),
+        }
+      );
+      if (!response.ok) throw new Error("Erro ao validar resposta");
+      const data = await response.json();
+      return data.isCorrect;
+    } catch (error) {
+      console.error("Erro ao validar resposta:", error);
+      return false;
+    }
+  };
+
+  const finalizarQuiz = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/finishquiz/${idPalestra}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            palestraId: idPalestra,
+            score: score,
+            correctAnswerCount: correctAnswers,
+            wrongAnswerCount: wrongAnswers,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error(`Erro ao finalizar quiz: ${response.statusText}`);
+      const data = await response.json();
+      setFinalResult({
+        correctAnswers: data.correctAnswers,
+        wrongAnswers: data.wrongAnswers,
+        totalTime: data.totalTime.toFixed(2),
+        score: data.score,
+      });
+    } catch (error) {
+      console.error("Erro ao finalizar quiz:", error);
+    }
+  };
 
   const onAnswerClick = (selectedAnswer, index) => {
     setAnswerIdx(index);
     setAnswer(selectedAnswer);
   };
 
-  const onClickNext = () => {
-    const questionId = questions[currentQuestion].id;
-    const timeSpent = ((Date.now() - quizStartTime) / 1000).toFixed(2);
-    const newAnswer = {
-      questionId,
-      selectedAnswer: answer,
-      timeSpent: parseFloat(timeSpent),
-    };
-    const updatedAnswers = [...answers, newAnswer];
+  const onClickNext = async () => {
+    if (answer === null) return;
+
+    const isCorrect = await validateAnswer(answer);
+    if (isCorrect) {
+      setCorrectAnswers((prev) => prev + 1);
+      setScore((prev) => prev + 100);
+    } else {
+      setWrongAnswers((prev) => prev + 1);
+    }
+
     const isLastQuestion = currentQuestion === questions.length - 1;
     if (isLastQuestion) {
-      setAnswers(updatedAnswers);
-      setQuizEndTime(Date.now());
+      await finalizarQuiz();
       setShowResult(true);
-      sendAllAnswers(updatedAnswers);
     } else {
-      setAnswers(updatedAnswers);
       setAnswerIdx(null);
       setAnswer(null);
       setCurrentQuestion((prev) => prev + 1);
     }
   };
 
-  const sendAllAnswers = async (answersArray) => {
-    try {
-      const endTime = Date.now();
-      const totalTimeSeconds = ((endTime - quizStartTime) / 1000).toFixed(2);
-      const payload = {
-        idPalestra,
-        totalTime: parseFloat(totalTimeSeconds),
-        answers: answersArray,
-        final: true,
-      };
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_NETWORK_API_LINK
-        }/api/questoes/validateAndRecord`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-      if (!response.ok) throw new Error("Erro ao enviar todas as respostas");
-      const data = await response.json();
-      setFinalResult(data);
-    } catch (error) {
-      console.error("Erro ao enviar todas as respostas:", error);
-    }
-  };
-
   const handleTimeUp = () => {
-    setQuizEndTime(Date.now());
     setShowResult(true);
-    sendAllAnswers(answers);
+    finalizarQuiz();
   };
 
-  const getTotalTimeTaken = () => {
-    if (!quizStartTime || !quizEndTime) return "Calculando...";
-    const totalMs = quizEndTime - quizStartTime;
-    const totalSec = Math.floor(totalMs / 1000);
-    const minutes = Math.floor(totalSec / 60);
-    const seconds = totalSec % 60;
-    return `${minutes} minuto(s) e ${seconds} segundo(s)`;
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Carregando quiz...
+      </div>
+    );
+  }
 
   if (questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
         Nenhuma questão encontrada.
+        <br />
+        <button
+          onClick={() => navigate(`/quizzes/${idPalestra}`)}
+          className="mt-4 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Voltar
+        </button>
       </div>
     );
   }
@@ -155,11 +190,9 @@ const Quiz = () => {
           <ResultCard
             correctAnswers={finalResult ? finalResult.correctAnswers : 0}
             wrongAnswers={finalResult ? finalResult.wrongAnswers : 0}
-            totalTime={
-              finalResult ? finalResult.totalTime : getTotalTimeTaken()
-            }
+            totalTime={`${finalResult ? finalResult.totalTime : 0} segundos`}
             score={finalResult ? finalResult.score : 0}
-            onExit={() => (window.location.href = `/ranking`)}
+            onExit={() => navigate(`/ranking`)}
           />
         )}
       </motion.div>
