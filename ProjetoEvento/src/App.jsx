@@ -15,6 +15,7 @@ import Header from "./components/headerGlobal/Header";
 import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
 import ProtectedRouteQuizz from "./components/ProtectedRouteQuizz";
 import LandingPage from "./pages/LandingPage";
+import PalestrasListParticipante from "./pages/PalestrasListParticipante";
 
 function App() {
   const location = useLocation();
@@ -97,7 +98,14 @@ function App() {
               </ProtectedRouteLogin>
             }
           />
-
+          <Route
+            path="/lista-de-palestras"
+            element={
+              <ProtectedRouteLogin role="Participante">
+                <PalestrasListParticipante />
+              </ProtectedRouteLogin>
+            }
+          />
           <Route
             path="/palestra/:idPalestra"
             element={

@@ -12,10 +12,10 @@ export default function QuizListConfirmationModal({ isOpen, onClose, onConfirm }
     >
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center max-w-md w-full border border-gray-200 dark:border-gray-700">
         <h2 id="confirmation-modal-title" className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
-          Desinscrever da Palestra
+          Sair da palestra
         </h2>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
-          Você tem certeza de que deseja desinscrever da palestra?
+          Você tem certeza de que deseja sair da palestra?
         </p>
         <div className="flex gap-4 justify-center">
           <button

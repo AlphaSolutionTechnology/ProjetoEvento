@@ -25,13 +25,11 @@ const ResultCard = ({ correctAnswers, wrongAnswers, totalTime, score, onExit }) 
           <dt className="text-xl">Tempo:</dt>
           <dd className="text-xl font-bold">{totalTime}</dd>
         </div>
-        {score !== undefined && (
-          <div className="flex items-center gap-3">
-            <Trophy className="w-8 h-8 text-yellow-500" />
-            <dt className="text-xl">Pontuação:</dt>
-            <dd className="text-xl font-bold">{score}</dd>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          <Trophy className="w-8 h-8 text-yellow-500" />
+          <dt className="text-xl">Pontuação:</dt>
+          <dd className="text-xl font-bold">{score}</dd>
+        </div>
       </dl>
 
       <button

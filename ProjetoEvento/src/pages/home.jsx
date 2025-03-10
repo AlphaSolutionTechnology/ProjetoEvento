@@ -57,17 +57,10 @@ const Home = () => {
           <HomeCard
             darkMode={darkMode}
             icon={<Puzzle className="h-12 w-12 text-blue-500 mb-4" />}
-            title="Complete desafios!"
+            title="Palestras"
             description="Participe de quizzes, ganhe pontos e desbloqueie conquistas incríveis."
-            buttonText="Iniciar Quiz"
-            onClick={() => {
-              const palestraSalva = localStorage.getItem("palestraAtual");
-              if (palestraSalva) {
-                navigate(`/palestra/${palestraSalva}`);
-              } else {
-                setIsModalOpen(true);
-              }
-            }}
+            buttonText="Ver Palestras!"
+            onClick={() => {navigate("/lista-de-palestras")}}
           />
         )}
 
