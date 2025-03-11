@@ -5,9 +5,9 @@ const RouteWrapper = ({ component: Component }) => {
   const { idPalestra } = useParams();
 
   return (
-    <ProtectedRouteInscricao idPalestra={idPalestra}>
+    // <ProtectedRouteInscricao idPalestra={idPalestra}>
       <Component />
-    </ProtectedRouteInscricao>
+    /* </ProtectedRouteInscricao> */
   );
 };
 

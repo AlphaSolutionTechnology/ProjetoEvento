@@ -4,6 +4,7 @@ import AlertToast from "../components/alert/AlertToast";
 import QuizListCard from "../components/quizList/QuizListCard";
 import QuizListActions from "../components/quizList/QuizListActions";
 import QuizListConfirmationModal from "../components/quizList/QuizListConfirmationModal";
+import useQuizReleaseStatus from "../hooks/useQuizReleased";
 
 export default function QuizzesPage() {
   const navigate = useNavigate();
@@ -12,13 +13,15 @@ export default function QuizzesPage() {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [score, setScore] = useState(0);
+  const quizReleased = useQuizReleaseStatus();
   const { idPalestra } = useParams();
 
   // Função para verificar o status do quiz
   const verificarStatusQuizz = async () => {
     try {
+      console.log("ID enviado:" , idPalestra)
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/verificarStatus/${idPalestra}`,
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/verificarStatus/${idPalestra}`,
         {
           method: "GET",
           credentials: "include",
@@ -54,7 +57,7 @@ export default function QuizzesPage() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/desinscrever/${idPalestra}`,
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/desinscrever/${idPalestra}`,
         { method: "DELETE", credentials: "include" }
       );
 
@@ -98,7 +101,7 @@ export default function QuizzesPage() {
 
       // Inicia o quiz se o resultado não existir (404)
       const iniciarResponse = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/startquiz/${idPalestra}`,
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/startquiz/${idPalestra}`,
         {
           method: "POST",
           credentials: "include",
@@ -141,7 +144,9 @@ export default function QuizzesPage() {
         score={score}
         badges={1}
         onAction={handleParticiparQuizz}
-        actionLabel={quizCompleted ? "Concluído" : "Participar"}
+        quizReleased={quizReleased}
+        quizCompleted={quizCompleted}
+        
       />
 
       {/* Usando o QuizListAction */}
