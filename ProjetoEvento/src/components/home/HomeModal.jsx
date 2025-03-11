@@ -10,7 +10,7 @@ const HomeModal = ({
 }) => {
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Digite o código da palestra</h2>
+      <h2 className="text-xl font-bold mb-4 dark:text-white">Digite o código do evento</h2>
       <form onSubmit={onSubmit}>
         <label htmlFor="codigoPalestra" className="sr-only">
           Código da palestra

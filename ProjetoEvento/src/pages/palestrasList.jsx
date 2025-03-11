@@ -1,3 +1,5 @@
+// Path: ProjetoEvento/src/pages/palestrasList.jsx
+
 import { useEffect, useState } from "react";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
@@ -156,7 +158,7 @@ function PalestrasList() {
           onClick={() => setIsVisible(!isVisible)} // Alterna a visibilidade do formulário
           style={{ pointerEvents: "auto" }} // Garante que o botão receba eventos de clique corretamente
         >
-          <Plus size={20} /> Criar Palestra
+          <Plus size={20} /> Criar Quiz
         </motion.button>
       </div>
 

@@ -15,6 +15,12 @@ import Header from "./components/headerGlobal/Header";
 import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
 import ProtectedRouteQuizz from "./components/ProtectedRouteQuizz";
 import LandingPage from "./pages/LandingPage";
+import EventsPage from "./pages/eventsPage";
+import EventLectures from "./pages/EventLectures";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+import CreateEvent from "./pages/CreateEvent";
+import CreateLecture from "./pages/CreateLecture";
+
 import PalestrasListParticipante from "./pages/PalestrasListParticipante";
 
 function App() {
@@ -45,7 +51,9 @@ function App() {
         ></motion.div>
 
         {/* Renderiza o Header em todas as páginas, menos na tela de Login e landingPage */}
-        {(location.pathname !== "/login" && location.pathname !== "/land") && <Header />}
+        {location.pathname !== "/login" && location.pathname !== "/land" && (
+          <Header />
+        )}
 
         <Routes>
           <Route path="/" element={<Navigate to="/land" />} />
@@ -65,9 +73,9 @@ function App() {
             path="/quizz/:idPalestra"
             element={
               <ProtectedRouteLogin>
-                  <ProtectedRouteQuizz>
+                <ProtectedRouteQuizz>
                   <RouteWrapper component={Questoes} />
-                  </ProtectedRouteQuizz>
+                </ProtectedRouteQuizz>
               </ProtectedRouteLogin>
             }
           />
@@ -132,13 +140,26 @@ function App() {
               </ProtectedRouteLogin>
             }
           />
-          <Route 
-            path="/land"
-            element={<LandingPage/>}>
-            
-          </Route>
-        </Routes>
 
+          <Route path="/land" element={<LandingPage />} />
+
+          <Route path="/eventos" element={<EventsPage />} />
+
+          <Route path="/eventosPalestras" element={<EventLectures />} />
+
+          <Route 
+            path="/organizer" 
+            element={
+              <ProtectedRouteLogin role="Administrador">
+                <OrganizerDashboard/>
+              </ProtectedRouteLogin>
+            }
+            />
+
+          <Route path="/create-event" element={<CreateEvent />} />
+
+          <Route path="/create-lecture" element={<CreateLecture />} />
+        </Routes>
       </main>
     </WebSocketProvider>
   );

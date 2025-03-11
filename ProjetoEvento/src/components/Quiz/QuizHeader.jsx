@@ -11,10 +11,15 @@ const PROGRESS_COLORS = {
 
 const ANIMATION_DURATION = 0.5;
 
-const QuizHeader = ({ currentQuestion, totalQuestions, onTimeUp, idPalestra }) => {
+const QuizHeader = ({
+  currentQuestion,
+  totalQuestions,
+  onTimeUp,
+  idPalestra,
+}) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  
+
   // Tempo total (em segundos) definido pelo back-end
   const [duration, setDuration] = useState(null);
   // Contador em segundos
@@ -112,7 +117,9 @@ const QuizHeader = ({ currentQuestion, totalQuestions, onTimeUp, idPalestra }) =
         {/* Contagem de perguntas, timer e barra de progresso */}
         <section className="flex flex-col sm:flex-row items-center justify-between w-full mt-2">
           <div className="flex items-center gap-2 text-2xl font-bold text-white">
-            <span className="bg-white/10 p-3 rounded-lg shadow-sm">{currentQuestion + 1}</span>
+            <span className="bg-white/10 p-3 rounded-lg shadow-sm">
+              {currentQuestion + 1}
+            </span>
             <span className="text-teal-200">/{totalQuestions}</span>
           </div>
 
@@ -171,8 +178,12 @@ const QuizHeader = ({ currentQuestion, totalQuestions, onTimeUp, idPalestra }) =
               transition={{ type: "spring", stiffness: 200 }}
             >
               <LogOut className="w-10 h-10 mx-auto text-red-500" />
-              <h2 className="text-xl font-semibold mt-4">Deseja desistir do quiz?</h2>
-              <p className="text-gray-400 mt-2">Você perderá seu progresso atual.</p>
+              <h2 className="text-xl font-semibold mt-4">
+                Deseja desistir do quiz?
+              </h2>
+              <p className="text-gray-400 mt-2">
+                Você perderá seu progresso atual.
+              </p>
               <div className="mt-6 flex justify-center gap-4">
                 <button
                   onClick={() => setShowModal(false)}

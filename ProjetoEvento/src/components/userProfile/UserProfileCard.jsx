@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Camera } from "lucide-react";
 import ChangeProfilePictureModal from "./ChangeProfilePictureModal";
 import UserBio from "./UserBio";
@@ -7,7 +7,6 @@ import ConnectionsSection from "./ConnectionsSection";
 
 function UserProfileCard({
   userName = "Usuário",
-  avatar = "/avatars/default.png",
   initialBio = "Esta pessoa ainda não adicionou uma biografia.",
   badges = [],
 }) {
@@ -17,8 +16,24 @@ function UserProfileCard({
 
   // Estados para controlar o modal de alteração de foto e a bio
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(avatar);
+  const [selectedImage, setSelectedImage] = useState(userAvatar || generateDefaultAvatar(userName));
   const [bio, setBio] = useState(initialBio);
+
+  // Efeito para garantir que o avatar padrão seja salvo no localStorage
+  useEffect(() => {
+    if (!userAvatar) {
+      const defaultAvatar = generateDefaultAvatar(userName);
+      const updatedUserData = { ...userData, avatar: defaultAvatar };
+      localStorage.setItem("user_data", JSON.stringify(updatedUserData));
+      setSelectedImage(defaultAvatar);
+    }
+  }, [userName, userAvatar, userData]);
+
+  // Função para gerar um avatar padrão com base no nome do usuário
+  function generateDefaultAvatar(name) {
+    const seed = name || "user"; // Usa o nome do usuário como semente
+    return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+  }
 
   // Função para atualizar a bio
   const handleBioUpdate = (newBio) => {
@@ -26,13 +41,20 @@ function UserProfileCard({
     // Aqui pode adicionar uma chamada à API para salvar a biografia no banco de dados
   };
 
+  // Função para salvar o avatar no localStorage
+const handleAvatarChange = (newAvatar) => {
+  setSelectedImage(newAvatar); // Atualiza o estado local
+  const updatedUserData = { ...userData, avatar: newAvatar }; // Atualiza os dados do usuário
+  localStorage.setItem("user_data", JSON.stringify(updatedUserData)); // Salva no localStorage
+};
+
   return (
     <div className="bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-700 dark:to-purple-800 rounded-3xl p-8 text-white dark:text-gray-100 shadow-2xl max-w-lg mx-auto relative">
       {/* Avatar do Usuário */}
       <section className="relative w-24 h-24 mx-auto mb-6 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
-        {userAvatar ? (
+        {selectedImage ? (
           <img
-            src={userAvatar}
+            src={selectedImage}
             alt="Avatar"
             className="rounded-full w-full h-full object-cover"
           />
@@ -69,8 +91,8 @@ function UserProfileCard({
         <ChangeProfilePictureModal
           currentPicture={selectedImage}
           onChangePicture={(newPicture) => {
-            setSelectedImage(newPicture);
-            setIsModalOpen(false);
+            handleAvatarChange(newPicture); // Salva o novo avatar
+            setIsModalOpen(false); // Fecha o modal
           }}
           onClose={() => setIsModalOpen(false)}
         />
