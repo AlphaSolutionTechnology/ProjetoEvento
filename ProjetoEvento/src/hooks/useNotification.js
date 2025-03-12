@@ -47,7 +47,7 @@ function useNotifications() {
   useEffect(() => {
     fetch(
       `${
-        import.meta.env.VITE_LOCAL_API_LINK
+        import.meta.env.VITE_NETWORK_API_LINK
       }/api/connection/retrieveconnectionrequest`,
       {
         method: "GET",

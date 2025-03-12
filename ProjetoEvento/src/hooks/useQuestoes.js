@@ -11,7 +11,7 @@ export const useQuestoes = (palestraId) => {
     setLoadingQuestoes(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/questoes/${palestraId}`, 
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${palestraId}`, 
         {method:"GET",
         credentials:"include"
       });
@@ -34,7 +34,7 @@ export const useQuestoes = (palestraId) => {
   const deleteQuestao = async (idQuestao) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/questoes/delete/${idQuestao}`,
         {
           method: "DELETE",

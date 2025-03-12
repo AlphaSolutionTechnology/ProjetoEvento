@@ -36,7 +36,7 @@ const Ranking = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/ranking/getupdatedranking`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/ranking/getupdatedranking`,
         {
           method: "GET",
           credentials: "include",
