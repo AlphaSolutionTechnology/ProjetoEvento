@@ -1,6 +1,11 @@
 import { Play, Star, Award, Lock } from "lucide-react";
 
-export default function QuizListCard({ score, onAction, quizReleased, quizCompleted }) {
+export default function QuizListCard({ score, onAction, quizzReleased, quizCompleted }) {
+
+  console.log('quizzReleased do componente:', quizzReleased); // Log para verificar o valor de quizzReleased
+  console.log('quizz completed do componente:', quizCompleted);
+
+
   return (
     <section
       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center max-w-md w-full border border-gray-200 dark:border-gray-700"
@@ -31,9 +36,9 @@ export default function QuizListCard({ score, onAction, quizReleased, quizComple
       {/* Botão "Participar" */}
       <button
         onClick={onAction}
-        disabled={!quizReleased || quizCompleted} // Desabilita se não estiver liberado ou já concluído
+        disabled={!quizzReleased || quizCompleted} // Desabilita se não estiver liberado ou já concluído
         className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg transition-all focus:outline-none 
-          ${quizReleased 
+          ${quizzReleased 
             ? quizCompleted 
               ? "bg-gray-400 cursor-not-allowed" 
               : "bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
@@ -41,7 +46,7 @@ export default function QuizListCard({ score, onAction, quizReleased, quizComple
         `}
         aria-label="Participar do quizz"
       >
-        {quizReleased ? (
+        {quizzReleased ? (
           quizCompleted ? (
             "Concluído"
           ) : (

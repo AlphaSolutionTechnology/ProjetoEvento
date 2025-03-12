@@ -86,7 +86,14 @@ function AdmQuiz() {
     setLoading(true);
     
     try {
-      const formattedHoraLiberacao = agora ? null : new Date(horaLiberacao).toISOString().slice(0, 19).replace("T", " ");
+      let formattedHoraLiberacao = null;
+    
+    if (!agora) {
+      const data = new Date(horaLiberacao);
+      data.setHours(data.getHours() - data.getTimezoneOffset() / 60); // ajusta corretamente o time zone
+      formattedHoraLiberacao = data.toISOString().slice(0, 19).replace("T", " ");
+    }
+
       const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/liberar`, {
         method: "POST",
         credentials:"include",

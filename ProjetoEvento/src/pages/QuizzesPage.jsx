@@ -4,7 +4,7 @@ import AlertToast from "../components/alert/AlertToast";
 import QuizListCard from "../components/quizList/QuizListCard";
 import QuizListActions from "../components/quizList/QuizListActions";
 import QuizListConfirmationModal from "../components/quizList/QuizListConfirmationModal";
-import useQuizReleaseStatus from "../hooks/useQuizReleased";
+
 
 export default function QuizzesPage() {
   const navigate = useNavigate();
@@ -13,8 +13,56 @@ export default function QuizzesPage() {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [score, setScore] = useState(0);
-  const quizReleased = useQuizReleaseStatus();
+  const [quizzReleased, setQuizzReleased] = useState(false);
   const { idPalestra } = useParams();
+
+
+  const verificarQuizzLiberado = async() => {
+    try{
+
+      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/isReleased/${idPalestra}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {"Content-Type":"application/json"},
+        }
+      );
+      if (!response.ok) {
+        console.error(`Erro: ${response.status} - ${response.statusText}`);
+        return false;
+        
+      }
+  
+      const data = await response.json();
+      const {message, horaLiberacao} = data;
+
+      const horaLiberacaoDate = new Date(horaLiberacao).getTime();
+      const currentTime = Date.now();
+
+      console.log("curerntTime: ", currentTime,"horaLiberacao: ", horaLiberacao);
+  
+      if (message === "Quizz está liberado!") {
+        return true;
+      } else if (message === "Quizz ainda não foi liberado.") {
+        if (currentTime >= horaLiberacaoDate)
+        return true;
+      } else {
+        return false;
+      }
+
+
+    } catch (error){
+      console.error("Erro ao verificar status do quiz:", error.message);
+      setToastMessage({
+        text: "Erro ao verificar se quizz está liberado.",
+        type: "error"
+      });
+    }
+
+
+
+  }
+
 
   // Função para verificar o status do quiz
   const verificarStatusQuizz = async () => {
@@ -129,10 +177,34 @@ export default function QuizzesPage() {
   useEffect(() => {
     const checkQuizStatus = async () => {
       const podeIniciar = await verificarStatusQuizz();
-      setQuizCompleted(!podeIniciar); // Se não pode iniciar, o quiz está concluído
+      setQuizCompleted(!podeIniciar); // Se não pode iniciar, o quiz está 
+      console.log("quizz completed da pagina:", quizCompleted)
     };
+  
     checkQuizStatus();
+
+
   }, [idPalestra]);
+
+  useEffect(() => {
+    const checkQuizzRelease = async () => {
+      const releaseStatus = await verificarQuizzLiberado();
+      setQuizzReleased(releaseStatus); // Atualiza o estado com o status de liberação do quiz
+      console.log("quizz released da página:", releaseStatus);
+    };
+  
+    // Inicia a verificação do status do quiz
+    if (!quizzReleased) {
+      // Inicia a verificação do status do quiz
+      checkQuizzRelease();
+    
+      // Configura o intervalo para verificar o status a cada 5 segundos
+      const intervalId = setInterval(checkQuizzRelease, 1000); // A cada 1 segundos
+    
+      // Cleanup: Limpar o intervalo quando o componente for desmontado ou quando o quiz for liberado
+      return () => clearInterval(intervalId);
+    }
+  }, [idPalestra, quizzReleased]);
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
@@ -144,7 +216,7 @@ export default function QuizzesPage() {
         score={score}
         badges={1}
         onAction={handleParticiparQuizz}
-        quizReleased={quizReleased}
+        quizzReleased={quizzReleased}
         quizCompleted={quizCompleted}
         
       />
