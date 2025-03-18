@@ -113,9 +113,13 @@ function PalestrasListParticipante() {
           palestras.map((palestra) => (
             <motion.div
               key={palestra.id}
-              whileHover={{ scale: loadingPalestraId === palestra.id ? 1 : 1.02 }} // Desativa hover durante loading
+              whileHover={{
+                scale: loadingPalestraId === palestra.id ? 1 : 1.02,
+              }} // Desativa hover durante loading
               className={`flex justify-between items-center dark:bg-gray-900 dark:text-white p-6 rounded-xl shadow-md relative ${
-                loadingPalestraId === palestra.id ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                loadingPalestraId === palestra.id
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer"
               } text-sm sm:text-base md:text-lg lg:text-base xl:text-lg max-w-xl w-full mx-auto`}
               onClick={() => goToPalestra(palestra)} // Chama a função ao clicar
               initial={{ x: 0 }}

@@ -11,10 +11,10 @@ export const useQuestoes = (palestraId) => {
     setLoadingQuestoes(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${palestraId}`, 
-        {method:"GET",
-        credentials:"include"
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/${palestraId}`,
+        { method: "GET", credentials: "include" }
+      );
 
       if (response.ok) {
         const data = await response.json();

@@ -18,7 +18,9 @@ export default function QuizzesPage() {
   const verificarStatusQuizz = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/verificarStatus/${idPalestra}`,
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/questoes/verificarStatus/${idPalestra}`,
         {
           method: "GET",
           credentials: "include",
@@ -54,7 +56,9 @@ export default function QuizzesPage() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/desinscrever/${idPalestra}`,
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/palestra/desinscrever/${idPalestra}`,
         { method: "DELETE", credentials: "include" }
       );
 
@@ -98,14 +102,17 @@ export default function QuizzesPage() {
 
       // Inicia o quiz se o resultado não existir (404)
       const iniciarResponse = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/startquiz/${idPalestra}`,
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/questoes/startquiz/${idPalestra}`,
         {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
         }
       );
-      if (!iniciarResponse.ok) throw new Error(`Erro ao iniciar quiz: ${iniciarResponse.statusText}`);
+      if (!iniciarResponse.ok)
+        throw new Error(`Erro ao iniciar quiz: ${iniciarResponse.statusText}`);
 
       // Após iniciar o quiz com sucesso, atualiza o estado e navega
       setQuizCompleted(false);

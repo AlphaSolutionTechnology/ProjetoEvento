@@ -34,7 +34,8 @@ const Quiz = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      if (!response.ok) throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
+      if (!response.ok)
+        throw new Error(`Erro ao buscar perguntas: ${response.statusText}`);
 
       const data = await response.json();
       setQuestions(data);
@@ -75,7 +76,9 @@ const Quiz = () => {
   const finalizarQuiz = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/finishquiz/${idPalestra}`,
+        `${
+          import.meta.env.VITE_NETWORK_API_LINK
+        }/api/questoes/finishquiz/${idPalestra}`,
         {
           method: "POST",
           credentials: "include",
@@ -88,7 +91,8 @@ const Quiz = () => {
           }),
         }
       );
-      if (!response.ok) throw new Error(`Erro ao finalizar quiz: ${response.statusText}`);
+      if (!response.ok)
+        throw new Error(`Erro ao finalizar quiz: ${response.statusText}`);
       const data = await response.json();
       setFinalResult({
         correctAnswers: data.correctAnswers,

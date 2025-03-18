@@ -81,23 +81,36 @@ function AdmQuiz() {
     );
   };
 
-
   const liberarQuizz = async (agora) => {
     setLoading(true);
-    
+
     try {
-      const formattedHoraLiberacao = new Date(horaLiberacao).toISOString().slice(0, 19).replace("T", " ");
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/liberar`, {
-        method: "POST",
-        credentials:"include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ palestraId, horaProgramada: formattedHoraLiberacao}),
-      });
+      const formattedHoraLiberacao = new Date(horaLiberacao)
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " ");
+      const response = await fetch(
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/liberar`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            palestraId,
+            horaProgramada: formattedHoraLiberacao,
+          }),
+        }
+      );
       const data = await response.json();
       if (data.success) {
-        showToast( agora ? "Quiz liberado agora!":  "Quiz será liberado na hora programada!", "success");
+        showToast(
+          agora
+            ? "Quiz liberado agora!"
+            : "Quiz será liberado na hora programada!",
+          "success"
+        );
       } else {
         showToast("Erro ao liberar quiz. 1", "error");
       }

@@ -18,11 +18,17 @@ const LoginPage = () => {
     loading,
     toastMessage,
     setToastMessage,
+    setFormData,
   } = useAuthForm();
 
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-900 overflow-hidden">
-      <AuthHeader />
+      <AuthHeader 
+        isLogin={isLogin} 
+        setIsLogin={setIsLogin}
+        setToastMessage={setToastMessage}
+        setFormData={setFormData}
+      />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
