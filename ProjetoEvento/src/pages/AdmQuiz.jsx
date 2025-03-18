@@ -85,32 +85,24 @@ function AdmQuiz() {
     setLoading(true);
 
     try {
-      const formattedHoraLiberacao = new Date(horaLiberacao)
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", " ");
-      const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/liberar`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            palestraId,
-            horaProgramada: formattedHoraLiberacao,
-          }),
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        showToast(
-          agora
-            ? "Quiz liberado agora!"
-            : "Quiz será liberado na hora programada!",
-          "success"
-        );
+      let formattedHoraLiberacao = null;
+    
+    if (!agora) {
+      const data = new Date(horaLiberacao);
+      data.setHours(data.getHours() - data.getTimezoneOffset() / 60); // ajusta corretamente o time zone
+      formattedHoraLiberacao = data.toISOString().slice(0, 19).replace("T", " ");
+    }
+
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/liberar`, {
+        method: "POST",
+        credentials:"include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ palestraId, horaProgramada: formattedHoraLiberacao}),
+      });
+      if (response.ok) {
+        showToast( agora ? "Quiz liberado agora!":  "Quiz será liberado na hora programada!", "success");
       } else {
         showToast("Erro ao liberar quiz. 1", "error");
       }
