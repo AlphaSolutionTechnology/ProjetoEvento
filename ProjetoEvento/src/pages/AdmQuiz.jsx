@@ -16,6 +16,8 @@ function AdmQuiz() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [codigoPalestra, setCodigoPalestra] = useState("");
   const [horaLiberacao, setHoraLiberacao] = useState("");
+  const [quizzLiberado, setQuizzLiberado] = useState(false);
+  const [quizzAgendado, setQuizzAgendado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({
     open: false,
@@ -36,6 +38,7 @@ function AdmQuiz() {
     const codigo = location.state?.codigoPalestra;
     setCodigoPalestra(codigo || "");
     if (codigo) handleDownloadQRCode(codigo);
+
   }, [location]);
 
   const showToast = (message, type) => {
@@ -102,7 +105,15 @@ function AdmQuiz() {
         body: JSON.stringify({ palestraId, horaProgramada: formattedHoraLiberacao}),
       });
       if (response.ok) {
-        showToast( agora ? "Quiz liberado agora!":  "Quiz será liberado na hora programada!", "success");
+        if(agora){
+          setQuizzLiberado(true);
+          showToast("Quiz liberado agora!","success")
+        }  else {
+          setQuizzAgendado(true);
+          setToast("Quizz será liberado na hora programada.","success")
+        }
+          
+
       } else {
         showToast("Erro ao liberar quiz. 1", "error");
       }
@@ -117,6 +128,53 @@ function AdmQuiz() {
   const liberarQuizAgora = () => liberarQuizz(true);
   //libera no horário programado
   const liberarQuizProgramado = () => liberarQuizz(false);
+
+  const handleStateQuizz = async() => {
+    try {
+
+      if(palestraId == null){
+        return
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/isReleased/${palestraId}`, {
+        method:"GET",
+        credentials:"include",
+        headers: {"Content-Type":"application/json"},
+      })
+
+      if (!response.ok) {
+        console.error(`Erro: ${response.status} - ${response.statusText}`);
+        setQuizzAgendado(false);
+        setQuizzLiberado(false);
+        setToast({ open: true, message: "Erro ao atualizar quizz.", type: "error" });
+
+      } 
+
+      const data = await response.json();
+      const {message, horaLiberacao} = data;
+  
+      if (message === "Quizz está liberado!") {
+        setQuizzLiberado(true);
+      } else if (message === "Quizz ainda não foi liberado.") {
+        setQuizzAgendado(true);
+      } else {
+        setToast("Ocorreu um erro.")
+      }
+      
+
+    } catch (error) {
+      console.error("Erro ao verificar quiz:", error.message);
+      setToastMessage({
+        text: "Erro ao verificar se quizz está liberado.",
+        type: "error"
+      });
+    }
+  }
+
+  useEffect(() => {
+    handleStateQuizz();
+  }, [palestraId]);
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
@@ -247,11 +305,14 @@ function AdmQuiz() {
         )}
         <div className="mt-12">
           <QuizControls
+            key={`${quizzLiberado}-${quizzAgendado}`}
             liberarQuizAgora={liberarQuizAgora}
             liberarQuizProgramado={liberarQuizProgramado}
-            loading={loading}
+            loading={loading} 
             horaLiberacao={horaLiberacao}
             setHoraLiberacao={setHoraLiberacao}
+            quizzLiberado={quizzLiberado}
+            quizzAgendado={quizzAgendado}
           />
         </div>
       </AnimatePresence>
