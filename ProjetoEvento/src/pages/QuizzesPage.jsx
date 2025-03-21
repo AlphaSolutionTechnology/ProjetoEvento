@@ -20,7 +20,7 @@ export default function QuizzesPage() {
   const verificarQuizzLiberado = async() => {
     try{
 
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/isReleased/${idPalestra}`,
+      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/isReleased/${idPalestra}`,
         {
           method: "GET",
           credentials: "include",
@@ -70,7 +70,7 @@ export default function QuizzesPage() {
       console.log("ID enviado:" , idPalestra)
       const response = await fetch(
         `${
-          import.meta.env.VITE_NETWORK_API_LINK
+          import.meta.env.VITE_LOCAL_API_LINK
         }/api/questoes/verificarStatus/${idPalestra}`,
         {
           method: "GET",
@@ -108,7 +108,7 @@ export default function QuizzesPage() {
     try {
       const response = await fetch(
         `${
-          import.meta.env.VITE_NETWORK_API_LINK
+          import.meta.env.VITE_LOCAL_API_LINK
         }/api/palestra/desinscrever/${idPalestra}`,
         { method: "DELETE", credentials: "include" }
       );
@@ -154,7 +154,7 @@ export default function QuizzesPage() {
       // Inicia o quiz se o resultado não existir (404)
       const iniciarResponse = await fetch(
         `${
-          import.meta.env.VITE_NETWORK_API_LINK
+          import.meta.env.VITE_LOCAL_API_LINK
         }/api/questoes/startquiz/${idPalestra}`,
         {
           method: "POST",
