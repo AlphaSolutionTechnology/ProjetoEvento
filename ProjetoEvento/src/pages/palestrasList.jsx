@@ -36,7 +36,7 @@ function PalestrasList() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/palestra/criar`,
         {
           method: "POST",
@@ -70,7 +70,7 @@ function PalestrasList() {
   const handlePalestrasList = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}
+        `${import.meta.env.VITE_NETWORK_API_LINK}
 /api/palestra/lista`,
         {
           method: "GET",
@@ -100,7 +100,7 @@ function PalestrasList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/excluir`,
+          `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/excluir`,
           {
             method: "DELETE",
             credentials: "include",

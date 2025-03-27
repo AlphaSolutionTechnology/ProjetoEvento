@@ -16,7 +16,7 @@ function PalestrasListParticipante() {
   const handlePalestrasList = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/lecturelist`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/lecturelist`,
         {
           method: "GET",
           credentials: "include",
@@ -43,7 +43,7 @@ function PalestrasListParticipante() {
     try {
       const response = await fetch(
         `${
-          import.meta.env.VITE_LOCAL_API_LINK
+          import.meta.env.VITE_NETWORK_API_LINK
         }/api/palestra/inscrever/${codigoPalestra}`,
         {
           method: "PATCH",
