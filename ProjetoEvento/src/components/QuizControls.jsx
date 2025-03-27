@@ -39,7 +39,9 @@ const QuizControls = ({
       {/* Botão para liberar quiz agora */}
       <button
         className="w-full p-3 bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 disabled:bg-gray-400 flex items-center justify-center gap-2"
-        onClick={liberarQuizAgora}
+        onClick={async () => {
+          setHoraLiberacao(new Date().toISOString());
+          await liberarQuizAgora();}}
         disabled={loading || quizzAgendado}
       >
         {loading ? "Liberando..." : "Liberar o Quiz Agora"}
@@ -51,7 +53,7 @@ const QuizControls = ({
           className="w-full py-3 bg-purple-500 text-white font-semibold rounded-md shadow-md hover:bg-purple-600 flex items-center justify-center gap-2"
           onClick={() => setMostrarAgendamento(true)}
         >
-          <CalendarPlus className="w-5 h-5" /> Programar Quiz
+          <CalendarPlus className="w-5 h-5" />{ quizzAgendado ? "Editar programação" : "Programar Quiz"  }
         </button>
       )}
 

@@ -89,12 +89,12 @@ function AdmQuiz() {
 
     try {
       let formattedHoraLiberacao = null;
-    
-    if (!agora) {
+      
+   
       const data = new Date(horaLiberacao);
       data.setHours(data.getHours() - data.getTimezoneOffset() / 60); // ajusta corretamente o time zone
       formattedHoraLiberacao = data.toISOString().slice(0, 19).replace("T", " ");
-    }
+    
 
       const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/liberar`, {
         method: "POST",
@@ -124,10 +124,6 @@ function AdmQuiz() {
     }
   };
 
-  //libera imediatamente
-  const liberarQuizAgora = () => liberarQuizz(true);
-  //libera no horário programado
-  const liberarQuizProgramado = () => liberarQuizz(false);
 
   const handleStateQuizz = async() => {
     try {
@@ -174,6 +170,9 @@ function AdmQuiz() {
   useEffect(() => {
     handleStateQuizz();
   }, [palestraId]);
+
+  const liberarQuizAgora = () =>  liberarQuizz(true);
+  const liberarQuizProgramado = () => liberarQuizz(false);
   
 
   return (

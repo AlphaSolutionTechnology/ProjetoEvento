@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AlertToast from "../components/alert/AlertToast";
 import QuizListCard from "../components/quizList/QuizListCard";
 import QuizListActions from "../components/quizList/QuizListActions";
 import QuizListConfirmationModal from "../components/quizList/QuizListConfirmationModal";
+import { WebSocketContext } from "../context/WebSocketContext";
 
 
 export default function QuizzesPage() {
@@ -14,8 +15,22 @@ export default function QuizzesPage() {
   const [progress, setProgress] = useState(0);
   const [score, setScore] = useState(0);
   const [quizzReleased, setQuizzReleased] = useState(false);
+  const [horaLiberacao, setHoraLiberacao] = useState("");
   const { idPalestra } = useParams();
+  const { messages } = useContext(WebSocketContext);
 
+  useEffect(() => {
+    messages.forEach((message) => {
+      if (message.type === "quiz_liberado" && Number(message.idPalestra) === Number(idPalestra)) { //idPalestra vindo de useParams() vem como string
+        setQuizzReleased((prev) => {
+          if (!prev) {
+            setToastMessage({ text: "O quiz foi liberado!", type: "success" });
+          }
+          return true;
+        });
+      }
+    });
+  }, [messages, idPalestra]);
 
   const verificarQuizzLiberado = async() => {
     try{
@@ -36,6 +51,8 @@ export default function QuizzesPage() {
       const data = await response.json();
       const {message, horaLiberacao} = data;
 
+      
+
       const horaLiberacaoDate = new Date(horaLiberacao).getTime();
       const currentTime = Date.now();
 
@@ -44,6 +61,7 @@ export default function QuizzesPage() {
       if (message === "Quizz está liberado!") {
         return true;
       } else if (message === "Quizz ainda não foi liberado.") {
+        setHoraLiberacao(horaLiberacao);
         if (currentTime >= horaLiberacaoDate)
         return true;
       } else {
@@ -180,6 +198,7 @@ export default function QuizzesPage() {
     }
   };
 
+
   // Verifica o status ao carregar a página para atualizar o estado inicial
   useEffect(() => {
     const checkQuizStatus = async () => {
@@ -202,21 +221,33 @@ export default function QuizzesPage() {
   
     // Inicia a verificação do status do quiz
     if (!quizzReleased) {
-      // Inicia a verificação do status do quiz
-      checkQuizzRelease();
-    
-      // Configura o intervalo para verificar o status a cada 5 segundos
-      const intervalId = setInterval(checkQuizzRelease, 1000); // A cada 1 segundos
-    
-      // Cleanup: Limpar o intervalo quando o componente for desmontado ou quando o quiz for liberado
-      return () => clearInterval(intervalId);
+      const horaLiberacaoTime = new Date(horaLiberacao).getTime();
+      const currentTime = Date.now();
+      const timeUntilRelease = horaLiberacaoTime - currentTime; // Tempo até a liberação em ms
+  
+      console.log("Tempo até a liberação do quiz (ms):", timeUntilRelease);
+  
+      if (timeUntilRelease > 0) {
+        // Agenda a requisição exatamente no horário de liberação
+        const timeoutId = setTimeout(checkQuizzRelease, timeUntilRelease);
+        
+        // Cleanup para evitar múltiplas execuções desnecessárias
+        return () => clearTimeout(timeoutId);
+      } else {
+        // Se o horário já passou, verifica imediatamente
+        checkQuizzRelease();
+      }
     }
-  }, [idPalestra, quizzReleased]);
+
+    checkQuizzRelease();
+
+  }, [idPalestra, quizzReleased, horaLiberacao]);
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
       {/* Usando o QuizListCard */}
       <QuizListCard
+        key={quizzReleased}
         title="Quizz"
         description="Teste seus conhecimentos e veja como você se sai!"
         progress={progress}
