@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { CheckCircle, Clock, CalendarPlus, X } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useEffect } from "react";
 
 const QuizControls = ({
   liberarQuizAgora,
@@ -13,6 +14,19 @@ const QuizControls = ({
   quizzAgendado
 }) => {
   const [mostrarAgendamento, setMostrarAgendamento] = useState(false);
+
+  const horaAgora = () => {
+    const agora = new Date().toISOString();
+    setHoraLiberacao(agora);
+  }
+
+  useEffect(() => {
+    if (horaLiberacao && new Date(horaLiberacao).getTime() <= Date.now()) {
+      liberarQuizAgora();
+    }
+  }, [horaLiberacao]);
+  
+  
 
   if (quizzLiberado) {
     return (
@@ -40,8 +54,8 @@ const QuizControls = ({
       <button
         className="w-full p-3 bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 disabled:bg-gray-400 flex items-center justify-center gap-2"
         onClick={async () => {
-          setHoraLiberacao(new Date().toISOString());
-          await liberarQuizAgora();}}
+          horaAgora();
+        }}
         disabled={loading || quizzAgendado}
       >
         {loading ? "Liberando..." : "Liberar o Quiz Agora"}

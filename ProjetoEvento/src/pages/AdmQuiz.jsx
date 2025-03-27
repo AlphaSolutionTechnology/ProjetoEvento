@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext} from "react";
 import { useLocation } from "react-router-dom";
 import { useQuestoes } from "../hooks/useQuestoes";
 import AlertToast from "../components/alert/AlertToast";
@@ -9,6 +9,7 @@ import QRCodeLink from "qrcode";
 import { motion, AnimatePresence } from "framer-motion"; // Importações do Framer Motion
 import { Download, X, ArrowLeft, ArrowRight, Eye, Plus } from "lucide-react"; // Ícones do Lucide
 import QuizControls from "../components/QuizControls";
+import { WebSocketContext } from "../context/WebSocketContext";
 
 function AdmQuiz() {
   const [palestraId, setPalestraId] = useState(null);
@@ -30,6 +31,8 @@ function AdmQuiz() {
   const location = useLocation();
   const { questoes, loadingQuestoes, searchQuestoes, deleteQuestao } =
     useQuestoes(palestraId);
+
+  const { messages } = useContext(WebSocketContext);
 
   useEffect(() => {
     const id = location.state?.idPalestra;
@@ -173,7 +176,17 @@ function AdmQuiz() {
 
   const liberarQuizAgora = () =>  liberarQuizz(true);
   const liberarQuizProgramado = () => liberarQuizz(false);
-  
+
+  useEffect(() => {
+    messages.forEach((message) => {
+
+      if (message.type === "quizz_agendado" && Number(message.idPalestra) === Number(palestraId)) {
+       setQuizzLiberado(true);
+      }
+
+    });
+
+  }, [messages, palestraId])  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">

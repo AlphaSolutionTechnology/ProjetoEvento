@@ -15,12 +15,12 @@ export default function QuizzesPage() {
   const [progress, setProgress] = useState(0);
   const [score, setScore] = useState(0);
   const [quizzReleased, setQuizzReleased] = useState(false);
-  const [horaLiberacao, setHoraLiberacao] = useState("");
   const { idPalestra } = useParams();
   const { messages } = useContext(WebSocketContext);
 
   useEffect(() => {
     messages.forEach((message) => {
+
       if (message.type === "quiz_liberado" && Number(message.idPalestra) === Number(idPalestra)) { //idPalestra vindo de useParams() vem como string
         setQuizzReleased((prev) => {
           if (!prev) {
@@ -29,6 +29,13 @@ export default function QuizzesPage() {
           return true;
         });
       }
+
+      if(message.type === "quizz_agendado" && Number(message.idPalestra) === Number(idPalestra)){
+        setQuizzReleased(true);
+      }
+
+
+
     });
   }, [messages, idPalestra]);
 
@@ -49,20 +56,10 @@ export default function QuizzesPage() {
       }
   
       const data = await response.json();
-      const {message, horaLiberacao} = data;
+      const { message } = data;
 
-      
-
-      const horaLiberacaoDate = new Date(horaLiberacao).getTime();
-      const currentTime = Date.now();
-
-      console.log("curerntTime: ", currentTime,"horaLiberacao: ", horaLiberacao);
   
       if (message === "Quizz está liberado!") {
-        return true;
-      } else if (message === "Quizz ainda não foi liberado.") {
-        setHoraLiberacao(horaLiberacao);
-        if (currentTime >= horaLiberacaoDate)
         return true;
       } else {
         return false;
@@ -85,7 +82,7 @@ export default function QuizzesPage() {
   // Função para verificar o status do quiz
   const verificarStatusQuizz = async () => {
     try {
-      console.log("ID enviado:" , idPalestra)
+  
       const response = await fetch(
         `${
           import.meta.env.VITE_LOCAL_API_LINK
@@ -204,7 +201,6 @@ export default function QuizzesPage() {
     const checkQuizStatus = async () => {
       const podeIniciar = await verificarStatusQuizz();
       setQuizCompleted(!podeIniciar); // Se não pode iniciar, o quiz está 
-      console.log("quizz completed da pagina:", quizCompleted)
     };
   
     checkQuizStatus();
@@ -216,32 +212,13 @@ export default function QuizzesPage() {
     const checkQuizzRelease = async () => {
       const releaseStatus = await verificarQuizzLiberado();
       setQuizzReleased(releaseStatus); // Atualiza o estado com o status de liberação do quiz
-      console.log("quizz released da página:", releaseStatus);
     };
   
-    // Inicia a verificação do status do quiz
-    if (!quizzReleased) {
-      const horaLiberacaoTime = new Date(horaLiberacao).getTime();
-      const currentTime = Date.now();
-      const timeUntilRelease = horaLiberacaoTime - currentTime; // Tempo até a liberação em ms
-  
-      console.log("Tempo até a liberação do quiz (ms):", timeUntilRelease);
-  
-      if (timeUntilRelease > 0) {
-        // Agenda a requisição exatamente no horário de liberação
-        const timeoutId = setTimeout(checkQuizzRelease, timeUntilRelease);
-        
-        // Cleanup para evitar múltiplas execuções desnecessárias
-        return () => clearTimeout(timeoutId);
-      } else {
-        // Se o horário já passou, verifica imediatamente
-        checkQuizzRelease();
-      }
-    }
+   
 
     checkQuizzRelease();
 
-  }, [idPalestra, quizzReleased, horaLiberacao]);
+  }, [idPalestra, quizzReleased]);
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">

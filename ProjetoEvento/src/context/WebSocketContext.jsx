@@ -38,6 +38,11 @@ const initializeWebSocketConnection = (
           onMessage(parsedMessage);
         });
 
+        stompClient.subscribe("/topic/quizz-agendado", (message) => {
+          const parsedMessage = JSON.parse(message.body);
+          onMessage(parsedMessage);
+        });
+
         stompClient.subscribe("/topic/ranking", (message) => {
           const parsedMessage = JSON.parse(message.body);
 
