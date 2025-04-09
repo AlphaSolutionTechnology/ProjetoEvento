@@ -22,7 +22,7 @@ const initializeWebSocketConnection = (
 ) => {
   if (!stompClient || !stompClient.connected) {
     const socket = new SockJS(
-      `${import.meta.env.VITE_LOCAL_API_LINK}/websocket`
+      `${import.meta.env.VITE_NETWORK_API_LINK}/websocket`
     );
 
     stompClient = Stomp.over(socket);
@@ -32,10 +32,15 @@ const initializeWebSocketConnection = (
       () => {
         setConnected(true);
 
-         // Assinatura do tópico onde a liberação do quiz será notificada
-         stompClient.subscribe("/topic/quizz-liberado", (message) => {
+        // Assinatura do tópico onde a liberação do quiz será notificada
+        stompClient.subscribe("/topic/quizz-liberado", (message) => {
           const parsedMessage = JSON.parse(message.body);
-          onMessage(parsedMessage);  // Enviar para o participante que o quiz foi liberado
+          onMessage(parsedMessage);
+        });
+
+        stompClient.subscribe("/topic/quizz-agendado", (message) => {
+          const parsedMessage = JSON.parse(message.body);
+          onMessage(parsedMessage);
         });
 
         stompClient.subscribe("/topic/ranking", (message) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext} from "react";
 import { useLocation } from "react-router-dom";
 import { useQuestoes } from "../hooks/useQuestoes";
 import AlertToast from "../components/alert/AlertToast";
@@ -9,6 +9,7 @@ import QRCodeLink from "qrcode";
 import { motion, AnimatePresence } from "framer-motion"; // Importações do Framer Motion
 import { Download, X, ArrowLeft, ArrowRight, Eye, Plus } from "lucide-react"; // Ícones do Lucide
 import QuizControls from "../components/QuizControls";
+import { WebSocketContext } from "../context/WebSocketContext";
 
 function AdmQuiz() {
   const [palestraId, setPalestraId] = useState(null);
@@ -16,6 +17,8 @@ function AdmQuiz() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [codigoPalestra, setCodigoPalestra] = useState("");
   const [horaLiberacao, setHoraLiberacao] = useState("");
+  const [quizzLiberado, setQuizzLiberado] = useState(false);
+  const [quizzAgendado, setQuizzAgendado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({
     open: false,
@@ -29,6 +32,8 @@ function AdmQuiz() {
   const { questoes, loadingQuestoes, searchQuestoes, deleteQuestao } =
     useQuestoes(palestraId);
 
+  const { messages } = useContext(WebSocketContext);
+
   useEffect(() => {
     const id = location.state?.idPalestra;
     setPalestraId(id || "");
@@ -36,6 +41,7 @@ function AdmQuiz() {
     const codigo = location.state?.codigoPalestra;
     setCodigoPalestra(codigo || "");
     if (codigo) handleDownloadQRCode(codigo);
+
   }, [location]);
 
   const showToast = (message, type) => {
@@ -81,13 +87,19 @@ function AdmQuiz() {
     );
   };
 
-
   const liberarQuizz = async (agora) => {
     setLoading(true);
-    
+
     try {
-      const formattedHoraLiberacao = new Date(horaLiberacao).toISOString().slice(0, 19).replace("T", " ");
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/liberar`, {
+      let formattedHoraLiberacao = null;
+      
+   
+      const data = new Date(horaLiberacao);
+      data.setHours(data.getHours() - data.getTimezoneOffset() / 60); // ajusta corretamente o time zone
+      formattedHoraLiberacao = data.toISOString().slice(0, 19).replace("T", " ");
+    
+
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/liberar`, {
         method: "POST",
         credentials:"include",
         headers: {
@@ -95,9 +107,16 @@ function AdmQuiz() {
         },
         body: JSON.stringify({ palestraId, horaProgramada: formattedHoraLiberacao}),
       });
-      const data = await response.json();
-      if (data.success) {
-        showToast( agora ? "Quiz liberado agora!":  "Quiz será liberado na hora programada!", "success");
+      if (response.ok) {
+        if(agora){
+          setQuizzLiberado(true);
+          showToast("Quiz liberado agora!","success")
+        }  else {
+          setQuizzAgendado(true);
+          setToast("Quizz será liberado na hora programada.","success")
+        }
+          
+
       } else {
         showToast("Erro ao liberar quiz. 1", "error");
       }
@@ -108,10 +127,66 @@ function AdmQuiz() {
     }
   };
 
-  //libera imediatamente
-  const liberarQuizAgora = () => liberarQuizz(true);
-  //libera no horário programado
+
+  const handleStateQuizz = async() => {
+    try {
+
+      if(palestraId == null){
+        return
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/isReleased/${palestraId}`, {
+        method:"GET",
+        credentials:"include",
+        headers: {"Content-Type":"application/json"},
+      })
+
+      if (!response.ok) {
+        console.error(`Erro: ${response.status} - ${response.statusText}`);
+        setQuizzAgendado(false);
+        setQuizzLiberado(false);
+        setToast({ open: true, message: "Erro ao atualizar quizz.", type: "error" });
+
+      } 
+
+      const data = await response.json();
+      const {message, horaLiberacao} = data;
+  
+      if (message === "Quizz está liberado!") {
+        setQuizzLiberado(true);
+      } else if (message === "Quizz ainda não foi liberado.") {
+        setQuizzAgendado(true);
+      } else {
+        setToast("Ocorreu um erro.")
+      }
+      
+
+    } catch (error) {
+      console.error("Erro ao verificar quiz:", error.message);
+      setToastMessage({
+        text: "Erro ao verificar se quizz está liberado.",
+        type: "error"
+      });
+    }
+  }
+
+  useEffect(() => {
+    handleStateQuizz();
+  }, [palestraId]);
+
+  const liberarQuizAgora = () =>  liberarQuizz(true);
   const liberarQuizProgramado = () => liberarQuizz(false);
+
+  useEffect(() => {
+    messages.forEach((message) => {
+
+      if (message.type === "quizz_agendado" && Number(message.idPalestra) === Number(palestraId)) {
+       setQuizzLiberado(true);
+      }
+
+    });
+
+  }, [messages, palestraId])  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
@@ -242,11 +317,14 @@ function AdmQuiz() {
         )}
         <div className="mt-12">
           <QuizControls
+            key={`${quizzLiberado}-${quizzAgendado}`}
             liberarQuizAgora={liberarQuizAgora}
             liberarQuizProgramado={liberarQuizProgramado}
-            loading={loading}
+            loading={loading} 
             horaLiberacao={horaLiberacao}
             setHoraLiberacao={setHoraLiberacao}
+            quizzLiberado={quizzLiberado}
+            quizzAgendado={quizzAgendado}
           />
         </div>
       </AnimatePresence>

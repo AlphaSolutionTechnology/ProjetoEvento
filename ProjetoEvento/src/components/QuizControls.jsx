@@ -1,36 +1,107 @@
-import React from "react";
+import React, { useState } from "react";
+import { CheckCircle, Clock, CalendarPlus, X } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useEffect } from "react";
 
-const QuizControls = ({ liberarQuizAgora, liberarQuizProgramado, loading, horaLiberacao, setHoraLiberacao }) => {
+const QuizControls = ({
+  liberarQuizAgora,
+  liberarQuizProgramado,
+  loading,
+  horaLiberacao,
+  setHoraLiberacao,
+  quizzLiberado,
+  quizzAgendado
+}) => {
+  const [mostrarAgendamento, setMostrarAgendamento] = useState(false);
+
+  const horaAgora = () => {
+    const agora = new Date().toISOString();
+    setHoraLiberacao(agora);
+  }
+
+  useEffect(() => {
+    if (horaLiberacao && new Date(horaLiberacao).getTime() <= Date.now()) {
+      liberarQuizAgora();
+    }
+  }, [horaLiberacao]);
+  
+  
+
+  if (quizzLiberado) {
+    return (
+      <div className="p-6 bg-green-100 border border-green-500 rounded-lg text-center">
+        <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
+        <h2 className="text-2xl font-semibold text-green-700">Quiz Liberado!</h2>
+        <p className="text-green-600">O quiz já foi liberado e não pode mais ser alterado.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Botão para liberar o quiz agora */}
+      {quizzAgendado && (
+        <div className="p-4 bg-blue-100 border border-blue-500 rounded-lg text-center">
+          <Clock className="w-10 h-10 text-blue-500 mx-auto mb-2" />
+          <p className="text-lg font-medium text-blue-700">
+            O quiz será liberado em: <strong>{horaLiberacao ? format(parseISO(horaLiberacao), "dd/MM/yyyy HH:mm", { locale: ptBR }) : "Não definido"}</strong>
+          </p>
+          <p className="text-blue-600">Você pode ajustar a hora de liberação se necessário.</p>
+        </div>
+      )}
+
+      {/* Botão para liberar quiz agora */}
       <button
-        className="w-full py-3 bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 disabled:bg-gray-400"
-        onClick={liberarQuizAgora}
-        disabled={loading}
+        className="w-full p-3 bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 disabled:bg-gray-400 flex items-center justify-center gap-2"
+        onClick={async () => {
+          horaAgora();
+        }}
+        disabled={loading || quizzAgendado}
       >
         {loading ? "Liberando..." : "Liberar o Quiz Agora"}
       </button>
 
-      {/* Opção para programar a liberação */}
-      <div className="space-y-4">
-        <label className="block text-lg text-gray-600">
-          Hora de liberação:
-          <input
-            type="datetime-local"
-            value={horaLiberacao}
-            onChange={(e) => setHoraLiberacao(e.target.value)}
-            className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </label>
+      {/* Botão para exibir o agendamento */}
+      {!mostrarAgendamento && (
         <button
-          className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 disabled:bg-gray-400"
-          onClick={liberarQuizProgramado}
-          disabled={loading || !horaLiberacao}
+          className="w-full py-3 bg-purple-500 text-white font-semibold rounded-md shadow-md hover:bg-purple-600 flex items-center justify-center gap-2"
+          onClick={() => setMostrarAgendamento(true)}
         >
-          {loading ? "Programando..." : "Programar Liberação"}
+          <CalendarPlus className="w-5 h-5" />{ quizzAgendado ? "Editar programação" : "Programar Quiz"  }
         </button>
-      </div>
+      )}
+
+      {/* Input e botão para programar quiz */}
+      {mostrarAgendamento && (
+        <div className="space-y-4 p-4 bg-gray-100 border border-gray-300 rounded-md">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-700">Definir horário de liberação</h3>
+            <button
+              onClick={() => setMostrarAgendamento(false)}
+              className="text-gray-600 hover:text-red-500"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <label className="block text-lg text-gray-600">
+            Hora de liberação:
+            <input
+              type="datetime-local"
+              value={horaLiberacao}
+              onChange={(e) => setHoraLiberacao(e.target.value)}
+              disabled={quizzLiberado}
+              className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-200"
+            />
+          </label>
+          <button
+            className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 disabled:bg-gray-400"
+            onClick={liberarQuizProgramado}
+            disabled={loading || !horaLiberacao || quizzLiberado}
+          >
+            {loading ? "Programando..." : "Confirmar Agendamento"}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

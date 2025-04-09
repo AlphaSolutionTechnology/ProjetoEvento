@@ -1,6 +1,11 @@
-import { Play, Star, Award } from "lucide-react";
+import { Play, Star, Award, Lock } from "lucide-react";
 
-export default function QuizListCard({ score, onAction }) {
+export default function QuizListCard({ score, onAction, quizzReleased, quizCompleted }) {
+
+  console.log('quizzReleased do componente:', quizzReleased); // Log para verificar o valor de quizzReleased
+  console.log('quizz completed do componente:', quizCompleted);
+
+
   return (
     <section
       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center max-w-md w-full border border-gray-200 dark:border-gray-700"
@@ -28,14 +33,34 @@ export default function QuizListCard({ score, onAction }) {
         </div>
       </section>
 
-      {/* Botão "Participar */}
+      {/* Botão "Participar" */}
       <button
         onClick={onAction}
-        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-500 text-white py-3 rounded-lg hover:from-purple-700 hover:to-purple-600 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        disabled={!quizzReleased || quizCompleted} // Desabilita se não estiver liberado ou já concluído
+        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg transition-all focus:outline-none 
+          ${quizzReleased 
+            ? quizCompleted 
+              ? "bg-gray-400 cursor-not-allowed" 
+              : "bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            : "bg-gray-300 cursor-not-allowed"} // Cor e estado quando o quiz não foi liberado
+        `}
         aria-label="Participar do quizz"
       >
-        <Play size={18} aria-hidden="true" />
-        Participar
+        {quizzReleased ? (
+          quizCompleted ? (
+            "Concluído"
+          ) : (
+            <>
+              <Play size={18} aria-hidden="true" />
+              Participar
+            </>
+          )
+        ) : (
+          <>
+            <Lock size={18} aria-hidden="true" />
+            Não disponível
+          </>
+        )}
       </button>
     </section>
   );

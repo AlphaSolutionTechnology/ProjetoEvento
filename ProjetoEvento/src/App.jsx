@@ -156,9 +156,24 @@ function App() {
             }
             />
 
-          <Route path="/create-event" element={<CreateEvent />} />
+          <Route 
+            path="/create-event" 
+            element={
+              <ProtectedRouteLogin role="Administrador">
+                <CreateEvent/>
+              </ProtectedRouteLogin>
+            } 
+          />
 
-          <Route path="/create-lecture" element={<CreateLecture />} />
+          <Route 
+            path="/create-lecture" 
+            element={
+              <ProtectedRouteLogin role="Administrador">
+                <CreateLecture/>
+              </ProtectedRouteLogin>
+            } 
+          />
+          
         </Routes>
       </main>
     </WebSocketProvider>
