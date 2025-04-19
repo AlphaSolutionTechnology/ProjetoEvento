@@ -9,7 +9,7 @@ const useEvents = () => {
     const fetchEvents = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_NETWORK_API_LINK}/api/event/getallevents`,
+          `${import.meta.env.VITE_LOCAL_API_LINK}/api/event/getallevents`,
           {
             method: "GET",
             credentials: "include",
@@ -39,7 +39,9 @@ const useEvents = () => {
   const fetchParticipants = async (eventId) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/event/getallparticipants/${eventId}`,
+        `${
+          import.meta.env.VITE_LOCAL_API_LINK
+        }/api/event/getallparticipants/${eventId}`,
         {
           method: "GET",
           credentials: "include",
