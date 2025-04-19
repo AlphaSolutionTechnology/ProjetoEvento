@@ -63,7 +63,33 @@ const useEvents = () => {
     }
   };
 
-  return { events, loading, error, fetchParticipants };
+  const createEvent = async (eventData) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/event/createevent`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(eventData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao criar evento: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data; // Retorna os dados do evento criado
+    } catch (err) {
+      console.error("Erro ao criar evento:", err);
+      throw err;
+    }
+  };
+
+  return { events, loading, error, fetchParticipants, createEvent };
 };
 
 export default useEvents;
