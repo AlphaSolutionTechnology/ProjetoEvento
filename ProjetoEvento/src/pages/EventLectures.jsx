@@ -7,7 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 const fetchEventData = async (endpoint) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_NETWORK_API_LINK}${endpoint}`,
+      `${import.meta.env.VITE_LOCAL_API_LINK}${endpoint}`,
       {
         method: 'GET',
         credentials: 'include',

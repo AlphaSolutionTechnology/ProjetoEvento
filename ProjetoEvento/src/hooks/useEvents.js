@@ -9,7 +9,7 @@ const useEvents = () => {
     const fetchEvents = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_NETWORK_API_LINK}/api/event/event-list`,
+          `${import.meta.env.VITE_LOCAL_API_LINK}/api/event/event-list`,
           {
             method: "GET",
             credentials: "include",
@@ -38,7 +38,7 @@ const useEvents = () => {
   const fetchParticipants = useCallback(async (eventId) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/event/participants/${eventId}`,
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/event/participants/${eventId}`,
         {
           method: "GET",
           credentials: "include",
@@ -63,7 +63,7 @@ const useEvents = () => {
   const participateInEvent = useCallback(async (eventId, userId) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/event/subscribe`,
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/event/subscribe`,
         {
           method: "PATCH",
           credentials: "include",
