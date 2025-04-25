@@ -70,7 +70,7 @@ function App() {
           />
 
           <Route
-            path="/quizz/:idPalestra"
+            path="/quiz/:idPalestra"
             element={
               <ProtectedRouteLogin>
                 <ProtectedRouteQuizz>

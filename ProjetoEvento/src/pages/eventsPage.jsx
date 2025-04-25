@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Tabs from "../components/events/Tabs";
-import EventCard from "../components/events/eventCard"; // Corrigido o nome do arquivo para consistência
+import EventCard from "../components/events/eventCard";
 import useEvents from "../hooks/useEvents";
 
 const EventsPage = () => {
-  const { events = [], participateInEvent } = useEvents(); // Garante que `events` nunca seja undefined
+  const { events = [], participateInEvent } = useEvents();
   const [activeTab, setActiveTab] = useState("geral");
   const [loading, setLoading] = useState(true);
 
-  // Garante que events sempre tenha um valor padrão e previne erro caso não tenha participantes
   const safeEvents = events.map((event) => ({
     ...event,
-    participants: event.participants || [], // Garante que participants não seja undefined
+    participants: event.participants || [],
   }));
 
   const filteredEvents =
@@ -30,7 +29,6 @@ const EventsPage = () => {
       <div className="container mx-auto px-4 sm:px-6 md:px-8 py-6">
         <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {/* Exibe Skeleton Loader enquanto carrega */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             {[...Array(6)].map((_, index) => (
@@ -50,9 +48,10 @@ const EventsPage = () => {
             {filteredEvents.length > 0 ? (
               filteredEvents.map((event) => (
                 <EventCard
-                  key={event.id}
+                  key={event.idEvento}
                   event={event}
                   onParticipate={participateInEvent}
+                  onTabChange={setActiveTab}
                 />
               ))
             ) : (

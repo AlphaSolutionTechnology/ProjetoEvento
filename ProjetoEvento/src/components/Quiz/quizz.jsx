@@ -41,7 +41,7 @@ const Quiz = () => {
       setQuestions(data);
     } catch (error) {
       console.error("Erro ao buscar perguntas:", error.message);
-      navigate(`/quizzes/${idPalestra}`);
+      navigate(`/eventosPalestras/${idPalestra}`);
     } finally {
       setLoading(false);
     }
@@ -149,7 +149,7 @@ const Quiz = () => {
         Nenhuma questão encontrada.
         <br />
         <button
-          onClick={() => navigate(`/quizzes/${idPalestra}`)}
+          onClick={() => navigate(`/eventosPalestras`)}
           className="mt-4 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Voltar

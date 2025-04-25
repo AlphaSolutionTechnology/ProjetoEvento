@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const useEvents = () => {
   const [events, setEvents] = useState([]);
@@ -9,7 +9,7 @@ const useEvents = () => {
     const fetchEvents = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_LOCAL_API_LINK}/api/event/getallevents`,
+          `${import.meta.env.VITE_NETWORK_API_LINK}/api/event/event-list`,
           {
             method: "GET",
             credentials: "include",
@@ -24,7 +24,7 @@ const useEvents = () => {
         }
 
         const data = await response.json();
-        setEvents(data); // Define os eventos com os dados da API
+        setEvents(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -35,13 +35,10 @@ const useEvents = () => {
     fetchEvents();
   }, []);
 
-  // Função para buscar participantes de um evento específico
-  const fetchParticipants = async (eventId) => {
+  const fetchParticipants = useCallback(async (eventId) => {
     try {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_LOCAL_API_LINK
-        }/api/event/getallparticipants/${eventId}`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/event/participants/${eventId}`,
         {
           method: "GET",
           credentials: "include",
@@ -56,40 +53,50 @@ const useEvents = () => {
       }
 
       const participants = await response.json();
-      return participants; // Retorna a lista de participantes (somente nomes)
+      return participants;
     } catch (err) {
       console.error("Erro ao buscar participantes:", err);
       return [];
     }
-  };
+  }, []);
 
-  const createEvent = async (eventData) => {
+  const participateInEvent = useCallback(async (eventId, userId) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_LOCAL_API_LINK}/api/event/createevent`,
+        `${import.meta.env.VITE_NETWORK_API_LINK}/api/event/subscribe`,
         {
-          method: "POST",
+          method: "PATCH",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(eventData),
+          body: JSON.stringify({ eventId, userId }),
         }
       );
 
       if (!response.ok) {
-        throw new Error(`Erro ao criar evento: ${response.status}`);
+        throw new Error(`Erro ao inscrever no evento: ${response.status}`);
       }
 
-      const data = await response.json();
-      return data; // Retorna os dados do evento criado
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.idEvento === eventId
+            ? {
+                ...event,
+                participating: true,
+                participants: [...(event.participants || []), { id: userId }],
+              }
+            : event
+        )
+      );
+      return await response.json();
     } catch (err) {
-      console.error("Erro ao criar evento:", err);
+      console.error("Erro ao inscrever no evento:", err);
       throw err;
     }
-  };
+  }, []);
 
-  return { events, loading, error, fetchParticipants, createEvent };
+  return { events, loading, error, fetchParticipants, participateInEvent };
 };
 
 export default useEvents;
