@@ -13,7 +13,7 @@ function PalestrasList() {
     tema: "",
     evento: {
       id: "1",
-      nome: "Primeiro Evento",
+      nome: "= Evento",
       data: "2025-03-25",
     },
   });
@@ -55,7 +55,7 @@ function PalestrasList() {
           tema: "",
           evento: {
             id: "1",
-            nome: "Primeiro Evento",
+            nome: "Primeiro",
             data: "2025-03-25",
           },
         });

@@ -46,8 +46,8 @@ const useAuthForm = () => {
           text: "Login realizado com sucesso!",
         });
         await new Promise((resolve) => {
-          localStorage.setItem("user_data", JSON.stringify(data.data));
-          setUser(data.data);
+          localStorage.setItem("user_data", JSON.stringify(data));
+          setUser(data);
           resolve();
         });
         navigate("/home");
