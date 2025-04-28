@@ -25,23 +25,43 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage, onRe
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === "application/pdf") {
-      setPdfFile(file);
-      handleExtractText(file).catch((error) =>
-        showAlert(error.message, "error")
-      );
-    } else {
-      showAlert("Por favor, selecione um arquivo PDF válido.", "error");
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    ];
+  
+    const maxSizeInMB = 10; // tamanho máximo permitido em MB
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024; // converte para bytes
+  
+    if (!file) {
+      showAlert("Nenhum arquivo selecionado.", "error");
+      return;
     }
+  
+    if (!allowedTypes.includes(file.type)) {
+      showAlert("Por favor, selecione um arquivo PDF, DOCX ou PPTX válido.", "error");
+      return;
+    }
+  
+    if (file.size > maxSizeInBytes) {
+      showAlert(`Arquivo muito grande! O limite é ${maxSizeInMB}MB.`, "error");
+      return;
+    }
+  
+    setPdfFile(file);
+  
+    handleExtractText(file).catch((error) =>
+      showAlert(error.message, "error")
+    );
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const success = await submitQuestions(questions, idPalestra);
       if (success) {
         showAlert("Questões enviadas com sucesso!", "success");
-        // Reinicia com uma questão vazia, se desejado:
         setQuestions([
           { questionText: "", choices: ["", "", "", ""], correctAnswer: "" },
         ]);
@@ -68,16 +88,10 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage, onRe
   };
 
   const handleCreateWithAI = () => {
-    // Opcional: limpe o estado para evitar mesclar com o formulário vazio
     setQuestions([]);
     handleFetchChatCompletion(pdfText, questionCount, [], setQuestions)
       .then((generatedQuestions) => {
-        if (
-          generatedQuestions &&
-          Array.isArray(generatedQuestions) &&
-          generatedQuestions.length > 0
-        ) {
-          // Garante que não haja questões vazias no array gerado
+        if (generatedQuestions && Array.isArray(generatedQuestions) && generatedQuestions.length > 0) {
           const nonEmptyQuestions = generatedQuestions.filter(
             (q) => q.questionText.trim() !== ""
           );
@@ -163,7 +177,7 @@ function QuestionsInvite({ questions, setQuestions, idPalestra, setMessage, onRe
             />
             <input
               type="file"
-              accept="application/pdf"
+              accept=".pdf,.docx,.pptx"
               onChange={handleFileChange}
               className="w-full text-black dark:text-white p-2 mb-3 rounded-lg bg-gray-100 dark:bg-gray-700"
             />
