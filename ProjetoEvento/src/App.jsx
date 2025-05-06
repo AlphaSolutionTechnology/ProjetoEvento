@@ -11,7 +11,7 @@ import RankingView from "./pages/RankingView";
 import ProfilePage from "./pages/ProfilePage";
 import PalestrasList from "./pages/palestrasList";
 import RouteWrapper from "./components/RouteWrapper";
-import Header from "./components/headerGlobal/Header";
+import Header from "./layout/headerGlobal/Header";
 import ProtectedRouteLogin from "./components/ProtectedRouteLogin";
 import ProtectedRouteQuizz from "./components/ProtectedRouteQuizz";
 import LandingPage from "./pages/LandingPage";

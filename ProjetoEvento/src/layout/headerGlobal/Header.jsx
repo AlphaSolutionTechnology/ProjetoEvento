@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Menu, X, UserCircle } from "lucide-react";
-import NotificationButton from "../notification/NotificationButton";
+import NotificationButton from "../../components/notification/NotificationButton";
 import ThemeToggle from "./ThemeToggle";
 import AccountMenu from "./AccountMenu";
 import { useNavigate } from "react-router-dom";
