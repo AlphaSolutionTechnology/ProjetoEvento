@@ -1,5 +1,5 @@
 import useAuth from "../hooks/useAuth";
-import UserProfileCard from "../components/userProfile/UserProfileCard";
+import UserProfileCard from "../components/userProfileCard/UserProfileCard";
 import Loading from "../components/loading/loading";
 
 function ProfilePage() {
