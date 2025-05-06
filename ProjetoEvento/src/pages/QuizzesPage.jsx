@@ -6,7 +6,6 @@ import QuizListActions from "../components/quizList/QuizListActions";
 import QuizListConfirmationModal from "../components/quizList/QuizListConfirmationModal";
 import { WebSocketContext } from "../context/WebSocketContext";
 
-
 export default function QuizzesPage() {
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState(null);
@@ -20,8 +19,11 @@ export default function QuizzesPage() {
 
   useEffect(() => {
     messages.forEach((message) => {
-
-      if (message.type === "quiz_liberado" && Number(message.idPalestra) === Number(idPalestra)) { //idPalestra vindo de useParams() vem como string
+      if (
+        message.type === "quiz_liberado" &&
+        Number(message.idPalestra) === Number(idPalestra)
+      ) {
+        //idPalestra vindo de useParams() vem como string
         setQuizzReleased((prev) => {
           if (!prev) {
             setToastMessage({ text: "O quiz foi liberado!", type: "success" });
@@ -30,63 +32,58 @@ export default function QuizzesPage() {
         });
       }
 
-      if(message.type === "quizz_agendado" && Number(message.idPalestra) === Number(idPalestra)){
+      if (
+        message.type === "quizz_agendado" &&
+        Number(message.idPalestra) === Number(idPalestra)
+      ) {
         setQuizzReleased(true);
       }
-
-
-
     });
   }, [messages, idPalestra]);
 
-  const verificarQuizzLiberado = async() => {
-    try{
-
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/isReleased/${idPalestra}`,
+  const verificarQuizzLiberado = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_LOCAL_API_LINK
+        }/api/palestra/isReleased/${idPalestra}`,
         {
           method: "GET",
           credentials: "include",
-          headers: {"Content-Type":"application/json"},
+          headers: { "Content-Type": "application/json" },
         }
       );
       if (!response.ok) {
         console.error(`Erro: ${response.status} - ${response.statusText}`);
         return false;
-        
       }
-  
+
       const data = await response.json();
       const { message } = data;
 
-  
       if (message === "Quizz está liberado!") {
         return true;
       } else {
         return false;
       }
-
-
-    } catch (error){
+    } catch (error) {
       console.error("Erro ao verificar status do quiz:", error.message);
       setToastMessage({
         text: "Erro ao verificar se quizz está liberado.",
-        type: "error"
+        type: "error",
       });
     }
-
-
-
-  }
-
+  };
 
   // Função para verificar o status do quiz
   const verificarStatusQuizz = async () => {
     try {
-  
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/verificarStatus/${idPalestra}`,
         `${
-          import.meta.env.VITE_NETWORK_API_LINK
+          import.meta.env.VITE_LOCAL_API_LINK
+        }/api/questoes/verificarStatus/${idPalestra}`,
+        `${
+          import.meta.env.VITE_LOCAL_API_LINK
         }/api/questoes/verificarStatus/${idPalestra}`,
         {
           method: "GET",
@@ -123,9 +120,11 @@ export default function QuizzesPage() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/desinscrever/${idPalestra}`,
         `${
-          import.meta.env.VITE_NETWORK_API_LINK
+          import.meta.env.VITE_LOCAL_API_LINK
+        }/api/palestra/desinscrever/${idPalestra}`,
+        `${
+          import.meta.env.VITE_LOCAL_API_LINK
         }/api/palestra/desinscrever/${idPalestra}`,
         { method: "DELETE", credentials: "include" }
       );
@@ -170,9 +169,11 @@ export default function QuizzesPage() {
 
       // Inicia o quiz se o resultado não existir (404)
       const iniciarResponse = await fetch(
-        `${import.meta.env.VITE_NETWORK_API_LINK}/api/questoes/startquiz/${idPalestra}`,
         `${
-          import.meta.env.VITE_NETWORK_API_LINK
+          import.meta.env.VITE_LOCAL_API_LINK
+        }/api/questoes/startquiz/${idPalestra}`,
+        `${
+          import.meta.env.VITE_LOCAL_API_LINK
         }/api/questoes/startquiz/${idPalestra}`,
         {
           method: "POST",
@@ -198,17 +199,14 @@ export default function QuizzesPage() {
     }
   };
 
-
   // Verifica o status ao carregar a página para atualizar o estado inicial
   useEffect(() => {
     const checkQuizStatus = async () => {
       const podeIniciar = await verificarStatusQuizz();
-      setQuizCompleted(!podeIniciar); // Se não pode iniciar, o quiz está 
+      setQuizCompleted(!podeIniciar); // Se não pode iniciar, o quiz está
     };
-  
+
     checkQuizStatus();
-
-
   }, [idPalestra]);
 
   useEffect(() => {
@@ -216,11 +214,8 @@ export default function QuizzesPage() {
       const releaseStatus = await verificarQuizzLiberado();
       setQuizzReleased(releaseStatus); // Atualiza o estado com o status de liberação do quiz
     };
-  
-   
 
     checkQuizzRelease();
-
   }, [idPalestra, quizzReleased]);
 
   return (
@@ -236,7 +231,6 @@ export default function QuizzesPage() {
         onAction={handleParticiparQuizz}
         quizzReleased={quizzReleased}
         quizCompleted={quizCompleted}
-        
       />
 
       {/* Usando o QuizListAction */}

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import LectureForm from '../components/dashboard/LectureForm';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import LectureForm from "../components/dashboard/LectureForm";
 
 const CreateLecture = () => {
   const navigate = useNavigate();
@@ -13,25 +13,28 @@ const CreateLecture = () => {
       setError(null);
       setSuccess(null);
 
-      const response = await fetch(`${import.meta.env.VITE_NETWORK_API_LINK}/api/palestra/criar`, {
-        method: 'POST',
-        credentials: 'include', // Sends eventToken cookie
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(lecture),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_LOCAL_API_LINK}/api/palestra/criar`,
+        {
+          method: "POST",
+          credentials: "include", // Sends eventToken cookie
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(lecture),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create lecture');
+        throw new Error(errorData.message || "Failed to create lecture");
       }
 
       const createdLecture = await response.json();
       setSuccess(`Lecture "${createdLecture.tema}" created successfully!`);
       setTimeout(() => navigate(-1), 2000); // Navigate back after 2 seconds
     } catch (err) {
-      setError(err.message || 'An unexpected error occurred');
+      setError(err.message || "An unexpected error occurred");
     }
   };
 
@@ -43,7 +46,9 @@ const CreateLecture = () => {
       >
         <ArrowLeft size={20} /> Voltar
       </button>
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Adicionar Nova Palestra</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+        Adicionar Nova Palestra
+      </h1>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-inner border dark:border-gray-700 transition-colors duration-300">
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">

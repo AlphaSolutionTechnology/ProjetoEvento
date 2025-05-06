@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 
 // Função para buscar dados do backend
 const fetchEventData = async (endpoint) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_NETWORK_API_LINK}${endpoint}`,
+      `${import.meta.env.VITE_LOCAL_API_LINK}${endpoint}`,
       {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -56,7 +56,7 @@ const EventLectures = () => {
         }));
         setLectures(mappedLectures);
       } else {
-        setError('Erro ao carregar palestras');
+        setError("Erro ao carregar palestras");
       }
 
       // Temporary progress data
@@ -142,14 +142,17 @@ const EventLectures = () => {
                     style={{
                       width: `${
                         eventProgress.totalLectures
-                          ? (eventProgress.completedLectures / eventProgress.totalLectures) * 100
+                          ? (eventProgress.completedLectures /
+                              eventProgress.totalLectures) *
+                            100
                           : 0
                       }%`,
                     }}
                   ></div>
                 </div>
                 <span className="text-gray-600 dark:text-gray-400">
-                  {eventProgress.completedLectures}/{eventProgress.totalLectures} palestras concluídas
+                  {eventProgress.completedLectures}/
+                  {eventProgress.totalLectures} palestras concluídas
                 </span>
               </div>
             </div>
@@ -174,10 +177,12 @@ const EventLectures = () => {
                     {lecture.title}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-2">
-                    <span className="font-semibold">Palestrante:</span> {lecture.speaker}
+                    <span className="font-semibold">Palestrante:</span>{" "}
+                    {lecture.speaker}
                   </p>
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    <span className="font-semibold">Horário:</span> {lecture.time}
+                    <span className="font-semibold">Horário:</span>{" "}
+                    {lecture.time}
                   </p>
                   <button
                     onClick={() => navigate(lecture.quizLink)}
